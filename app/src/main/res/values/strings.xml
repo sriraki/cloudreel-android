@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">CloudReel</string>
+    <string name="enterprise_platform_badge">✦ ENTERPRISE BROADCAST PLATFORM</string>
+
+    <!-- Splash Screen -->
+    <string name="splash_logo_desc">CloudReel Official Logo</string>
+
+    <!-- Authentication -->
+    <string name="login_title">Sign in to CloudReel</string>
+    <string name="login_subtitle">Enter your corporate credentials to continue</string>
+    <string name="email_label">Work Email</string>
+    <string name="email_placeholder">name@organization.com</string>
+    <string name="password_label">Password</string>
+    <string name="password_placeholder">Enter your password</string>
+    <string name="sign_in_button">Sign In</string>
+    <string name="forgot_password">Forgot password?</string>
+    <string name="dont_have_account">Don\'t have an account?</string>
+    <string name="create_account">Create Account</string>
+
+    <!-- Sign Up -->
+    <string name="signup_title">Create your account</string>
+    <string name="signup_subtitle">Join CloudReel enterprise broadcast platform</string>
+    <string name="fullname_label">Full Name</string>
+    <string name="fullname_placeholder">e.g. Rakesh Kumar</string>
+    <string name="confirm_password_label">Confirm Password</string>
+    <string name="confirm_password_placeholder">Re-enter your password</string>
+    <string name="already_have_account">Already have an account?</string>
+    <string name="sign_in_link">Sign In</string>
+
+    <!-- Go Live Home -->
+    <string name="go_live_title">Go Live</string>
+    <string name="go_live_subtitle">Choose how you want to connect.</string>
+
+    <!-- Streamer Option -->
+    <string name="streamer_title">Streamer</string>
+    <string name="streamer_description">Broadcast live using your camera and bonded network connections.</string>
+
+    <!-- Relay Option -->
+    <string name="relay_title">Relay</string>
+    <string name="relay_description">Contribute your cellular connection to support live broadcasting.</string>
+
+    <!-- Common & Accessibility -->
+    <string name="theme_toggle_desc">Toggle theme</string>
+    <string name="sign_out_desc">Sign Out</string>
+    <string name="back_desc">Navigate back</string>
+    <string name="loading">Loading…</string>
+</resources>
