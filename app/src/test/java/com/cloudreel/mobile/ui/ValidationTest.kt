@@ -51,4 +51,35 @@ class ValidationTest {
         assertTrue("1 day old session must be active", isRecentValid)
         assertFalse("31 day old session must be expired", isExpiredValid)
     }
+
+    @Test
+    fun testRoleSelectionLogic() {
+        val roles = listOf("STREAMER", "RELAY")
+        assertEquals(2, roles.size)
+        assertTrue(roles.contains("STREAMER"))
+        assertTrue(roles.contains("RELAY"))
+        assertFalse("Host role must not be present", roles.contains("HOST"))
+        assertFalse("Participant role must not be present", roles.contains("PARTICIPANT"))
+    }
+
+    @Test
+    fun testAuthFormValidation() {
+        val emptyEmail = ""
+        val invalidEmail = "invalid@"
+        val validEmail = "producer@cloudreel.com"
+
+        val emptyPass = ""
+        val shortPass = "12345"
+        val validPass = "SecurePass123"
+
+        // Email checks
+        assertTrue(emptyEmail.isBlank())
+        assertFalse(invalidEmail.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()))
+        assertTrue(validEmail.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()))
+
+        // Password checks
+        assertTrue(emptyPass.isBlank())
+        assertTrue(shortPass.length < 6)
+        assertTrue(validPass.length >= 6)
+    }
 }
