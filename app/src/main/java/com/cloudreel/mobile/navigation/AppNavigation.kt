@@ -17,8 +17,11 @@ import com.cloudreel.mobile.data.remote.AuthRepository
 import com.cloudreel.mobile.ui.auth.AuthViewModel
 import com.cloudreel.mobile.ui.auth.LoginScreen
 import com.cloudreel.mobile.ui.auth.SignUpScreen
-import com.cloudreel.mobile.ui.home.GoLiveHomeScreen
+import com.cloudreel.mobile.ui.broadcast.BroadcastScreen
+import com.cloudreel.mobile.ui.category.CategorySelectionScreen
 import com.cloudreel.mobile.ui.home.HomeViewModel
+import com.cloudreel.mobile.ui.livesessions.LiveSessionsScreen
+import com.cloudreel.mobile.ui.mesh.CellularBondingMeshScreen
 import com.cloudreel.mobile.ui.relay.RelayScreen
 import com.cloudreel.mobile.ui.session.HostWorkflowScreen
 import com.cloudreel.mobile.ui.session.ParticipantWorkflowScreen
@@ -40,7 +43,7 @@ fun CloudReelNavGraph(
         modifier = modifier
     ) {
         // ── 1. SPLASH SCREEN ──────────────────────────────────────────────────
-        // Unconditionally navigates to Home Screen as required by spec
+        // Unconditionally navigates to Category Selection Screen after branding animation
         composable(
             route = Screen.Splash.route,
             enterTransition = { fadeIn(animationSpec = tween(300)) },
@@ -50,41 +53,29 @@ fun CloudReelNavGraph(
             SplashScreen(
                 viewModel = splashViewModel,
                 onNavigateToHome = {
-                    navController.navigate(Screen.Home.route) {
+                    navController.navigate(Screen.CategorySelection.route) {
                         popUpTo(Screen.Splash.route) { inclusive = true }
                     }
                 }
             )
         }
 
-        // ── 2. HOME SCREEN (4 PRIMARY OPTIONS) ────────────────────────────────
+        // ── 2. CATEGORY SELECTION SCREEN ──────────────────────────────────────
+        // Initial post-splash screen with two primary categories:
+        // 1. Live Sessions  2. Broadcast
         composable(
-            route = Screen.Home.route,
+            route = Screen.CategorySelection.route,
             enterTransition = { fadeIn(animationSpec = tween(350)) },
             exitTransition = { fadeOut(animationSpec = tween(250)) }
         ) {
             val homeViewModel = HomeViewModel(sessionManager)
-            GoLiveHomeScreen(
+            CategorySelectionScreen(
                 viewModel = homeViewModel,
-                // Option 1: Start as Host -> Shared Session Entry (Host Mode)
-                onNavigateToHost = {
-                    navController.navigate(Screen.SessionEntry.createRoute("host"))
+                onNavigateToLiveSessions = {
+                    navController.navigate(Screen.LiveSessions.route)
                 },
-                // Option 2: Join as Participant -> Shared Session Entry (Participant Mode)
-                onNavigateToParticipant = {
-                    navController.navigate(Screen.SessionEntry.createRoute("participant"))
-                },
-                // Option 3: Streamer -> Direct to Streamer if authenticated, else Login
-                onNavigateToStreamer = {
-                    if (sessionManager.isSessionActive()) {
-                        navController.navigate(Screen.Streamer.route)
-                    } else {
-                        navController.navigate(Screen.Login.route)
-                    }
-                },
-                // Option 4: Relay -> Direct to Relay without login requirement
-                onNavigateToRelay = {
-                    navController.navigate(Screen.Relay.route)
+                onNavigateToBroadcast = {
+                    navController.navigate(Screen.Broadcast.route)
                 },
                 onLogout = {
                     sessionManager.clearSession()
@@ -92,7 +83,93 @@ fun CloudReelNavGraph(
             )
         }
 
-        // ── 3. SHARED SESSION URL / CODE ENTRY SCREEN ─────────────────────────
+        // ── 3. LIVE SESSIONS SCREEN ───────────────────────────────────────────
+        // Displays: Start as Host & Join as Participant
+        composable(
+            route = Screen.LiveSessions.route,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
+            LiveSessionsScreen(
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToHost = {
+                    navController.navigate(Screen.SessionEntry.createRoute("host"))
+                },
+                onNavigateToParticipant = {
+                    navController.navigate(Screen.SessionEntry.createRoute("participant"))
+                }
+            )
+        }
+
+        // ── 4. BROADCAST SCREEN ───────────────────────────────────────────────
+        // Displays: Streamer, Relay, and Cellular Bonding Mesh (Network Contribution)
+        composable(
+            route = Screen.Broadcast.route,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
+            val homeViewModel = HomeViewModel(sessionManager)
+            BroadcastScreen(
+                viewModel = homeViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNavigateToStreamer = {
+                    if (sessionManager.isSessionActive()) {
+                        navController.navigate(Screen.Streamer.route)
+                    } else {
+                        navController.navigate(Screen.Login.route)
+                    }
+                },
+                onNavigateToRelay = {
+                    navController.navigate(Screen.Relay.route)
+                },
+                onNavigateToMesh = {
+                    navController.navigate(Screen.CellularBondingMesh.route)
+                }
+            )
+        }
+
+        // ── 5. CELLULAR BONDING MESH (NETWORK CONTRIBUTION) WORKFLOW ──────────
+        composable(
+            route = Screen.CellularBondingMesh.route,
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(300)
+                )
+            }
+        ) {
+            CellularBondingMeshScreen(
+                onNavigateBack = { navController.popBackStack() }
+            )
+        }
+
+        // ── 6. SHARED SESSION URL / CODE ENTRY SCREEN ─────────────────────────
         composable(
             route = Screen.SessionEntry.route,
             arguments = listOf(
@@ -121,18 +198,18 @@ fun CloudReelNavGraph(
                 onValidationSuccess = { validCode ->
                     if (mode.equals("host", ignoreCase = true)) {
                         navController.navigate(Screen.HostWorkflow.createRoute(validCode)) {
-                            popUpTo(Screen.Home.route) { inclusive = false }
+                            popUpTo(Screen.LiveSessions.route) { inclusive = false }
                         }
                     } else {
                         navController.navigate(Screen.ParticipantWorkflow.createRoute(validCode)) {
-                            popUpTo(Screen.Home.route) { inclusive = false }
+                            popUpTo(Screen.LiveSessions.route) { inclusive = false }
                         }
                     }
                 }
             )
         }
 
-        // ── 4. HOST WORKFLOW DESTINATION ──────────────────────────────────────
+        // ── 7. HOST WORKFLOW DESTINATION ──────────────────────────────────────
         composable(
             route = Screen.HostWorkflow.route,
             arguments = listOf(
@@ -161,7 +238,7 @@ fun CloudReelNavGraph(
             )
         }
 
-        // ── 5. PARTICIPANT WORKFLOW DESTINATION ───────────────────────────────
+        // ── 8. PARTICIPANT WORKFLOW DESTINATION ───────────────────────────────
         composable(
             route = Screen.ParticipantWorkflow.route,
             arguments = listOf(
@@ -190,7 +267,7 @@ fun CloudReelNavGraph(
             )
         }
 
-        // ── 6. LOGIN SCREEN (FOR STREAMER WORKFLOW) ───────────────────────────
+        // ── 9. LOGIN SCREEN (FOR STREAMER WORKFLOW) ───────────────────────────
         composable(
             route = Screen.Login.route,
             enterTransition = {
@@ -216,7 +293,7 @@ fun CloudReelNavGraph(
             )
         }
 
-        // ── 7. SIGN UP SCREEN (FOR STREAMER WORKFLOW) ─────────────────────────
+        // ── 10. SIGN UP SCREEN (FOR STREAMER WORKFLOW) ────────────────────────
         composable(
             route = Screen.SignUp.route,
             enterTransition = {
@@ -247,7 +324,7 @@ fun CloudReelNavGraph(
             )
         }
 
-        // ── 8. STREAMER DESTINATION WORKFLOW ──────────────────────────────────
+        // ── 11. STREAMER DESTINATION WORKFLOW ─────────────────────────────────
         composable(
             route = Screen.Streamer.route,
             enterTransition = {
@@ -268,7 +345,7 @@ fun CloudReelNavGraph(
             )
         }
 
-        // ── 9. RELAY DESTINATION WORKFLOW ─────────────────────────────────────
+        // ── 12. RELAY DESTINATION WORKFLOW ────────────────────────────────────
         composable(
             route = Screen.Relay.route,
             enterTransition = {

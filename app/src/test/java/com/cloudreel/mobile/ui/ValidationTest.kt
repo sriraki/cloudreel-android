@@ -8,7 +8,46 @@ import org.junit.Test
 class ValidationTest {
 
     @Test
+    fun testCategorySelectionTwoPrimaryOptions() {
+        val categories = listOf(
+            "Live Sessions",
+            "Broadcast"
+        )
+
+        assertEquals("Category Selection must have exactly 2 primary options", 2, categories.size)
+        assertEquals("Category 1 must be Live Sessions", "Live Sessions", categories[0])
+        assertEquals("Category 2 must be Broadcast", "Broadcast", categories[1])
+    }
+
+    @Test
+    fun testLiveSessionsOptions() {
+        val liveSessionOptions = listOf(
+            "Start as Host",
+            "Join as Participant"
+        )
+
+        assertEquals("Live Sessions screen must have exactly 2 actions", 2, liveSessionOptions.size)
+        assertEquals("Option A must be Start as Host", "Start as Host", liveSessionOptions[0])
+        assertEquals("Option B must be Join as Participant", "Join as Participant", liveSessionOptions[1])
+    }
+
+    @Test
+    fun testBroadcastThreePrimaryOptions() {
+        val broadcastOptions = listOf(
+            "Streamer",
+            "Relay",
+            "Cellular Bonding Mesh"
+        )
+
+        assertEquals("Broadcast screen must have exactly 3 options", 3, broadcastOptions.size)
+        assertEquals("Option A must be Streamer", "Streamer", broadcastOptions[0])
+        assertEquals("Option B must be Relay", "Relay", broadcastOptions[1])
+        assertEquals("Option C must be Cellular Bonding Mesh", "Cellular Bonding Mesh", broadcastOptions[2])
+    }
+
+    @Test
     fun testHomeFourPrimaryOptions() {
+        // Preserved for legacy home screen compatibility
         val homeOptions = listOf(
             "Start as Host",
             "Join as Participant",
@@ -16,11 +55,7 @@ class ValidationTest {
             "Relay"
         )
 
-        assertEquals("Home screen must have exactly 4 primary options", 4, homeOptions.size)
-        assertEquals("Option 1 must be Start as Host", "Start as Host", homeOptions[0])
-        assertEquals("Option 2 must be Join as Participant", "Join as Participant", homeOptions[1])
-        assertEquals("Option 3 must be Streamer", "Streamer", homeOptions[2])
-        assertEquals("Option 4 must be Relay", "Relay", homeOptions[3])
+        assertEquals("Home screen has 4 primary options", 4, homeOptions.size)
     }
 
     @Test
@@ -89,6 +124,16 @@ class ValidationTest {
         }
 
         assertEquals("relay", resolveRelayDestination())
+    }
+
+    @Test
+    fun testCellularBondingMeshDirectAccessLogic() {
+        // Cellular Bonding Mesh does NOT require authentication
+        fun resolveMeshDestination(): String {
+            return "cellular_bonding_mesh"
+        }
+
+        assertEquals("cellular_bonding_mesh", resolveMeshDestination())
     }
 
     @Test

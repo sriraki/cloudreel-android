@@ -28,27 +28,42 @@
     <string name="already_have_account">Already have an account?</string>
     <string name="sign_in_link">Sign In</string>
 
-    <!-- Updated Home Screen -->
+    <!-- Category Selection Screen -->
+    <string name="category_selection_heading">How would you like to use CloudReel?</string>
+    <string name="category_selection_subtitle">Choose a category to get started.</string>
+    <string name="category_live_sessions_title">Live Sessions</string>
+    <string name="category_live_sessions_desc">Host a session or join an existing one.</string>
+    <string name="category_broadcast_title">Broadcast</string>
+    <string name="category_broadcast_desc">Stream live video or contribute your mobile connection to strengthen a live stream.</string>
+
+    <!-- Live Sessions Screen -->
+    <string name="live_sessions_heading">Live Sessions</string>
+    <string name="live_sessions_subtitle">Host or join an interactive live session.</string>
+
+    <!-- Broadcast Screen -->
+    <string name="broadcast_heading">Broadcast</string>
+    <string name="broadcast_subtitle">Live streaming &amp; network contribution.</string>
+
+    <!-- Broadcast Options -->
+    <string name="streamer_title">Streamer</string>
+    <string name="streamer_description">Go live and stream video.</string>
+    <string name="relay_title">Relay</string>
+    <string name="relay_description">Contribute your connection to support a live stream.</string>
+    <string name="mesh_title">Network Contribution</string>
+    <string name="mesh_tech_badge">Cellular Bonding Mesh</string>
+    <string name="mesh_description">Share your mobile connection to strengthen a live stream.</string>
+
+    <!-- Live Sessions Options -->
+    <string name="start_as_host_title">Start as Host</string>
+    <string name="start_as_host_subtitle">Create and host a live session.</string>
+    <string name="join_as_participant_title">Join as Participant</string>
+    <string name="join_as_participant_subtitle">Join an existing live session.</string>
+
+    <!-- Legacy / Home Screen compatibility -->
     <string name="home_title">Welcome to CloudReel</string>
     <string name="home_subtitle">Choose how you want to connect.</string>
     <string name="go_live_title">Welcome to CloudReel</string>
     <string name="go_live_subtitle">Choose how you want to connect.</string>
-
-    <!-- Option 1: Start as Host -->
-    <string name="start_as_host_title">Start as Host</string>
-    <string name="start_as_host_subtitle">Create or host a live session.</string>
-
-    <!-- Option 2: Join as Participant -->
-    <string name="join_as_participant_title">Join as Participant</string>
-    <string name="join_as_participant_subtitle">Join an existing session.</string>
-
-    <!-- Option 3: Streamer -->
-    <string name="streamer_title">Streamer</string>
-    <string name="streamer_description">Broadcast live using your camera and bonded connections.</string>
-
-    <!-- Option 4: Relay -->
-    <string name="relay_title">Relay</string>
-    <string name="relay_description">Contribute your cellular connection to support live broadcasting.</string>
 
     <!-- Session URL/Code Entry -->
     <string name="host_mode_title">Start as Host</string>

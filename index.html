@@ -519,6 +519,129 @@
       margin-left: 10px;
     }
 
+    /* ── CATEGORY SELECTION CARDS ──────────────────────────── */
+    .category-card {
+      border-radius: 22px;
+      padding: 22px;
+      cursor: pointer;
+      margin-bottom: 16px;
+      display: flex;
+      flex-direction: column;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      background: var(--bg-device-card);
+      border: 1px solid var(--border-device);
+      text-align: left;
+    }
+
+    .category-card:hover {
+      border-color: rgba(121, 40, 202, 0.4);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    }
+
+    .category-card:active {
+      transform: scale(0.98);
+    }
+
+    .category-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .category-card-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .category-card-icon.purple {
+      background: rgba(48, 49, 203, 0.12);
+      color: #3031CB;
+    }
+
+    .category-card-icon.magenta {
+      background: rgba(211, 0, 234, 0.12);
+      color: #D300EA;
+    }
+
+    .category-card-title {
+      font-size: 20px;
+      font-weight: 800;
+      letter-spacing: -0.4px;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .category-card-desc {
+      font-size: 13px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 14px;
+    }
+
+    .category-features-row {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .category-feature-pill {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 8px;
+      background: var(--bg-device-subtle);
+      color: var(--text-muted);
+      border: 1px solid var(--border-device);
+    }
+
+    /* Mesh Toggles & Controls */
+    .mesh-toggle-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 0;
+      border-bottom: 1px solid var(--border-device);
+    }
+
+    .mesh-toggle-row:last-child {
+      border-bottom: none;
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 44px;
+      height: 24px;
+      background: var(--border-device);
+      border-radius: 12px;
+      cursor: pointer;
+      transition: background-color 0.2s;
+    }
+
+    .toggle-switch.active {
+      background: var(--cr-violet);
+    }
+
+    .toggle-switch::after {
+      content: '';
+      position: absolute;
+      top: 2px;
+      left: 2px;
+      width: 20px;
+      height: 20px;
+      border-radius: 50%;
+      background: #FFFFFF;
+      transition: transform 0.2s;
+    }
+
+    .toggle-switch.active::after {
+      transform: translateX(20px);
+    }
+
     /* Telemetry Card */
     .telemetry-card {
       background: var(--bg-device-card);
@@ -672,14 +795,15 @@
       <!-- Screen Switcher Pills -->
       <div class="screen-pills">
         <button class="screen-pill-btn" onclick="navigateTo('splash')">Splash</button>
-        <button class="screen-pill-btn active" onclick="navigateTo('home')">Home (4 Options)</button>
+        <button class="screen-pill-btn active" onclick="navigateTo('category-selection')">Category Selection</button>
+        <button class="screen-pill-btn" onclick="navigateTo('live-sessions')">Live Sessions</button>
         <button class="screen-pill-btn" onclick="openSessionEntry('host')">Host Entry</button>
         <button class="screen-pill-btn" onclick="openSessionEntry('participant')">Participant Entry</button>
-        <button class="screen-pill-btn" onclick="navigateTo('host-workflow')">Host Hub</button>
-        <button class="screen-pill-btn" onclick="navigateTo('participant-workflow')">Stream View</button>
-        <button class="screen-pill-btn" onclick="navigateTo('login')">Login</button>
+        <button class="screen-pill-btn" onclick="navigateTo('broadcast')">Broadcast</button>
+        <button class="screen-pill-btn" onclick="navigateTo('mesh')">Mesh Contribution</button>
         <button class="screen-pill-btn" onclick="navigateTo('streamer')">Streamer</button>
         <button class="screen-pill-btn" onclick="navigateTo('relay')">Relay</button>
+        <button class="screen-pill-btn" onclick="navigateTo('login')">Login</button>
       </div>
 
       <!-- Theme Switcher -->
@@ -750,12 +874,244 @@
               <path fill="url(#nav-grad)" d="M162.6,100.9h-30.2c-.7,0-1.3-.3-1.7-.9l-13-18.6c-.5-.7-.4-1.7,0-2.4l7.8-9.8c.4-.5,1-.8,1.6-.8h4.1c5.8,0,10.4-4,10.4-9s-4.7-8.8-10.4-9c-5.8-.2-9.7,5.5-9.8,5.9l-15,20.2-5.1,6.8s-11.3,15.6-30.7,21.3c-5.9,2-12.3,2.9-19,2.7C23.9,106.4,1.1,83.8,0,55.9-1.2,25.3,23.3,0,53.8,0s34.3,9.1,44,22.9c.7,1,.5,2.2-.3,3-.6.5-1.1,1-1.6,1.5h0c-5.3,4.9-9.2,11-14.8,19-.9,1.4-3,1.1-3.6-.5-3.4-10.4-13.5-17.7-25.1-17.1-12.9.7-23.3,11.5-23.5,24.5-.2,14,11,25.4,24.9,25.4h2.5c.4,0,.8,0,1.2-.2h1.4c.4,0,.8-.2,1.2-.2,6.7-1.4,17.2-5.2,24.8-15.7,8.5-11.8,13-19.8,19.7-26.1h0c6.4-6.5,16-10.7,26.7-10.7,19.3,0,34.9,13.4,34.9,30s-5.2,18-13.3,23.5c-.9.6-1.1,1.9-.5,2.8l11.8,15.9c.9,1.3,0,3.2-1.6,3.2h0v-.3Z"/>
             </svg>
             <h2 style="font-size:30px; font-weight:800; margin-top:20px; letter-spacing:-0.5px;">CloudReel</h2>
-            <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Directing to CloudReel Home...</p>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Directing to Category Selection...</p>
           </div>
         </div>
 
-        <!-- 2. HOME SCREEN (4 PRIMARY OPTIONS) -->
-        <div class="app-screen active-screen" id="screen-home">
+        <!-- 2. CATEGORY SELECTION SCREEN (NEW ROOT POST-SPLASH) -->
+        <div class="app-screen active-screen" id="screen-category-selection">
+          <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
+          <h2 class="screen-title">How would you like to use CloudReel?</h2>
+          <p class="screen-subtitle">Choose your live production or participation mode below.</p>
+
+          <!-- CATEGORY CARD 1: LIVE SESSIONS -->
+          <div class="category-card" onclick="navigateTo('live-sessions')" data-a11y-role="Live Sessions Category Card">
+            <div class="category-card-header">
+              <div class="category-card-icon purple">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <span class="home-card-badge">Interactive Meetings</span>
+            </div>
+            <h3 class="category-card-title">Live Sessions</h3>
+            <p class="category-card-desc">Host a session or join an existing one.</p>
+            <div class="category-features-row">
+              <span class="category-feature-pill">Start as Host</span>
+              <span class="category-feature-pill">Join as Participant</span>
+            </div>
+          </div>
+
+          <!-- CATEGORY CARD 2: BROADCAST -->
+          <div class="category-card" onclick="navigateTo('broadcast')" data-a11y-role="Broadcast Category Card">
+            <div class="category-card-header">
+              <div class="category-card-icon magenta">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="12" cy="11" r="2"/><path d="M7.8 7a6.5 6.5 0 0 0 0 8m8.4-8a6.5 6.5 0 0 1 0 8"/><path d="M4.9 4.2a10.5 10.5 0 0 0 0 13.6m14.2-13.6a10.5 10.5 0 0 1 0 13.6"/><line x1="12" y1="13" x2="12" y2="21"/>
+                </svg>
+              </div>
+              <span class="home-card-badge">Live Stream & Mesh</span>
+            </div>
+            <h3 class="category-card-title">Broadcast</h3>
+            <p class="category-card-desc">Stream live video or contribute your mobile connection to strengthen a live stream.</p>
+            <div class="category-features-row">
+              <span class="category-feature-pill">Streamer</span>
+              <span class="category-feature-pill">Relay</span>
+              <span class="category-feature-pill">Cellular Bonding Mesh</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. LIVE SESSIONS SCREEN -->
+        <div class="app-screen" id="screen-live-sessions">
+          <div class="platform-badge">✦ LIVE SESSIONS WORKFLOW</div>
+          <h2 class="screen-title">Live Sessions</h2>
+          <p class="screen-subtitle">Host or join an interactive live session.</p>
+
+          <!-- OPTION A: START AS HOST -->
+          <div class="home-option-card" onclick="openSessionEntry('host')" data-a11y-role="Start as Host (Button)">
+            <div style="display:flex; align-items:center;">
+              <div class="home-card-icon-box purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 2a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M19 10v3a7 7 0 0 1-14 0v-3"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+              </div>
+              <div>
+                <div class="home-card-title-row">
+                  <span class="home-card-title">Start as Host</span>
+                  <span class="home-card-badge">Host Mode</span>
+                </div>
+                <p class="home-card-desc">Create and host a live session.</p>
+              </div>
+            </div>
+            <div class="chevron-box">→</div>
+          </div>
+
+          <!-- OPTION B: JOIN AS PARTICIPANT -->
+          <div class="home-option-card" onclick="openSessionEntry('participant')" data-a11y-role="Join as Participant (Button)">
+            <div style="display:flex; align-items:center;">
+              <div class="home-card-icon-box violet">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div>
+                <div class="home-card-title-row">
+                  <span class="home-card-title">Join as Participant</span>
+                  <span class="home-card-badge">Receiver Mode</span>
+                </div>
+                <p class="home-card-desc">Join an existing live session.</p>
+              </div>
+            </div>
+            <div class="chevron-box">→</div>
+          </div>
+        </div>
+
+        <!-- 4. BROADCAST SCREEN -->
+        <div class="app-screen" id="screen-broadcast">
+          <div class="platform-badge">✦ BROADCAST PLATFORM</div>
+          <h2 class="screen-title">Broadcast</h2>
+          <p class="screen-subtitle">Live streaming & network contribution.</p>
+
+          <!-- OPTION A: STREAMER -->
+          <div class="home-option-card" onclick="onStreamerTapped()" data-a11y-role="Streamer (Button)">
+            <div style="display:flex; align-items:center;">
+              <div class="home-card-icon-box purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                </svg>
+              </div>
+              <div>
+                <div class="home-card-title-row">
+                  <span class="home-card-title">Streamer</span>
+                  <span class="home-card-badge">Camera + Bonding</span>
+                </div>
+                <p class="home-card-desc">Go live and stream video.</p>
+              </div>
+            </div>
+            <div class="chevron-box">→</div>
+          </div>
+
+          <!-- OPTION B: RELAY -->
+          <div class="home-option-card" onclick="navigateTo('relay')" data-a11y-role="Relay (Button)">
+            <div style="display:flex; align-items:center;">
+              <div class="home-card-icon-box violet">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M2 12h20"/><path d="M6 16l6-8 6 8"/><circle cx="12" cy="8" r="2"/>
+                </svg>
+              </div>
+              <div>
+                <div class="home-card-title-row">
+                  <span class="home-card-title">Relay</span>
+                  <span class="home-card-badge">Donate Cellular</span>
+                </div>
+                <p class="home-card-desc">Contribute your connection to support a live stream.</p>
+              </div>
+            </div>
+            <div class="chevron-box">→</div>
+          </div>
+
+          <!-- OPTION C: NETWORK CONTRIBUTION (CELLULAR BONDING MESH) -->
+          <div class="home-option-card" onclick="navigateTo('mesh')" data-a11y-role="Network Contribution (Button)">
+            <div style="display:flex; align-items:center;">
+              <div class="home-card-icon-box magenta">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><line x1="7" y1="7" x2="10" y2="10.5"/><line x1="17" y1="7" x2="14" y2="10.5"/><line x1="7" y1="17" x2="10" y2="13.5"/><line x1="17" y1="17" x2="14" y2="13.5"/>
+                </svg>
+              </div>
+              <div>
+                <div class="home-card-title-row">
+                  <span class="home-card-title">Network Contribution</span>
+                  <span class="home-card-badge">Cellular Bonding Mesh</span>
+                </div>
+                <p class="home-card-desc">Share your mobile connection to strengthen a live stream.</p>
+              </div>
+            </div>
+            <div class="chevron-box">→</div>
+          </div>
+
+          <!-- TELEMETRY PREVIEW CARD -->
+          <div class="telemetry-card">
+            <div class="telemetry-header">
+              <span class="telemetry-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                CELLULAR BONDING MESH
+              </span>
+              <span class="telemetry-status-ready">● READY</span>
+            </div>
+            <div class="telemetry-grid">
+              <div>
+                <p class="telemetry-item-title">WiFi Uplink</p>
+                <p class="telemetry-item-val">18.4 Mbps</p>
+              </div>
+              <div>
+                <p class="telemetry-item-title">Cellular 5G</p>
+                <p class="telemetry-item-val">24.1 Mbps</p>
+              </div>
+              <div>
+                <p class="telemetry-item-title">Total Bonded</p>
+                <p class="telemetry-item-val" style="color:var(--cr-violet);">42.5 Mbps</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 5. CELLULAR BONDING MESH SCREEN (FULL WORKFLOW) -->
+        <div class="app-screen" id="screen-mesh">
+          <div style="display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:10px; background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.35); color:var(--cr-success); font-size:11px; font-weight:800; margin-bottom:12px;">
+            ● CONTRIBUTING TO MESH
+          </div>
+          <h2 class="screen-title">Network Contribution</h2>
+          <p class="screen-subtitle">Share your mobile connection to strengthen a live stream.</p>
+
+          <!-- Telemetry Stats Card -->
+          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:20px; padding:18px; margin-bottom:14px;">
+            <p style="font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing:0.5px; margin-bottom:12px;">BONDED UPLINK CHANNELS</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
+              <div style="background:var(--bg-device-subtle); border-radius:12px; padding:12px; border:1px solid var(--border-device);">
+                <p style="font-size:11px; color:var(--text-muted);">SIM 1 • Jio True 5G</p>
+                <p style="font-size:16px; font-weight:800; color:var(--text-main); margin-top:2px;" id="meshCellularSpeed">24.1 Mbps</p>
+                <p style="font-size:10px; color:var(--cr-success); margin-top:2px;">Signal: -82 dBm (Strong)</p>
+              </div>
+              <div style="background:var(--bg-device-subtle); border-radius:12px; padding:12px; border:1px solid var(--border-device);">
+                <p style="font-size:11px; color:var(--text-muted);">Wi-Fi 6 Uplink</p>
+                <p style="font-size:16px; font-weight:800; color:var(--text-main); margin-top:2px;" id="meshWifiSpeed">18.4 Mbps</p>
+                <p style="font-size:10px; color:var(--cr-success); margin-top:2px;">Signal: -54 dBm (Optimal)</p>
+              </div>
+            </div>
+            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1px solid var(--border-device);">
+              <span style="font-size:12px; color:var(--text-muted);">Total Contributed Throughput</span>
+              <span style="font-size:15px; font-weight:800; color:var(--cr-violet);" id="meshTotalSpeed">42.5 Mbps</span>
+            </div>
+          </div>
+
+          <!-- Configuration & Toggles Card -->
+          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:20px; padding:18px; margin-bottom:18px;">
+            <p style="font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing:0.5px; margin-bottom:8px;">CONTRIBUTION PREFERENCES</p>
+            <div class="mesh-toggle-row">
+              <div>
+                <p style="font-size:13px; font-weight:700; color:var(--text-main);">Background Contribution</p>
+                <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Keep contributing when screen locks</p>
+              </div>
+              <div class="toggle-switch active" id="bgContribToggle" onclick="toggleSwitch('bgContribToggle')"></div>
+            </div>
+            <div class="mesh-toggle-row">
+              <div>
+                <p style="font-size:13px; font-weight:700; color:var(--text-main);">Battery Saver Throttling</p>
+                <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Pause automatically below 20% battery</p>
+              </div>
+              <div class="toggle-switch active" id="batterySaverToggle" onclick="toggleSwitch('batterySaverToggle')"></div>
+            </div>
+          </div>
+
+          <!-- Action Button -->
+          <button class="btn-secondary" id="meshPauseBtn" onclick="toggleMeshContribution()">
+            Pause Mesh Contribution
+          </button>
+        </div>
+
+        <!-- 6. HOME SCREEN (LEGACY 4 OPTIONS VIEW) -->
+        <div class="app-screen" id="screen-home">
           <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
           <h2 class="screen-title">Welcome to CloudReel</h2>
           <p class="screen-subtitle">Choose how you want to connect.</p>
@@ -1120,13 +1476,14 @@
   </div>
 
   <script>
-    let currentScreen = 'home';
+    let currentScreen = 'category-selection';
     let currentSessionMode = 'host';
     let isDark = false;
     let isAuthenticated = false; // By default unauthenticated as per spec requirement
     let isMuted = false;
     let isBroadcasting = true;
     let isRelaying = true;
+    let isContributingMesh = true;
 
     function navigateTo(screenId) {
       currentScreen = screenId;
@@ -1138,6 +1495,10 @@
 
       const pill = Array.from(document.querySelectorAll('.screen-pill-btn')).find(b => {
         const text = b.textContent.toLowerCase();
+        if (screenId === 'category-selection') return text.includes('category selection');
+        if (screenId === 'live-sessions') return text.includes('live sessions');
+        if (screenId === 'broadcast') return text === 'broadcast';
+        if (screenId === 'mesh') return text.includes('mesh');
         if (screenId === 'home') return text.includes('home');
         if (screenId === 'session-entry') return (currentSessionMode === 'host' ? text.includes('host entry') : text.includes('participant entry'));
         if (screenId === 'host-workflow') return text.includes('host hub');
@@ -1153,19 +1514,19 @@
       if (screenId === 'splash') {
         header.style.display = 'none';
         setTimeout(() => {
-          if (currentScreen === 'splash') navigateTo('home');
+          if (currentScreen === 'splash') navigateTo('category-selection');
         }, 1600);
       } else {
         header.style.display = 'flex';
       }
 
-      if (screenId === 'session-entry' || screenId === 'host-workflow' || screenId === 'participant-workflow' || screenId === 'streamer' || screenId === 'relay' || screenId === 'signup' || screenId === 'login') {
+      if (['live-sessions', 'broadcast', 'mesh', 'session-entry', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
         backBtn.style.display = 'flex';
       } else {
         backBtn.style.display = 'none';
       }
 
-      if (screenId === 'home') {
+      if (screenId === 'category-selection' || screenId === 'home') {
         signOutBtn.style.display = isAuthenticated ? 'flex' : 'none';
       } else {
         signOutBtn.style.display = 'none';
@@ -1173,12 +1534,20 @@
     }
 
     function navigateBack() {
-      if (currentScreen === 'session-entry' || currentScreen === 'host-workflow' || currentScreen === 'participant-workflow' || currentScreen === 'streamer' || currentScreen === 'relay' || currentScreen === 'login') {
-        navigateTo('home');
+      if (currentScreen === 'live-sessions' || currentScreen === 'broadcast') {
+        navigateTo('category-selection');
+      } else if (currentScreen === 'mesh' || currentScreen === 'streamer' || currentScreen === 'relay') {
+        navigateTo('broadcast');
+      } else if (currentScreen === 'session-entry') {
+        navigateTo('live-sessions');
+      } else if (currentScreen === 'host-workflow' || currentScreen === 'participant-workflow') {
+        navigateTo('live-sessions');
+      } else if (currentScreen === 'login') {
+        navigateTo('broadcast');
       } else if (currentScreen === 'signup') {
         navigateTo('login');
       } else {
-        navigateTo('home');
+        navigateTo('category-selection');
       }
     }
 
@@ -1269,7 +1638,7 @@
     function logout() {
       isAuthenticated = false;
       document.getElementById('signOutBtn').style.display = 'none';
-      navigateTo('home');
+      navigateTo('category-selection');
     }
 
     function toggleTheme() {
@@ -1326,6 +1695,30 @@
       }
     }
 
+    function toggleSwitch(id) {
+      const el = document.getElementById(id);
+      if (el) el.classList.toggle('active');
+    }
+
+    function toggleMeshContribution() {
+      isContributingMesh = !isContributingMesh;
+      const btn = document.getElementById('meshPauseBtn');
+      const cell = document.getElementById('meshCellularSpeed');
+      const wifi = document.getElementById('meshWifiSpeed');
+      const total = document.getElementById('meshTotalSpeed');
+      if (isContributingMesh) {
+        btn.textContent = 'Pause Mesh Contribution';
+        cell.textContent = '24.1 Mbps';
+        wifi.textContent = '18.4 Mbps';
+        total.textContent = '42.5 Mbps';
+      } else {
+        btn.textContent = 'Resume Mesh Contribution';
+        cell.textContent = '0.0 Mbps';
+        wifi.textContent = '0.0 Mbps';
+        total.textContent = '0.0 Mbps';
+      }
+    }
+
     // Set system time
     const now = new Date();
     document.getElementById('systemTime').textContent = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
@@ -1339,7 +1732,7 @@
     if (cleanScreen) {
       if (cleanScreen === 'host-entry') openSessionEntry('host');
       else if (cleanScreen === 'participant-entry') openSessionEntry('participant');
-      else if (['splash', 'login', 'signup', 'home', 'streamer', 'relay', 'host-workflow', 'participant-workflow'].includes(cleanScreen)) {
+      else if (['splash', 'category-selection', 'live-sessions', 'broadcast', 'mesh', 'login', 'signup', 'home', 'streamer', 'relay', 'host-workflow', 'participant-workflow'].includes(cleanScreen)) {
         navigateTo(cleanScreen);
       }
     }
