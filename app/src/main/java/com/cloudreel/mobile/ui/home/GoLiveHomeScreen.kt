@@ -26,7 +26,9 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.CellTower
 import androidx.compose.material.icons.filled.FiberManualRecord
+import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.NetworkCheck
+import androidx.compose.material.icons.filled.Podcasts
 import androidx.compose.material.icons.filled.Videocam
 import androidx.compose.material.icons.filled.Wifi
 import androidx.compose.material3.Card
@@ -54,7 +56,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cloudreel.mobile.R
 import com.cloudreel.mobile.theme.CRBrandGradient
+import com.cloudreel.mobile.theme.CRMagenta
 import com.cloudreel.mobile.theme.CRPurple
+import com.cloudreel.mobile.theme.CRViolet
 import com.cloudreel.mobile.theme.SuccessGreen
 import com.cloudreel.mobile.ui.components.CloudReelHeader
 import com.cloudreel.mobile.ui.components.EnterprisePlatformBadge
@@ -62,6 +66,8 @@ import com.cloudreel.mobile.ui.components.EnterprisePlatformBadge
 @Composable
 fun GoLiveHomeScreen(
     viewModel: HomeViewModel,
+    onNavigateToHost: () -> Unit,
+    onNavigateToParticipant: () -> Unit,
     onNavigateToStreamer: () -> Unit,
     onNavigateToRelay: () -> Unit,
     onLogout: () -> Unit
@@ -78,7 +84,7 @@ fun GoLiveHomeScreen(
         ) {
             // Header with CloudReel logo top-left, theme toggle and sign out top-right
             CloudReelHeader(
-                showSignOut = true,
+                showSignOut = uiState.user != null,
                 onSignOutClick = {
                     viewModel.logout()
                     onLogout()
@@ -93,54 +99,78 @@ fun GoLiveHomeScreen(
                     .navigationBarsPadding(),
                 horizontalAlignment = Alignment.Start
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-                // Enterprise Badge matching brand reference
+                // Enterprise Platform Badge matching brand identity
                 EnterprisePlatformBadge()
 
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(18.dp))
 
-                // Headline Title matching specification
+                // Heading matching specification: "Welcome to CloudReel"
                 Text(
-                    text = stringResource(R.string.go_live_title),
+                    text = stringResource(R.string.home_title),
                     style = MaterialTheme.typography.displayLarge,
                     color = MaterialTheme.colorScheme.onBackground
                 )
 
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(6.dp))
 
-                // Subtitle
+                // Supporting text matching specification: "Choose how you want to connect."
                 Text(
-                    text = stringResource(R.string.go_live_subtitle),
+                    text = stringResource(R.string.home_subtitle),
                     style = MaterialTheme.typography.bodyLarge,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(28.dp))
 
-                // ── OPTION A: STREAMER ─────────────────────────────────────────
-                RoleOptionCard(
+                // ── OPTION 1: START AS HOST ───────────────────────────────────────
+                HomeOptionCard(
+                    title = stringResource(R.string.start_as_host_title),
+                    description = stringResource(R.string.start_as_host_subtitle),
+                    badgeLabel = "Host Mode",
+                    icon = Icons.Default.Podcasts,
+                    accentColor = CRPurple,
+                    onClick = onNavigateToHost
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // ── OPTION 2: JOIN AS PARTICIPANT ─────────────────────────────────
+                HomeOptionCard(
+                    title = stringResource(R.string.join_as_participant_title),
+                    description = stringResource(R.string.join_as_participant_subtitle),
+                    badgeLabel = "Receiver Mode",
+                    icon = Icons.Default.Group,
+                    accentColor = CRViolet,
+                    onClick = onNavigateToParticipant
+                )
+
+                Spacer(modifier = Modifier.height(14.dp))
+
+                // ── OPTION 3: STREAMER ───────────────────────────────────────────
+                HomeOptionCard(
                     title = stringResource(R.string.streamer_title),
                     description = stringResource(R.string.streamer_description),
                     badgeLabel = "Camera + Bonding",
                     icon = Icons.Default.Videocam,
-                    isPrimaryGradient = true,
+                    accentColor = CRMagenta,
                     onClick = onNavigateToStreamer
                 )
 
-                Spacer(modifier = Modifier.height(18.dp))
+                Spacer(modifier = Modifier.height(14.dp))
 
-                // ── OPTION B: RELAY ───────────────────────────────────────────
-                RoleOptionCard(
+                // ── OPTION 4: RELAY ──────────────────────────────────────────────
+                HomeOptionCard(
                     title = stringResource(R.string.relay_title),
                     description = stringResource(R.string.relay_description),
                     badgeLabel = "Donate This Cellular",
                     icon = Icons.Default.CellTower,
-                    isPrimaryGradient = false,
+                    accentColor = CRPurple,
                     onClick = onNavigateToRelay
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(26.dp))
 
                 // ── BONDED TELEMETRY CARD (from brand screenshot 2 card aesthetic) ──
                 BondedNetworkPreviewCard(
@@ -154,53 +184,32 @@ fun GoLiveHomeScreen(
 }
 
 /**
- * Enterprise Role Option Card component with full accessibility and interactive tactile feedback.
+ * Enterprise Home Option Card component with full accessibility, tactile feedback,
+ * brand color tokens, and comfortable touch targets.
  */
 @Composable
-private fun RoleOptionCard(
+private fun HomeOptionCard(
     title: String,
     description: String,
     badgeLabel: String,
     icon: ImageVector,
-    isPrimaryGradient: Boolean,
+    accentColor: Color,
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
     val isPressed by interactionSource.collectIsPressedAsState()
     val scale by animateFloatAsState(
         targetValue = if (isPressed) 0.98f else 1.0f,
-        label = "roleCardScale"
+        label = "homeCardScale"
     )
-
-    val surfaceColor = if (isPrimaryGradient) {
-        Color.Transparent
-    } else {
-        MaterialTheme.colorScheme.surface
-    }
-
-    val outlineColor = if (isPrimaryGradient) {
-        Color.Transparent
-    } else {
-        MaterialTheme.colorScheme.outline
-    }
-
-    val titleColor = if (isPrimaryGradient) Color.White else MaterialTheme.colorScheme.onBackground
-    val descColor = if (isPrimaryGradient) Color.White.copy(alpha = 0.9f) else MaterialTheme.colorScheme.onSurfaceVariant
 
     Box(
         modifier = Modifier
             .scale(scale)
             .fillMaxWidth()
-            .clip(RoundedCornerShape(22.dp))
-            .then(
-                if (isPrimaryGradient) {
-                    Modifier.background(CRBrandGradient)
-                } else {
-                    Modifier
-                        .background(surfaceColor)
-                        .border(1.dp, outlineColor, RoundedCornerShape(22.dp))
-                }
-            )
+            .clip(RoundedCornerShape(20.dp))
+            .background(MaterialTheme.colorScheme.surface)
+            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(20.dp))
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -211,113 +220,119 @@ private fun RoleOptionCard(
                 contentDescription = "$title, $badgeLabel. $description"
                 role = SemanticsRole.Button
             }
-            .padding(22.dp)
+            .padding(18.dp)
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.Top,
+            verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.SpaceBetween
         ) {
             Row(
-                modifier = Modifier.weight(1f),
-                verticalAlignment = Alignment.Top
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.weight(1f)
             ) {
                 // Icon Avatar
                 Box(
                     modifier = Modifier
-                        .size(48.dp)
+                        .size(46.dp)
                         .clip(CircleShape)
-                        .background(
-                            if (isPrimaryGradient) Color.White.copy(alpha = 0.2f)
-                            else MaterialTheme.colorScheme.surfaceVariant
-                        ),
+                        .background(accentColor.copy(alpha = 0.12f)),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = if (isPrimaryGradient) Color.White else CRPurple,
-                        modifier = Modifier.size(24.dp)
+                        tint = accentColor,
+                        modifier = Modifier.size(22.dp)
                     )
                 }
 
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Column {
+                Column(
+                    modifier = Modifier.weight(1f)
+                ) {
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
                         Text(
                             text = title,
-                            fontSize = 20.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = titleColor
+                            style = MaterialTheme.typography.titleLarge,
+                            color = MaterialTheme.colorScheme.onBackground
                         )
 
-                        Spacer(modifier = Modifier.width(8.dp))
-
-                        // Role badge pill
+                        // Pill badge
                         Box(
                             modifier = Modifier
-                                .clip(RoundedCornerShape(12.dp))
-                                .background(
-                                    if (isPrimaryGradient) Color.White.copy(alpha = 0.25f)
-                                    else MaterialTheme.colorScheme.surfaceVariant
-                                )
-                                .padding(horizontal = 8.dp, vertical = 2.dp)
+                                .clip(RoundedCornerShape(6.dp))
+                                .background(MaterialTheme.colorScheme.surfaceVariant)
+                                .padding(horizontal = 7.dp, vertical = 2.dp)
                         ) {
                             Text(
                                 text = badgeLabel,
-                                fontSize = 11.sp,
+                                fontSize = 10.sp,
                                 fontWeight = FontWeight.SemiBold,
-                                color = if (isPrimaryGradient) Color.White else MaterialTheme.colorScheme.onSurfaceVariant
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                         }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    Spacer(modifier = Modifier.height(4.dp))
 
                     Text(
                         text = description,
-                        fontSize = 14.sp,
-                        lineHeight = 20.sp,
-                        color = descColor
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        lineHeight = 16.sp
                     )
                 }
             }
 
-            Icon(
-                imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
-                contentDescription = null,
-                tint = if (isPrimaryGradient) Color.White else MaterialTheme.colorScheme.onSurfaceVariant,
+            Spacer(modifier = Modifier.width(8.dp))
+
+            // Trailing Chevron
+            Box(
                 modifier = Modifier
-                    .size(24.dp)
-                    .padding(top = 4.dp)
-            )
+                    .size(32.dp)
+                    .clip(CircleShape)
+                    .background(MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                    modifier = Modifier.size(18.dp)
+                )
+            }
         }
     }
 }
 
 /**
- * Live bonded cellular status preview matching the video preview card in Screenshot 2
+ * Bonded Network preview card matching the brand telemetry card in Screenshot 2.
  */
 @Composable
 private fun BondedNetworkPreviewCard(
-    bondingState: com.cloudreel.mobile.ui.home.NetworkBondingState
+    bondingState: NetworkBondingState
 ) {
     Card(
-        modifier = Modifier
-            .fillMaxWidth()
-            .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(20.dp)),
         shape = RoundedCornerShape(20.dp),
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface
-        )
+        ),
+        modifier = Modifier
+            .fillMaxWidth()
+            .border(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.outline,
+                shape = RoundedCornerShape(20.dp)
+            )
     ) {
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(18.dp)
+                .padding(20.dp)
         ) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
@@ -326,60 +341,62 @@ private fun BondedNetworkPreviewCard(
             ) {
                 Row(
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.NetworkCheck,
+                        contentDescription = null,
+                        tint = CRPurple,
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Text(
+                        text = "CELLULAR BONDING MESH",
+                        fontSize = 11.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        letterSpacing = 0.5.sp
+                    )
+                }
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.spacedBy(6.dp)
                 ) {
                     Icon(
                         imageVector = Icons.Default.FiberManualRecord,
                         contentDescription = null,
                         tint = SuccessGreen,
-                        modifier = Modifier.size(10.dp)
+                        modifier = Modifier.size(8.dp)
                     )
                     Text(
-                        text = "CELLULAR BONDING READY",
+                        text = "READY",
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        letterSpacing = 0.6.sp,
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-
-                // Latency pill
-                Box(
-                    modifier = Modifier
-                        .clip(RoundedCornerShape(10.dp))
-                        .background(MaterialTheme.colorScheme.surfaceVariant)
-                        .padding(horizontal = 8.dp, vertical = 3.dp)
-                ) {
-                    Text(
-                        text = "${bondingState.latencyMs}ms Latency",
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                        color = SuccessGreen
                     )
                 }
             }
 
             Spacer(modifier = Modifier.height(14.dp))
 
-            // Network telemetry stats
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                TelemetryMetric(
-                    label = "5G Cellular",
-                    value = if (bondingState.cellular5GConnected) "Active" else "Offline",
-                    icon = Icons.Default.CellTower
+                MetricColumn(
+                    icon = Icons.Default.Wifi,
+                    label = "WiFi Uplink",
+                    value = if (bondingState.wifiConnected) "18.4 Mbps" else "Standby"
                 )
-                TelemetryMetric(
-                    label = "Wi-Fi 6",
-                    value = if (bondingState.wifiConnected) "Bonded" else "Offline",
-                    icon = Icons.Default.Wifi
+                MetricColumn(
+                    icon = Icons.Default.CellTower,
+                    label = "Cellular 5G",
+                    value = if (bondingState.cellular5GConnected) "24.1 Mbps" else "Ready"
                 )
-                TelemetryMetric(
-                    label = "Total Throughput",
-                    value = "${bondingState.bondedSpeedMbps} Mbps",
-                    icon = Icons.Default.NetworkCheck
+                MetricColumn(
+                    icon = Icons.Default.NetworkCheck,
+                    label = "Total Bonded",
+                    value = "${bondingState.bondedSpeedMbps} Mbps"
                 )
             }
         }
@@ -387,12 +404,12 @@ private fun BondedNetworkPreviewCard(
 }
 
 @Composable
-private fun TelemetryMetric(
+private fun MetricColumn(
+    icon: ImageVector,
     label: String,
-    value: String,
-    icon: ImageVector
+    value: String
 ) {
-    Column {
+    Column(horizontalAlignment = Alignment.Start) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
             horizontalArrangement = Arrangement.spacedBy(4.dp)
@@ -400,7 +417,7 @@ private fun TelemetryMetric(
             Icon(
                 imageVector = icon,
                 contentDescription = null,
-                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                tint = CRPurple,
                 modifier = Modifier.size(14.dp)
             )
             Text(
@@ -409,12 +426,12 @@ private fun TelemetryMetric(
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
         }
-        Spacer(modifier = Modifier.height(2.dp))
+        Spacer(modifier = Modifier.height(3.dp))
         Text(
             text = value,
             fontSize = 14.sp,
-            fontWeight = FontWeight.Bold,
-            color = MaterialTheme.colorScheme.onBackground
+            fontWeight = FontWeight.SemiBold,
+            color = MaterialTheme.colorScheme.onSurface
         )
     }
 }

@@ -28,17 +28,40 @@
     <string name="already_have_account">Already have an account?</string>
     <string name="sign_in_link">Sign In</string>
 
-    <!-- Go Live Home -->
-    <string name="go_live_title">Go Live</string>
+    <!-- Updated Home Screen -->
+    <string name="home_title">Welcome to CloudReel</string>
+    <string name="home_subtitle">Choose how you want to connect.</string>
+    <string name="go_live_title">Welcome to CloudReel</string>
     <string name="go_live_subtitle">Choose how you want to connect.</string>
 
-    <!-- Streamer Option -->
-    <string name="streamer_title">Streamer</string>
-    <string name="streamer_description">Broadcast live using your camera and bonded network connections.</string>
+    <!-- Option 1: Start as Host -->
+    <string name="start_as_host_title">Start as Host</string>
+    <string name="start_as_host_subtitle">Create or host a live session.</string>
 
-    <!-- Relay Option -->
+    <!-- Option 2: Join as Participant -->
+    <string name="join_as_participant_title">Join as Participant</string>
+    <string name="join_as_participant_subtitle">Join an existing session.</string>
+
+    <!-- Option 3: Streamer -->
+    <string name="streamer_title">Streamer</string>
+    <string name="streamer_description">Broadcast live using your camera and bonded connections.</string>
+
+    <!-- Option 4: Relay -->
     <string name="relay_title">Relay</string>
     <string name="relay_description">Contribute your cellular connection to support live broadcasting.</string>
+
+    <!-- Session URL/Code Entry -->
+    <string name="host_mode_title">Start as Host</string>
+    <string name="host_mode_subtitle">Enter the session URL or code to continue.</string>
+    <string name="host_mode_button">Continue as Host</string>
+    <string name="participant_mode_title">Join a Session</string>
+    <string name="participant_mode_subtitle">Enter the session URL or code to join.</string>
+    <string name="participant_mode_button">Join Session</string>
+    <string name="session_code_label">Session URL or Code</string>
+    <string name="session_code_placeholder">e.g. CR-84920 or https://live.cloudreel.com/room</string>
+    <string name="session_code_error_empty">Please enter a valid session URL or code.</string>
+    <string name="session_code_error_invalid">Invalid format. Please enter a full URL (https://…) or 4–12 character room code.</string>
+    <string name="validating_session">Validating session…</string>
 
     <!-- Common & Accessibility -->
     <string name="theme_toggle_desc">Toggle theme</string>

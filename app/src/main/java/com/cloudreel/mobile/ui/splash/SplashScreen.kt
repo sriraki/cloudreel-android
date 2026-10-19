@@ -29,8 +29,7 @@ import com.cloudreel.mobile.ui.components.CloudReelEmblem
 @Composable
 fun SplashScreen(
     viewModel: SplashViewModel,
-    onNavigateToHome: () -> Unit,
-    onNavigateToLogin: () -> Unit
+    onNavigateToHome: () -> Unit
 ) {
     val navTarget by viewModel.navigationTarget.collectAsState()
 
@@ -63,8 +62,7 @@ fun SplashScreen(
 
     LaunchedEffect(navTarget) {
         when (navTarget) {
-            is SplashNavigationTarget.GoLiveHome -> onNavigateToHome()
-            is SplashNavigationTarget.Login -> onNavigateToLogin()
+            is SplashNavigationTarget.Home -> onNavigateToHome()
             is SplashNavigationTarget.Idle -> Unit
         }
     }

@@ -1,23 +1,20 @@
 package com.cloudreel.mobile.ui.components
 
 import androidx.compose.foundation.Canvas
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Path
-import androidx.compose.ui.text.SpanStyle
-import androidx.compose.ui.text.buildAnnotatedString
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
+import com.cloudreel.mobile.R
 import com.cloudreel.mobile.theme.CRBrandGradient
+import com.cloudreel.mobile.theme.LocalThemeController
 
 /**
  * High-fidelity CloudReel Logo component.
@@ -26,47 +23,24 @@ import com.cloudreel.mobile.theme.CRBrandGradient
 @Composable
 fun CloudReelLogo(
     modifier: Modifier = Modifier,
-    emblemSize: Dp = 38.dp,
-    textSize: Float = 24f,
+    height: Dp = 30.dp,
     showWordmark: Boolean = true
 ) {
-    Row(
-        modifier = modifier,
-        verticalAlignment = Alignment.CenterVertically,
-        horizontalArrangement = Arrangement.spacedBy(10.dp)
-    ) {
-        // Official CloudReel Emblem with brand gradient
-        CloudReelEmblem(
-            modifier = Modifier.size(emblemSize)
-        )
+    val themeController = LocalThemeController.current
+    val isDark = themeController.isDark
 
-        if (showWordmark) {
-            val textColor = MaterialTheme.colorScheme.onBackground
-            Text(
-                text = buildAnnotatedString {
-                    withStyle(
-                        SpanStyle(
-                            fontWeight = FontWeight.Bold,
-                            color = textColor,
-                            fontSize = textSize.sp,
-                            letterSpacing = (-0.5).sp
-                        )
-                    ) {
-                        append("Cloud")
-                    }
-                    withStyle(
-                        SpanStyle(
-                            fontWeight = FontWeight.Bold,
-                            color = textColor,
-                            fontSize = textSize.sp,
-                            letterSpacing = (-0.5).sp
-                        )
-                    ) {
-                        append("Reel")
-                    }
-                }
-            )
-        }
+    if (showWordmark) {
+        val logoRes = if (isDark) R.drawable.cloudreel_logo_dark else R.drawable.cloudreel_logo
+        Image(
+            painter = painterResource(id = logoRes),
+            contentDescription = stringResource(R.string.app_name),
+            modifier = modifier.height(height),
+            contentScale = ContentScale.Fit
+        )
+    } else {
+        CloudReelEmblem(
+            modifier = modifier.size(height)
+        )
     }
 }
 

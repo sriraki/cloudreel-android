@@ -1,0 +1,1348 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>CloudReel Android App — Interactive Design & Flow Simulator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cr-magenta: #D300EA;
+      --cr-purple: #3031CB;
+      --cr-violet: #7928CA;
+      --cr-gradient: linear-gradient(135deg, #D300EA 0%, #3031CB 100%);
+      --cr-success: #10B981;
+      --cr-error: #EF4444;
+      
+      /* Light theme (default) */
+      --bg-page: #F3F4F6;
+      --bg-device: #FFFFFF;
+      --bg-device-surface: #FFFFFF;
+      --bg-device-subtle: #F9FAFB;
+      --bg-device-card: #FFFFFF;
+      --border-device: #E5E7EB;
+      --text-main: #111111;
+      --text-muted: #666666;
+      --badge-bg: #F3E8FF;
+      --badge-text: #6B21A8;
+      --badge-border: rgba(121, 40, 202, 0.25);
+    }
+
+    body.dark {
+      --bg-page: #0B0B0F;
+      --bg-device: #121212;
+      --bg-device-surface: #181822;
+      --bg-device-subtle: #1F1F2B;
+      --bg-device-card: #181822;
+      --border-device: #2B2B38;
+      --text-main: #FFFFFF;
+      --text-muted: #9CA3AF;
+      --badge-bg: rgba(211, 0, 234, 0.14);
+      --badge-text: #E879F9;
+      --badge-border: rgba(211, 0, 234, 0.35);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-page);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 24px 16px 48px;
+      transition: background-color 0.3s ease, color 0.3s ease;
+    }
+
+    /* Top Control Bar */
+    .control-console {
+      width: 100%;
+      max-width: 960px;
+      background: var(--bg-device-surface);
+      border: 1px solid var(--border-device);
+      border-radius: 16px;
+      padding: 16px 20px;
+      margin-bottom: 24px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      justify-content: space-between;
+      gap: 14px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+    }
+
+    .brand-title-wrap {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .brand-title-wrap svg {
+      height: 24px;
+      width: auto;
+      display: block;
+    }
+
+    .brand-title-wrap h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: -0.3px;
+    }
+
+    .brand-title-wrap span {
+      background: var(--cr-gradient);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      font-size: 11px;
+      font-weight: 800;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+    }
+
+    .controls-actions {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .screen-pills {
+      display: flex;
+      background: var(--bg-device-subtle);
+      border: 1px solid var(--border-device);
+      padding: 3px;
+      border-radius: 12px;
+      gap: 2px;
+      flex-wrap: wrap;
+    }
+
+    .screen-pill-btn {
+      background: transparent;
+      border: none;
+      padding: 6px 12px;
+      border-radius: 9px;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .screen-pill-btn:hover {
+      color: var(--text-main);
+    }
+
+    .screen-pill-btn.active {
+      background: var(--bg-device-card);
+      color: var(--text-main);
+      box-shadow: 0 1px 4px rgba(0,0,0,0.08);
+    }
+
+    .tool-btn {
+      background: var(--bg-device-subtle);
+      border: 1px solid var(--border-device);
+      border-radius: 10px;
+      padding: 8px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s;
+    }
+
+    .tool-btn:hover {
+      background: var(--border-device);
+    }
+
+    .tool-btn.active-tool {
+      background: var(--badge-bg);
+      color: var(--cr-violet);
+      border-color: var(--badge-border);
+    }
+
+    /* Device Mockup Stage */
+    .device-stage {
+      display: flex;
+      justify-content: center;
+      width: 100%;
+    }
+
+    .mobile-frame {
+      width: 412px;
+      min-height: 860px;
+      background: var(--bg-device);
+      border: 10px solid #222228;
+      border-radius: 46px;
+      box-shadow: 0 25px 60px -15px rgba(0,0,0,0.3), 0 0 0 1px rgba(255,255,255,0.05);
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* Android Status Bar */
+    .status-bar {
+      height: 44px;
+      padding: 0 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-main);
+      z-index: 100;
+      flex-shrink: 0;
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    /* App Header */
+    .app-header {
+      padding: 10px 20px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--border-device);
+      flex-shrink: 0;
+      background: var(--bg-device);
+      z-index: 50;
+    }
+
+    .header-logo-svg {
+      height: 28px;
+      width: auto;
+      display: block;
+      color: var(--text-main);
+    }
+
+    .header-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .header-btn {
+      width: 36px;
+      height: 36px;
+      border-radius: 50%;
+      border: 1px solid var(--border-device);
+      background: var(--bg-device-surface);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      color: var(--text-main);
+      font-size: 16px;
+      transition: background-color 0.2s;
+    }
+
+    .header-btn:hover {
+      background: var(--border-device);
+    }
+
+    /* Viewport Area */
+    .screen-viewport {
+      flex: 1;
+      position: relative;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .app-screen {
+      display: none;
+      padding: 20px 24px 36px;
+      flex-direction: column;
+      flex: 1;
+      animation: fadeIn 0.25s ease-out;
+    }
+
+    .app-screen.active-screen {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Enterprise Badge */
+    .platform-badge {
+      display: inline-flex;
+      align-items: center;
+      padding: 5px 12px;
+      background: var(--badge-bg);
+      border: 1px solid var(--badge-border);
+      border-radius: 999px;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.8px;
+      color: var(--badge-text);
+      margin-bottom: 14px;
+      align-self: flex-start;
+    }
+
+    /* Headings */
+    .screen-title {
+      font-size: 26px;
+      font-weight: 800;
+      letter-spacing: -0.6px;
+      line-height: 1.15;
+      color: var(--text-main);
+      margin-bottom: 6px;
+    }
+
+    .screen-subtitle {
+      font-size: 14px;
+      color: var(--text-muted);
+      line-height: 1.45;
+      margin-bottom: 22px;
+    }
+
+    /* Inputs */
+    .input-group {
+      margin-bottom: 18px;
+      text-align: left;
+    }
+
+    .input-label {
+      display: block;
+      font-size: 13px;
+      font-weight: 600;
+      margin-bottom: 6px;
+      color: var(--text-main);
+    }
+
+    .input-box {
+      border: 1px solid var(--border-device);
+      border-radius: 14px;
+      padding: 12px 14px;
+      display: flex;
+      align-items: center;
+      background: var(--bg-device-surface);
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+
+    .input-box:focus-within {
+      border-color: var(--cr-violet);
+      box-shadow: 0 0 0 3px rgba(121, 40, 202, 0.15);
+    }
+
+    .input-box.error {
+      border-color: var(--cr-error);
+      box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15);
+    }
+
+    .input-box input {
+      border: none;
+      background: transparent;
+      outline: none;
+      width: 100%;
+      height: 100%;
+      font-size: 14px;
+      color: inherit;
+      font-family: inherit;
+    }
+
+    .clear-btn, .toggle-pass-btn {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--text-muted);
+      font-size: 12px;
+      padding: 4px;
+    }
+
+    .error-text {
+      color: var(--cr-error);
+      font-size: 11px;
+      margin-top: 5px;
+      font-weight: 500;
+    }
+
+    /* Buttons */
+    .btn-gradient {
+      width: 100%;
+      height: 52px;
+      background: var(--cr-gradient);
+      color: #FFFFFF;
+      border: none;
+      border-radius: 14px;
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      box-shadow: 0 4px 16px rgba(211, 0, 234, 0.35);
+      transition: transform 0.15s, box-shadow 0.15s;
+    }
+
+    .btn-gradient:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 6px 20px rgba(211, 0, 234, 0.45);
+    }
+
+    .btn-gradient:active {
+      transform: scale(0.98);
+    }
+
+    .btn-secondary {
+      width: 100%;
+      height: 50px;
+      background: var(--bg-device-subtle);
+      color: var(--text-main);
+      border: 1px solid var(--border-device);
+      border-radius: 14px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: background-color 0.2s;
+    }
+
+    .btn-secondary:hover {
+      background: var(--border-device);
+    }
+
+    /* ── 4 PRIMARY HOME OPTION CARDS ───────────────────────── */
+    .home-option-card {
+      border-radius: 20px;
+      padding: 16px;
+      cursor: pointer;
+      margin-bottom: 12px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: transform 0.2s, box-shadow 0.2s;
+      background: var(--bg-device-card);
+      border: 1px solid var(--border-device);
+      text-align: left;
+    }
+
+    .home-option-card:hover {
+      border-color: rgba(121, 40, 202, 0.3);
+      box-shadow: 0 4px 16px rgba(0,0,0,0.04);
+    }
+
+    .home-option-card:active {
+      transform: scale(0.98);
+    }
+
+    .home-card-icon-box {
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-right: 14px;
+    }
+
+    .home-card-icon-box.purple {
+      background: rgba(48, 49, 203, 0.12);
+      color: #3031CB;
+    }
+
+    .home-card-icon-box.violet {
+      background: rgba(121, 40, 202, 0.12);
+      color: #7928CA;
+    }
+
+    .home-card-icon-box.magenta {
+      background: rgba(211, 0, 234, 0.12);
+      color: #D300EA;
+    }
+
+    .home-card-title-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 3px;
+    }
+
+    .home-card-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .home-card-badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 6px;
+      background: var(--bg-device-subtle);
+      color: var(--text-muted);
+      border: 1px solid var(--border-device);
+    }
+
+    .home-card-desc {
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.4;
+    }
+
+    .chevron-box {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background: var(--bg-device-subtle);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--text-muted);
+      font-size: 14px;
+      flex-shrink: 0;
+      margin-left: 10px;
+    }
+
+    /* Telemetry Card */
+    .telemetry-card {
+      background: var(--bg-device-card);
+      border: 1px solid var(--border-device);
+      border-radius: 20px;
+      padding: 16px 18px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    .telemetry-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .telemetry-tag {
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: 0.6px;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .telemetry-status-ready {
+      color: var(--cr-success);
+      font-size: 11px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .telemetry-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .telemetry-item-title {
+      font-size: 10px;
+      color: var(--text-muted);
+      margin-bottom: 2px;
+    }
+
+    .telemetry-item-val {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    /* Quick Fill Chip */
+    .chip-btn {
+      display: inline-block;
+      padding: 4px 10px;
+      border-radius: 8px;
+      font-size: 11px;
+      font-weight: 600;
+      background: var(--bg-device-subtle);
+      border: 1px solid var(--border-device);
+      color: var(--cr-violet);
+      cursor: pointer;
+    }
+
+    .chip-btn:hover {
+      background: var(--badge-bg);
+    }
+
+    /* Workflow Viewport */
+    .stream-viewport {
+      background: #0D0D12;
+      border-radius: 18px;
+      aspect-ratio: 16 / 9;
+      position: relative;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 18px;
+      border: 1px solid var(--border-device);
+    }
+
+    /* Accessibility Overlay */
+    .a11y-active [data-a11y-role] {
+      outline: 2px dashed #EF4444 !important;
+      outline-offset: 2px !important;
+      position: relative;
+    }
+
+    .a11y-active [data-a11y-role]::after {
+      content: attr(data-a11y-role);
+      position: absolute;
+      top: -14px;
+      right: 0;
+      background: #EF4444;
+      color: white;
+      font-size: 9px;
+      font-weight: 800;
+      padding: 1px 4px;
+      border-radius: 3px;
+      z-index: 999;
+      pointer-events: none;
+    }
+
+    /* Splash Screen Style */
+    .splash-container {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 100%;
+      padding-bottom: 80px;
+    }
+
+    .splash-logo {
+      width: 90px;
+      height: auto;
+      animation: pulseLogo 2s ease-in-out infinite;
+    }
+
+    @keyframes pulseLogo {
+      0% { transform: scale(0.96); opacity: 0.9; }
+      50% { transform: scale(1.04); opacity: 1; }
+      100% { transform: scale(0.96); opacity: 0.9; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Control Console -->
+  <div class="control-console">
+    <div class="brand-title-wrap">
+      <svg viewBox="0 0 166.2 107.6" style="height:26px; width:auto; display:block;">
+        <defs>
+          <linearGradient id="nav-grad" x1="0" y1="539.6" x2="166.2" y2="539.6" gradientTransform="translate(0 -486)" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#D300EA"/>
+            <stop offset="1" stop-color="#3031CB"/>
+          </linearGradient>
+        </defs>
+        <path fill="url(#nav-grad)" d="M162.6,100.9h-30.2c-.7,0-1.3-.3-1.7-.9l-13-18.6c-.5-.7-.4-1.7,0-2.4l7.8-9.8c.4-.5,1-.8,1.6-.8h4.1c5.8,0,10.4-4,10.4-9s-4.7-8.8-10.4-9c-5.8-.2-9.7,5.5-9.8,5.9l-15,20.2-5.1,6.8s-11.3,15.6-30.7,21.3c-5.9,2-12.3,2.9-19,2.7C23.9,106.4,1.1,83.8,0,55.9-1.2,25.3,23.3,0,53.8,0s34.3,9.1,44,22.9c.7,1,.5,2.2-.3,3-.6.5-1.1,1-1.6,1.5h0c-5.3,4.9-9.2,11-14.8,19-.9,1.4-3,1.1-3.6-.5-3.4-10.4-13.5-17.7-25.1-17.1-12.9.7-23.3,11.5-23.5,24.5-.2,14,11,25.4,24.9,25.4h2.5c.4,0,.8,0,1.2-.2h1.4c.4,0,.8-.2,1.2-.2,6.7-1.4,17.2-5.2,24.8-15.7,8.5-11.8,13-19.8,19.7-26.1h0c6.4-6.5,16-10.7,26.7-10.7,19.3,0,34.9,13.4,34.9,30s-5.2,18-13.3,23.5c-.9.6-1.1,1.9-.5,2.8l11.8,15.9c.9,1.3,0,3.2-1.6,3.2h0v-.3Z"/>
+      </svg>
+      <h1>CloudReel Mobile Simulator</h1>
+      <span>Native Compose App</span>
+    </div>
+
+    <div class="controls-actions">
+      <!-- Screen Switcher Pills -->
+      <div class="screen-pills">
+        <button class="screen-pill-btn" onclick="navigateTo('splash')">Splash</button>
+        <button class="screen-pill-btn active" onclick="navigateTo('home')">Home (4 Options)</button>
+        <button class="screen-pill-btn" onclick="openSessionEntry('host')">Host Entry</button>
+        <button class="screen-pill-btn" onclick="openSessionEntry('participant')">Participant Entry</button>
+        <button class="screen-pill-btn" onclick="navigateTo('host-workflow')">Host Hub</button>
+        <button class="screen-pill-btn" onclick="navigateTo('participant-workflow')">Stream View</button>
+        <button class="screen-pill-btn" onclick="navigateTo('login')">Login</button>
+        <button class="screen-pill-btn" onclick="navigateTo('streamer')">Streamer</button>
+        <button class="screen-pill-btn" onclick="navigateTo('relay')">Relay</button>
+      </div>
+
+      <!-- Theme Switcher -->
+      <button class="tool-btn" id="themeToggleBtn" onclick="toggleTheme()">
+        🌙 Dark Mode
+      </button>
+
+      <!-- A11y Inspector -->
+      <button class="tool-btn" id="a11yToggleBtn" onclick="toggleA11y()">
+        ♿ A11y Mode
+      </button>
+    </div>
+  </div>
+
+  <!-- Device Frame -->
+  <div class="device-stage">
+    <div class="mobile-frame" id="mobileDevice">
+      
+      <!-- Android System Status Bar -->
+      <div class="status-bar">
+        <span id="systemTime">9:41</span>
+        <div class="status-icons">
+          <span>5G</span>
+          <span>Wi-Fi 6</span>
+          <span>100%</span>
+        </div>
+      </div>
+
+      <!-- App Header -->
+      <div class="app-header" id="screenHeader">
+        <div style="display:flex; align-items:center; gap:8px;">
+          <button id="backBtn" class="header-btn" style="display:none;" onclick="navigateBack()" data-a11y-role="Back Button (48dp)">
+            ←
+          </button>
+          <svg viewBox="0 0 559.1 107.6" class="header-logo-svg" role="img" aria-label="CloudReel">
+            <g fill="currentColor">
+              <path d="M440.9,89.3l-11.2-17h-14v16.9h-10.6V30.3l30.4.2c10.8,0,18.1,10.3,17.6,20.7.5,8.5-3.6,15.6-11.5,19.5l12,18.4h-12.7c0,0,0,.2,0,.2ZM442.2,53c.8-5-1.9-12.1-7.3-12.2l-19.2-.3v22h15.9c5.5,0,10-3.7,10.6-9.5h0Z"/>
+              <path d="M485.6,76.1h11.2c-4,13.6-21.1,17.6-32.9,10.6-6.5-3.9-9.3-11-9.3-18.4s3-15.3,9.9-18.9c8.4-4.4,18.5-4.1,26,1.7,6.3,4.8,8.4,12.8,7.4,20.6h-32.6c.6,4.9,4.2,8.1,9,8.8,4.1.6,8.4-.6,11.2-4.2h0v-.2ZM486.3,62.1c-1.1-3.4-3.7-5-6.7-5.7-5.4-1.3-11,.5-13.7,5.7h20.4Z"/>
+              <path d="M532.2,76.2h11.4c-2.7,10.4-14.2,15.3-24.4,13.5-7.1-1.2-13.1-5.2-15.8-11.9-2.2-5.4-2.3-11.4-.8-17.1,2-7.6,8.4-12.5,16-13.9l7.5-.3c13.4,1.4,20.2,11.7,18.9,25h-32.7c.5,4.4,3.7,7.6,7.9,8.5,4.3,1,9,.3,12-3.9h0ZM533.4,62.1c-2.3-5-7.2-6.6-11.8-6-3.8.5-7.1,2.3-8.7,6h20.5Z"/>
+              <path d="M374.3,88.8c-11.7-.8-18.7-10-18.4-21,.3-11.9,9-20.7,21.1-19.8,5.6.4,9.6,2.6,13,8v-24.7h6.7v42c-2.3,9.2-9.4,14.9-18.6,15.6h-3.9,0ZM375.5,82.9c8.2.5,14.2-5.1,14.6-13,.3-4.8-.8-9.8-4.6-13-6.2-5.1-16-4.1-20.4,2.7-2.6,4.1-2.8,9.2-1.6,13.6,1.5,5.7,6,9.3,12.1,9.7h-.1Z"/>
+              <path d="M218.7,82.9c6.6,0,12.2-1.7,16.6-6.4l6.1,4-5.7,4.5c-14,8-34.3,4.7-41.3-9.2-8-15.9-3.4-38.9,15-44.1,10.9-3.1,24.4-1.1,31.7,7.5l-5.7,3.8c-4.1-4.1-9.1-6.1-14.7-6.4-11.4-.7-21,6.7-22.2,18.1-.4,3.4-.4,6.7,0,10.2,1.2,10.3,9.5,18,20.2,18h0Z"/>
+              <path d="M305.2,68.4c0,11.5-9.3,20.8-20.8,20.8s-20.8-9.3-20.8-20.8,9.3-20.8,20.8-20.8,20.8,9.3,20.8,20.8ZM296.5,75.9c2.9-5.8,2.4-13.3-2.2-18-5.5-5.7-15.1-5.2-20.2.3-2.9,3.2-3.2,6.7-3.4,10.5-.2,8.2,5.5,14.4,13.8,14.2,5,0,9.5-2.1,12-7.1h0Z"/>
+              <rect x="548.5" y="30.4" width="10.6" height="59"/>
+              <path d="M342,48.8h6.2v25.7c-.1,8.8-9.4,15.6-20.5,14.3-7.6-.8-14.5-6.3-15.2-14.6l-.3-25.3,6.6-.2v23c0,1.8.9,5,1.9,6.4,3.3,4.8,9.4,5.7,14.7,3.8,4-1.4,6.4-5.7,6.4-10v-23.2h.2Z"/>
+              <rect x="249.4" y="31.1" width="6.8" height="57"/>
+            </g>
+            <path fill="url(#nav-grad)" d="M162.6,100.9h-30.2c-.7,0-1.3-.3-1.7-.9l-13-18.6c-.5-.7-.4-1.7,0-2.4l7.8-9.8c.4-.5,1-.8,1.6-.8h4.1c5.8,0,10.4-4,10.4-9s-4.7-8.8-10.4-9c-5.8-.2-9.7,5.5-9.8,5.9l-15,20.2-5.1,6.8s-11.3,15.6-30.7,21.3c-5.9,2-12.3,2.9-19,2.7C23.9,106.4,1.1,83.8,0,55.9-1.2,25.3,23.3,0,53.8,0s34.3,9.1,44,22.9c.7,1,.5,2.2-.3,3-.6.5-1.1,1-1.6,1.5h0c-5.3,4.9-9.2,11-14.8,19-.9,1.4-3,1.1-3.6-.5-3.4-10.4-13.5-17.7-25.1-17.1-12.9.7-23.3,11.5-23.5,24.5-.2,14,11,25.4,24.9,25.4h2.5c.4,0,.8,0,1.2-.2h1.4c.4,0,.8-.2,1.2-.2,6.7-1.4,17.2-5.2,24.8-15.7,8.5-11.8,13-19.8,19.7-26.1h0c6.4-6.5,16-10.7,26.7-10.7,19.3,0,34.9,13.4,34.9,30s-5.2,18-13.3,23.5c-.9.6-1.1,1.9-.5,2.8l11.8,15.9c.9,1.3,0,3.2-1.6,3.2h0v-.3Z"/>
+          </svg>
+        </div>
+
+        <div class="header-actions">
+          <button class="header-btn" onclick="toggleTheme()" title="Toggle Theme" data-a11y-role="Theme Toggle (48dp)">
+            <span id="headerThemeIcon">🌙</span>
+          </button>
+          <button id="signOutBtn" class="header-btn" onclick="logout()" title="Sign Out" data-a11y-role="Sign Out (48dp)">
+            ⎋
+          </button>
+        </div>
+      </div>
+
+      <!-- Viewport -->
+      <div class="screen-viewport">
+
+        <!-- 1. SPLASH SCREEN -->
+        <div class="app-screen" id="screen-splash">
+          <div class="splash-container">
+            <svg viewBox="0 0 166.2 107.6" class="splash-logo">
+              <path fill="url(#nav-grad)" d="M162.6,100.9h-30.2c-.7,0-1.3-.3-1.7-.9l-13-18.6c-.5-.7-.4-1.7,0-2.4l7.8-9.8c.4-.5,1-.8,1.6-.8h4.1c5.8,0,10.4-4,10.4-9s-4.7-8.8-10.4-9c-5.8-.2-9.7,5.5-9.8,5.9l-15,20.2-5.1,6.8s-11.3,15.6-30.7,21.3c-5.9,2-12.3,2.9-19,2.7C23.9,106.4,1.1,83.8,0,55.9-1.2,25.3,23.3,0,53.8,0s34.3,9.1,44,22.9c.7,1,.5,2.2-.3,3-.6.5-1.1,1-1.6,1.5h0c-5.3,4.9-9.2,11-14.8,19-.9,1.4-3,1.1-3.6-.5-3.4-10.4-13.5-17.7-25.1-17.1-12.9.7-23.3,11.5-23.5,24.5-.2,14,11,25.4,24.9,25.4h2.5c.4,0,.8,0,1.2-.2h1.4c.4,0,.8-.2,1.2-.2,6.7-1.4,17.2-5.2,24.8-15.7,8.5-11.8,13-19.8,19.7-26.1h0c6.4-6.5,16-10.7,26.7-10.7,19.3,0,34.9,13.4,34.9,30s-5.2,18-13.3,23.5c-.9.6-1.1,1.9-.5,2.8l11.8,15.9c.9,1.3,0,3.2-1.6,3.2h0v-.3Z"/>
+            </svg>
+            <h2 style="font-size:30px; font-weight:800; margin-top:20px; letter-spacing:-0.5px;">CloudReel</h2>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Directing to CloudReel Home...</p>
+          </div>
+        </div>
+
+        <!-- 2. HOME SCREEN (4 PRIMARY OPTIONS) -->
+        <div class="app-screen active-screen" id="screen-home">
+          <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
+          <h2 class="screen-title">Welcome to CloudReel</h2>
+          <p class="screen-subtitle">Choose how you want to connect.</p>
+
+          <!-- OPTION 1: START AS HOST -->
+          <div class="home-option-card" onclick="openSessionEntry('host')" data-a11y-role="Start as Host (Button)">
+            <div style="display:flex; align-items:center;">
+              <div class="home-card-icon-box purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M12 2a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M19 10v3a7 7 0 0 1-14 0v-3"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+                </svg>
+              </div>
+              <div>
+                <div class="home-card-title-row">
+                  <span class="home-card-title">Start as Host</span>
+                  <span class="home-card-badge">Host Mode</span>
+                </div>
+                <p class="home-card-desc">Create or host a live session.</p>
+              </div>
+            </div>
+            <div class="chevron-box">→</div>
+          </div>
+
+          <!-- OPTION 2: JOIN AS PARTICIPANT -->
+          <div class="home-option-card" onclick="openSessionEntry('participant')" data-a11y-role="Join as Participant (Button)">
+            <div style="display:flex; align-items:center;">
+              <div class="home-card-icon-box violet">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+                </svg>
+              </div>
+              <div>
+                <div class="home-card-title-row">
+                  <span class="home-card-title">Join as Participant</span>
+                  <span class="home-card-badge">Receiver Mode</span>
+                </div>
+                <p class="home-card-desc">Join an existing session.</p>
+              </div>
+            </div>
+            <div class="chevron-box">→</div>
+          </div>
+
+          <!-- OPTION 3: STREAMER -->
+          <div class="home-option-card" onclick="onStreamerTapped()" data-a11y-role="Streamer (Button)">
+            <div style="display:flex; align-items:center;">
+              <div class="home-card-icon-box magenta">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
+                </svg>
+              </div>
+              <div>
+                <div class="home-card-title-row">
+                  <span class="home-card-title">Streamer</span>
+                  <span class="home-card-badge">Camera + Bonding</span>
+                </div>
+                <p class="home-card-desc">Broadcast live using your camera and bonded connections.</p>
+              </div>
+            </div>
+            <div class="chevron-box">→</div>
+          </div>
+
+          <!-- OPTION 4: RELAY -->
+          <div class="home-option-card" onclick="navigateTo('relay')" data-a11y-role="Relay (Button)">
+            <div style="display:flex; align-items:center;">
+              <div class="home-card-icon-box purple">
+                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
+                  <path d="M2 12h20"/><path d="M6 16l6-8 6 8"/><circle cx="12" cy="8" r="2"/>
+                </svg>
+              </div>
+              <div>
+                <div class="home-card-title-row">
+                  <span class="home-card-title">Relay</span>
+                  <span class="home-card-badge">Donate Cellular</span>
+                </div>
+                <p class="home-card-desc">Contribute your cellular connection to support live broadcasting.</p>
+              </div>
+            </div>
+            <div class="chevron-box">→</div>
+          </div>
+
+          <!-- TELEMETRY PREVIEW CARD -->
+          <div class="telemetry-card">
+            <div class="telemetry-header">
+              <span class="telemetry-tag">
+                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                CELLULAR BONDING MESH
+              </span>
+              <span class="telemetry-status-ready">● READY</span>
+            </div>
+            <div class="telemetry-grid">
+              <div>
+                <p class="telemetry-item-title">WiFi Uplink</p>
+                <p class="telemetry-item-val">18.4 Mbps</p>
+              </div>
+              <div>
+                <p class="telemetry-item-title">Cellular 5G</p>
+                <p class="telemetry-item-val">24.1 Mbps</p>
+              </div>
+              <div>
+                <p class="telemetry-item-title">Total Bonded</p>
+                <p class="telemetry-item-val" style="color:var(--cr-violet);">42.5 Mbps</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3. SHARED SESSION URL / CODE ENTRY SCREEN -->
+        <div class="app-screen" id="screen-session-entry">
+          <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
+          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
+            <div style="width:48px; height:48px; border-radius:50%; background:var(--cr-gradient); display:flex; align-items:center; justify-content:center; color:white;">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" id="sessionIcon">
+                <path d="M12 2a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M19 10v3a7 7 0 0 1-14 0v-3"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
+              </svg>
+            </div>
+            <div>
+              <h2 class="screen-title" id="sessionEntryTitle" style="margin-bottom:2px;">Start as Host</h2>
+              <p class="screen-subtitle" id="sessionEntrySubtitle" style="margin-bottom:0;">Enter the session URL or code to continue.</p>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:20px; padding:18px; margin-top:14px; margin-bottom:20px;">
+            <div class="input-group" style="margin-bottom:10px;">
+              <label class="input-label" id="sessionInputLabel">Session URL or Code</label>
+              <div class="input-box" id="sessionInputBox" data-a11y-role="Session Code Input (50dp)">
+                <input type="text" id="sessionCodeInput" placeholder="e.g. CR-84920 or session URL" value="CR-84920">
+                <button class="clear-btn" onclick="clearSessionInput()">✕</button>
+              </div>
+              <div class="error-text" id="sessionError" style="display:none;"></div>
+            </div>
+
+            <!-- Quick fill helper -->
+            <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
+              <span style="font-size:11px; color:var(--text-muted);">Quick fill:</span>
+              <span class="chip-btn" onclick="fillSessionCode('CR-84920')">CR-84920</span>
+              <span class="chip-btn" onclick="fillSessionCode('CR-HOST-01')">CR-HOST-01</span>
+              <span class="chip-btn" onclick="fillSessionCode('https://live.cloudreel.com/room')">URL Link</span>
+            </div>
+          </div>
+
+          <button class="btn-gradient" id="sessionSubmitBtn" onclick="submitSessionCode()" data-a11y-role="Continue Action (52dp)">
+            <span id="sessionSubmitBtnText">Continue as Host</span> →
+          </button>
+
+          <p style="margin-top:20px; font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            Encrypted peer-to-peer session signaling via CloudReel Mesh
+          </p>
+        </div>
+
+        <!-- 4. HOST WORKFLOW SCREEN -->
+        <div class="app-screen" id="screen-host-workflow">
+          <div style="display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:10px; background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.35); color:var(--cr-success); font-size:11px; font-weight:800; margin-bottom:12px;">
+            ● LIVE HOSTING ACTIVE
+          </div>
+          <h2 class="screen-title">Host Session Hub</h2>
+          <p class="screen-subtitle">Managing room broadcast and incoming bonded connections.</p>
+
+          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:18px; padding:18px; margin-bottom:16px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <p style="font-size:11px; font-weight:600; color:var(--text-muted); letter-spacing:0.5px;">SESSION ROOM CODE</p>
+                <p style="font-size:22px; font-weight:800; color:var(--cr-purple); letter-spacing:1px; margin-top:2px;" id="hostRoomCodeDisplay">CR-84920</p>
+              </div>
+              <button class="tool-btn" style="background:var(--cr-gradient); color:white; border:none;" onclick="alert('Session code copied to clipboard!')">
+                Copy
+              </button>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:18px; padding:18px; margin-bottom:24px;">
+            <p style="font-size:11px; font-weight:700; color:var(--text-muted); margin-bottom:14px; letter-spacing:0.5px;">NETWORK & PARTICIPANTS</p>
+            <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+              <div>
+                <p style="font-size:11px; color:var(--text-muted);">Participants</p>
+                <p style="font-size:15px; font-weight:700; color:var(--text-main); margin-top:2px;">4 Connected</p>
+              </div>
+              <div>
+                <p style="font-size:11px; color:var(--text-muted);">Aggregated Speed</p>
+                <p style="font-size:15px; font-weight:700; color:var(--text-main); margin-top:2px;">42.8 Mbps</p>
+              </div>
+              <div>
+                <p style="font-size:11px; color:var(--text-muted);">Active Relays</p>
+                <p style="font-size:15px; font-weight:700; color:var(--text-main); margin-top:2px;">2 Cellular</p>
+              </div>
+              <div>
+                <p style="font-size:11px; color:var(--text-muted);">Bonding Health</p>
+                <p style="font-size:15px; font-weight:700; color:var(--cr-success); margin-top:2px;">Optimal (99.8%)</p>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-secondary" onclick="navigateTo('home')">
+            End Broadcast & Close Room
+          </button>
+        </div>
+
+        <!-- 5. PARTICIPANT WORKFLOW SCREEN -->
+        <div class="app-screen" id="screen-participant-workflow">
+          <div style="display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:10px; background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.35); color:var(--cr-success); font-size:11px; font-weight:800; margin-bottom:12px;">
+            ● PARTICIPANT CONNECTED
+          </div>
+          <h2 class="screen-title">Live Stream View</h2>
+          <p class="screen-subtitle" id="participantRoomSubtitle">Room: CR-84920 • Real-time Bonded Stream</p>
+
+          <div class="stream-viewport">
+            <svg viewBox="0 0 166.2 107.6" style="width:60px; height:auto; opacity:0.85;">
+              <path fill="url(#nav-grad)" d="M162.6,100.9h-30.2c-.7,0-1.3-.3-1.7-.9l-13-18.6c-.5-.7-.4-1.7,0-2.4l7.8-9.8c.4-.5,1-.8,1.6-.8h4.1c5.8,0,10.4-4,10.4-9s-4.7-8.8-10.4-9c-5.8-.2-9.7,5.5-9.8,5.9l-15,20.2-5.1,6.8s-11.3,15.6-30.7,21.3c-5.9,2-12.3,2.9-19,2.7C23.9,106.4,1.1,83.8,0,55.9-1.2,25.3,23.3,0,53.8,0s34.3,9.1,44,22.9c.7,1,.5,2.2-.3,3-.6.5-1.1,1-1.6,1.5h0c-5.3,4.9-9.2,11-14.8,19-.9,1.4-3,1.1-3.6-.5-3.4-10.4-13.5-17.7-25.1-17.1-12.9.7-23.3,11.5-23.5,24.5-.2,14,11,25.4,24.9,25.4h2.5c.4,0,.8,0,1.2-.2h1.4c.4,0,.8-.2,1.2-.2,6.7-1.4,17.2-5.2,24.8-15.7,8.5-11.8,13-19.8,19.7-26.1h0c6.4-6.5,16-10.7,26.7-10.7,19.3,0,34.9,13.4,34.9,30s-5.2,18-13.3,23.5c-.9.6-1.1,1.9-.5,2.8l11.8,15.9c.9,1.3,0,3.2-1.6,3.2h0v-.3Z"/>
+            </svg>
+            <p style="color:white; font-size:12px; margin-top:8px; opacity:0.8;">CloudReel Low-Latency Stream</p>
+            <div style="position:absolute; top:12px; left:12px; display:flex; gap:6px;">
+              <span style="background:rgba(0,0,0,0.7); color:white; font-size:10px; font-weight:700; padding:3px 8px; border-radius:6px;">1080p60</span>
+              <span style="background:var(--cr-success); color:white; font-size:10px; font-weight:700; padding:3px 8px; border-radius:6px;">18ms Latency</span>
+            </div>
+          </div>
+
+          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:18px; padding:18px; margin-bottom:24px;">
+            <div style="display:flex; justify-content:space-between; align-items:center;">
+              <div>
+                <p style="font-size:14px; font-weight:600; color:var(--text-main);">Audio Stream</p>
+                <p style="font-size:12px; color:var(--text-muted); margin-top:2px;" id="audioStatusText">Stereo 48kHz (Active)</p>
+              </div>
+              <button class="tool-btn" id="muteToggleBtn" onclick="toggleMute()">Mute</button>
+            </div>
+          </div>
+
+          <button class="btn-secondary" onclick="navigateTo('home')">
+            Leave Session
+          </button>
+        </div>
+
+        <!-- 6. LOGIN SCREEN (FOR STREAMER AUTH) -->
+        <div class="app-screen" id="screen-login">
+          <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
+          <h2 class="screen-title">Sign in to CloudReel</h2>
+          <p class="screen-subtitle">Sign in to access your camera & cellular bonding streamer.</p>
+
+          <div class="input-group">
+            <label class="input-label">Work Email</label>
+            <div class="input-box" data-a11y-role="Input (50dp)">
+              <input type="email" id="loginEmail" placeholder="name@organization.com" value="producer@cloudreel.com">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">Password</label>
+            <div class="input-box" data-a11y-role="Input (50dp)">
+              <input type="password" id="loginPassword" placeholder="Enter your password" value="••••••••••••">
+              <button class="toggle-pass-btn" onclick="togglePass('loginPassword')">Show</button>
+            </div>
+          </div>
+
+          <div style="text-align:right; margin-bottom:24px;">
+            <a href="#" onclick="alert('Password reset link sent to your work email.'); return false;" style="font-size:12px; color:var(--cr-violet); font-weight:600; text-decoration:none;">Forgot password?</a>
+          </div>
+
+          <button class="btn-gradient" onclick="simulateLogin()" data-a11y-role="Primary Action (52dp)">
+            <span>Sign In to Streamer</span> →
+          </button>
+
+          <p style="text-align:center; margin-top:24px; font-size:13px; color:var(--text-muted);">
+            Don't have an account? 
+            <a href="#" onclick="navigateTo('signup'); return false;" style="color:var(--cr-magenta); font-weight:700; text-decoration:none;">Create Account</a>
+          </p>
+        </div>
+
+        <!-- 7. SIGN UP SCREEN -->
+        <div class="app-screen" id="screen-signup">
+          <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
+          <h2 class="screen-title">Create account</h2>
+          <p class="screen-subtitle">Join CloudReel enterprise broadcast platform</p>
+
+          <div class="input-group">
+            <label class="input-label">Full Name</label>
+            <div class="input-box" data-a11y-role="Input (50dp)">
+              <input type="text" placeholder="e.g. Rakesh Kumar">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">Work Email</label>
+            <div class="input-box" data-a11y-role="Input (50dp)">
+              <input type="email" placeholder="name@organization.com">
+            </div>
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">Password</label>
+            <div class="input-box" data-a11y-role="Input (50dp)">
+              <input type="password" placeholder="At least 6 characters">
+            </div>
+          </div>
+
+          <button class="btn-gradient" style="margin-top:12px;" onclick="simulateLogin()" data-a11y-role="Primary Action (52dp)">
+            <span>Create Account & Continue</span> →
+          </button>
+
+          <p style="text-align:center; margin-top:24px; font-size:13px; color:var(--text-muted);">
+            Already have an account? 
+            <a href="#" onclick="navigateTo('login'); return false;" style="color:var(--cr-magenta); font-weight:700; text-decoration:none;">Sign In</a>
+          </p>
+        </div>
+
+        <!-- 8. STREAMER SCREEN -->
+        <div class="app-screen" id="screen-streamer">
+          <div class="camera-viewfinder" data-a11y-role="Camera Viewfinder">
+            <div class="viewfinder-crosshair">+</div>
+            <div class="viewfinder-top-bar">
+              <span class="live-badge" id="streamerLiveBadge">● LIVE ON-AIR</span>
+              <button class="camera-flip-btn" title="Flip Camera" data-a11y-role="Flip Camera">🔄</button>
+            </div>
+            <div class="viewfinder-bottom-badge">
+              1080p60 • 42.5 Mbps • 18ms latency
+            </div>
+          </div>
+
+          <div class="telemetry-card" style="margin-top:0;">
+            <div class="telemetry-header">
+              <span class="telemetry-tag">BONDED UPLINKS</span>
+              <span class="telemetry-status-ready">ACTIVE</span>
+            </div>
+            <div class="telemetry-grid">
+              <div>
+                <p class="telemetry-item-title">Cellular 5G</p>
+                <p class="telemetry-item-val">24.1 Mbps</p>
+              </div>
+              <div>
+                <p class="telemetry-item-title">WiFi Uplink</p>
+                <p class="telemetry-item-val">18.4 Mbps</p>
+              </div>
+              <div>
+                <p class="telemetry-item-title">Frame Loss</p>
+                <p class="telemetry-item-val" style="color:var(--cr-success);">0.00%</p>
+              </div>
+            </div>
+          </div>
+
+          <button class="btn-gradient" id="broadcastToggleBtn" onclick="toggleBroadcast()" data-a11y-role="Broadcast Toggle (52dp)">
+            End Broadcast
+          </button>
+        </div>
+
+        <!-- 9. RELAY SCREEN -->
+        <div class="app-screen" id="screen-relay">
+          <div class="platform-badge">✦ RELAY NODE ACTIVE</div>
+          <h2 class="screen-title">Donate Cellular</h2>
+          <p class="screen-subtitle">Your device is contributing uplink bandwidth to CloudReel Mesh.</p>
+
+          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:18px; padding:18px; margin-bottom:18px;">
+            <p style="font-size:11px; color:var(--text-muted); font-weight:700;">CONTRIBUTED BANDWIDTH</p>
+            <p style="font-size:28px; font-weight:800; color:var(--cr-success); margin-top:4px;" id="relayBandwidthVal">48.2 Mbps</p>
+            <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">100% encrypted passthrough. Zero media stored on device.</p>
+          </div>
+
+          <button class="btn-secondary" id="relayToggleBtn" onclick="toggleRelay()" data-a11y-role="Relay Pause (50dp)">
+            Pause Connection Donation
+          </button>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    let currentScreen = 'home';
+    let currentSessionMode = 'host';
+    let isDark = false;
+    let isAuthenticated = false; // By default unauthenticated as per spec requirement
+    let isMuted = false;
+    let isBroadcasting = true;
+    let isRelaying = true;
+
+    function navigateTo(screenId) {
+      currentScreen = screenId;
+      document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active-screen'));
+      document.querySelectorAll('.screen-pill-btn').forEach(el => el.classList.remove('active'));
+
+      const target = document.getElementById('screen-' + screenId);
+      if (target) target.classList.add('active-screen');
+
+      const pill = Array.from(document.querySelectorAll('.screen-pill-btn')).find(b => {
+        const text = b.textContent.toLowerCase();
+        if (screenId === 'home') return text.includes('home');
+        if (screenId === 'session-entry') return (currentSessionMode === 'host' ? text.includes('host entry') : text.includes('participant entry'));
+        if (screenId === 'host-workflow') return text.includes('host hub');
+        if (screenId === 'participant-workflow') return text.includes('stream view');
+        return text.includes(screenId.slice(0, 4));
+      });
+      if (pill) pill.classList.add('active');
+
+      const backBtn = document.getElementById('backBtn');
+      const signOutBtn = document.getElementById('signOutBtn');
+      const header = document.getElementById('screenHeader');
+
+      if (screenId === 'splash') {
+        header.style.display = 'none';
+        setTimeout(() => {
+          if (currentScreen === 'splash') navigateTo('home');
+        }, 1600);
+      } else {
+        header.style.display = 'flex';
+      }
+
+      if (screenId === 'session-entry' || screenId === 'host-workflow' || screenId === 'participant-workflow' || screenId === 'streamer' || screenId === 'relay' || screenId === 'signup' || screenId === 'login') {
+        backBtn.style.display = 'flex';
+      } else {
+        backBtn.style.display = 'none';
+      }
+
+      if (screenId === 'home') {
+        signOutBtn.style.display = isAuthenticated ? 'flex' : 'none';
+      } else {
+        signOutBtn.style.display = 'none';
+      }
+    }
+
+    function navigateBack() {
+      if (currentScreen === 'session-entry' || currentScreen === 'host-workflow' || currentScreen === 'participant-workflow' || currentScreen === 'streamer' || currentScreen === 'relay' || currentScreen === 'login') {
+        navigateTo('home');
+      } else if (currentScreen === 'signup') {
+        navigateTo('login');
+      } else {
+        navigateTo('home');
+      }
+    }
+
+    function openSessionEntry(mode) {
+      currentSessionMode = mode;
+      const isHost = mode === 'host';
+      document.getElementById('sessionEntryTitle').textContent = isHost ? 'Start as Host' : 'Join a Session';
+      document.getElementById('sessionEntrySubtitle').textContent = isHost ? 'Enter the session URL or code to continue.' : 'Enter the session URL or code to join.';
+      document.getElementById('sessionSubmitBtnText').textContent = isHost ? 'Continue as Host' : 'Join Session';
+      document.getElementById('sessionCodeInput').placeholder = isHost ? 'e.g. CR-HOST-01 or session URL' : 'e.g. CR-84920 or session URL';
+      document.getElementById('sessionCodeInput').value = isHost ? 'CR-HOST-01' : 'CR-84920';
+      document.getElementById('sessionError').style.display = 'none';
+      document.getElementById('sessionInputBox').classList.remove('error');
+      navigateTo('session-entry');
+    }
+
+    function clearSessionInput() {
+      document.getElementById('sessionCodeInput').value = '';
+      document.getElementById('sessionError').style.display = 'none';
+      document.getElementById('sessionInputBox').classList.remove('error');
+      document.getElementById('sessionCodeInput').focus();
+    }
+
+    function fillSessionCode(code) {
+      document.getElementById('sessionCodeInput').value = code;
+      document.getElementById('sessionError').style.display = 'none';
+      document.getElementById('sessionInputBox').classList.remove('error');
+    }
+
+    function submitSessionCode() {
+      const input = document.getElementById('sessionCodeInput').value.trim();
+      const errEl = document.getElementById('sessionError');
+      const box = document.getElementById('sessionInputBox');
+
+      if (!input) {
+        errEl.textContent = 'Please enter a valid session URL or room code.';
+        errEl.style.display = 'block';
+        box.classList.add('error');
+        return;
+      }
+
+      const isUrl = input.startsWith('http://') || input.startsWith('https://');
+      const isCode = /^[a-zA-Z0-9_-]{4,24}$/.test(input);
+
+      if (!isUrl && !isCode) {
+        errEl.textContent = 'Invalid format. Enter a URL (https://…) or a 4–16 character room code.';
+        errEl.style.display = 'block';
+        box.classList.add('error');
+        return;
+      }
+
+      const btn = document.getElementById('sessionSubmitBtn');
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Validating session...';
+
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        if (currentSessionMode === 'host') {
+          document.getElementById('hostRoomCodeDisplay').textContent = input;
+          navigateTo('host-workflow');
+        } else {
+          document.getElementById('participantRoomSubtitle').textContent = `Room: ${input} • Real-time Bonded Stream`;
+          navigateTo('participant-workflow');
+        }
+      }, 500);
+    }
+
+    function onStreamerTapped() {
+      if (isAuthenticated) {
+        navigateTo('streamer');
+      } else {
+        navigateTo('login');
+      }
+    }
+
+    function simulateLogin() {
+      const btn = event.currentTarget;
+      const originalText = btn.innerHTML;
+      btn.innerHTML = 'Signing in...';
+      setTimeout(() => {
+        btn.innerHTML = originalText;
+        isAuthenticated = true;
+        // Directly open the streamer workflow as requested!
+        navigateTo('streamer');
+      }, 500);
+    }
+
+    function logout() {
+      isAuthenticated = false;
+      document.getElementById('signOutBtn').style.display = 'none';
+      navigateTo('home');
+    }
+
+    function toggleTheme() {
+      isDark = !isDark;
+      document.body.classList.toggle('dark', isDark);
+      document.getElementById('headerThemeIcon').textContent = isDark ? '☀️' : '🌙';
+      document.getElementById('themeToggleBtn').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+    }
+
+    function toggleA11y() {
+      document.body.classList.toggle('a11y-active');
+      const btn = document.getElementById('a11yToggleBtn');
+      btn.classList.toggle('active-tool');
+    }
+
+    function togglePass(id) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+    }
+
+    function toggleMute() {
+      isMuted = !isMuted;
+      document.getElementById('muteToggleBtn').textContent = isMuted ? 'Unmute' : 'Mute';
+      document.getElementById('audioStatusText').textContent = isMuted ? 'Muted' : 'Stereo 48kHz (Active)';
+    }
+
+    function toggleBroadcast() {
+      isBroadcasting = !isBroadcasting;
+      const btn = document.getElementById('broadcastToggleBtn');
+      const badge = document.getElementById('streamerLiveBadge');
+      if (isBroadcasting) {
+        btn.textContent = 'End Broadcast';
+        badge.textContent = '● LIVE ON-AIR';
+        badge.style.background = 'var(--cr-error)';
+      } else {
+        btn.textContent = 'Start Live Broadcast';
+        badge.textContent = '○ STANDBY READY';
+        badge.style.background = 'rgba(0,0,0,0.6)';
+      }
+    }
+
+    function toggleRelay() {
+      isRelaying = !isRelaying;
+      const btn = document.getElementById('relayToggleBtn');
+      const val = document.getElementById('relayBandwidthVal');
+      if (isRelaying) {
+        btn.textContent = 'Pause Connection Donation';
+        val.textContent = '48.2 Mbps';
+        val.style.color = 'var(--cr-success)';
+      } else {
+        btn.textContent = 'Resume Connection Donation';
+        val.textContent = '0.0 Mbps';
+        val.style.color = 'var(--text-muted)';
+      }
+    }
+
+    // Set system time
+    const now = new Date();
+    document.getElementById('systemTime').textContent = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
+
+    // Support URL hash routing
+    const rawHash = window.location.hash.replace('#', '');
+    if (rawHash.includes('dark')) {
+      toggleTheme();
+    }
+    const cleanScreen = rawHash.replace('-dark', '');
+    if (cleanScreen) {
+      if (cleanScreen === 'host-entry') openSessionEntry('host');
+      else if (cleanScreen === 'participant-entry') openSessionEntry('participant');
+      else if (['splash', 'login', 'signup', 'home', 'streamer', 'relay', 'host-workflow', 'participant-workflow'].includes(cleanScreen)) {
+        navigateTo(cleanScreen);
+      }
+    }
+  </script>
+</body>
+</html>

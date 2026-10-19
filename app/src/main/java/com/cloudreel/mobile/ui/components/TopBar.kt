@@ -65,8 +65,7 @@ fun CloudReelHeader(
 
             // Top-left CloudReel Official Logo
             CloudReelLogo(
-                emblemSize = 32.dp,
-                textSize = 21f,
+                height = 28.dp,
                 showWordmark = true
             )
         }

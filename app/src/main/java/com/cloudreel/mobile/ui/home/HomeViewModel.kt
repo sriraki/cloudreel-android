@@ -24,6 +24,8 @@ data class HomeUiState(
 )
 
 enum class Role {
+    HOST,
+    PARTICIPANT,
     STREAMER,
     RELAY
 }

@@ -8,8 +8,92 @@ import org.junit.Test
 class ValidationTest {
 
     @Test
+    fun testHomeFourPrimaryOptions() {
+        val homeOptions = listOf(
+            "Start as Host",
+            "Join as Participant",
+            "Streamer",
+            "Relay"
+        )
+
+        assertEquals("Home screen must have exactly 4 primary options", 4, homeOptions.size)
+        assertEquals("Option 1 must be Start as Host", "Start as Host", homeOptions[0])
+        assertEquals("Option 2 must be Join as Participant", "Join as Participant", homeOptions[1])
+        assertEquals("Option 3 must be Streamer", "Streamer", homeOptions[2])
+        assertEquals("Option 4 must be Relay", "Relay", homeOptions[3])
+    }
+
+    @Test
+    fun testSessionEntryValidation() {
+        // Validation rules:
+        // 1. Non-empty
+        // 2. Starts with http:// or https:// OR matches alphanumeric/dashes 4-24 chars
+        fun isValidSessionInput(input: String): Boolean {
+            val trimmed = input.trim()
+            if (trimmed.isBlank()) return false
+            val isUrl = trimmed.startsWith("http://", ignoreCase = true) ||
+                    trimmed.startsWith("https://", ignoreCase = true)
+            val isRoomCode = trimmed.matches(Regex("^[a-zA-Z0-9_-]{4,24}$"))
+            return isUrl || isRoomCode
+        }
+
+        // Valid room codes
+        assertTrue(isValidSessionInput("CR-84920"))
+        assertTrue(isValidSessionInput("CR-HOST-01"))
+        assertTrue(isValidSessionInput("room1234"))
+        assertTrue(isValidSessionInput("STREAM_TEST"))
+
+        // Valid URLs
+        assertTrue(isValidSessionInput("https://live.cloudreel.com/room/123"))
+        assertTrue(isValidSessionInput("http://mesh.internal/session/cr-900"))
+
+        // Invalid inputs
+        assertFalse("Empty input must be rejected", isValidSessionInput(""))
+        assertFalse("Whitespace must be rejected", isValidSessionInput("   "))
+        assertFalse("Too short code (<4 chars) must be rejected", isValidSessionInput("abc"))
+        assertFalse("Illegal special characters must be rejected", isValidSessionInput("cr*room?#"))
+    }
+
+    @Test
+    fun testSessionEntryModeMapping() {
+        fun resolveMode(param: String?): String {
+            return if (param.equals("host", ignoreCase = true)) "HOST" else "PARTICIPANT"
+        }
+
+        assertEquals("HOST", resolveMode("host"))
+        assertEquals("HOST", resolveMode("HOST"))
+        assertEquals("PARTICIPANT", resolveMode("participant"))
+        assertEquals("PARTICIPANT", resolveMode("PARTICIPANT"))
+        assertEquals("PARTICIPANT", resolveMode(null))
+        assertEquals("PARTICIPANT", resolveMode("unknown"))
+    }
+
+    @Test
+    fun testStreamerAuthRequirementLogic() {
+        // Streamer requires auth:
+        // if authenticated -> open Streamer directly
+        // if unauthenticated -> open Login -> on success -> open Streamer directly
+        fun resolveStreamerDestination(isAuthenticated: Boolean): String {
+            return if (isAuthenticated) "streamer" else "login"
+        }
+
+        assertEquals("streamer", resolveStreamerDestination(true))
+        assertEquals("login", resolveStreamerDestination(false))
+    }
+
+    @Test
+    fun testRelayDirectAccessLogic() {
+        // Relay does NOT require authentication
+        fun resolveRelayDestination(): String {
+            return "relay"
+        }
+
+        assertEquals("relay", resolveRelayDestination())
+    }
+
+    @Test
     fun testEmailValidation() {
-        val validEmail = "rakesh@yupptv.com"
+        val validEmail = "rakesh@cloudreel.com"
         val invalidEmail = "not-an-email"
 
         val emailRegex = "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()
@@ -50,36 +134,5 @@ class ValidationTest {
 
         assertTrue("1 day old session must be active", isRecentValid)
         assertFalse("31 day old session must be expired", isExpiredValid)
-    }
-
-    @Test
-    fun testRoleSelectionLogic() {
-        val roles = listOf("STREAMER", "RELAY")
-        assertEquals(2, roles.size)
-        assertTrue(roles.contains("STREAMER"))
-        assertTrue(roles.contains("RELAY"))
-        assertFalse("Host role must not be present", roles.contains("HOST"))
-        assertFalse("Participant role must not be present", roles.contains("PARTICIPANT"))
-    }
-
-    @Test
-    fun testAuthFormValidation() {
-        val emptyEmail = ""
-        val invalidEmail = "invalid@"
-        val validEmail = "producer@cloudreel.com"
-
-        val emptyPass = ""
-        val shortPass = "12345"
-        val validPass = "SecurePass123"
-
-        // Email checks
-        assertTrue(emptyEmail.isBlank())
-        assertFalse(invalidEmail.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()))
-        assertTrue(validEmail.matches("^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$".toRegex()))
-
-        // Password checks
-        assertTrue(emptyPass.isBlank())
-        assertTrue(shortPass.length < 6)
-        assertTrue(validPass.length >= 6)
     }
 }

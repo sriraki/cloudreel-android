@@ -11,8 +11,7 @@ import kotlinx.coroutines.launch
 
 sealed class SplashNavigationTarget {
     object Idle : SplashNavigationTarget()
-    object GoLiveHome : SplashNavigationTarget()
-    object Login : SplashNavigationTarget()
+    object Home : SplashNavigationTarget()
 }
 
 class SplashViewModel(
@@ -24,14 +23,9 @@ class SplashViewModel(
 
     fun checkSessionAndProceed() {
         viewModelScope.launch {
-            // Keep brand animation smooth (~1.4 seconds) while verifying secure credentials
+            // Keep brand animation smooth (~1.4 seconds)
             delay(1400)
-            val hasValidSession = sessionManager.isSessionActive()
-            _navigationTarget.value = if (hasValidSession) {
-                SplashNavigationTarget.GoLiveHome
-            } else {
-                SplashNavigationTarget.Login
-            }
+            _navigationTarget.value = SplashNavigationTarget.Home
         }
     }
 }
