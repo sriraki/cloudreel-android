@@ -23,6 +23,8 @@ import com.cloudreel.mobile.ui.home.HomeViewModel
 import com.cloudreel.mobile.ui.livesessions.LiveSessionsScreen
 import com.cloudreel.mobile.ui.mesh.CellularBondingMeshScreen
 import com.cloudreel.mobile.ui.relay.RelayScreen
+import com.cloudreel.mobile.ui.session.ActiveSessionScreen
+import com.cloudreel.mobile.ui.session.DeviceSetupScreen
 import com.cloudreel.mobile.ui.session.HostWorkflowScreen
 import com.cloudreel.mobile.ui.session.ParticipantWorkflowScreen
 import com.cloudreel.mobile.ui.session.SessionEntryScreen
@@ -196,15 +198,82 @@ fun CloudReelNavGraph(
                 mode = mode,
                 onNavigateBack = { navController.popBackStack() },
                 onValidationSuccess = { validCode ->
-                    if (mode.equals("host", ignoreCase = true)) {
-                        navController.navigate(Screen.HostWorkflow.createRoute(validCode)) {
-                            popUpTo(Screen.LiveSessions.route) { inclusive = false }
-                        }
-                    } else {
-                        navController.navigate(Screen.ParticipantWorkflow.createRoute(validCode)) {
-                            popUpTo(Screen.LiveSessions.route) { inclusive = false }
-                        }
-                    }
+                    navController.navigate(Screen.DeviceSetup.createRoute(mode, validCode))
+                }
+            )
+        }
+
+        // ── 7. DEVICE SETUP SCREEN (PRE-JOIN SCREENSHOT 1) ────────────────────
+        composable(
+            route = Screen.DeviceSetup.route,
+            arguments = listOf(
+                navArgument("mode") {
+                    type = NavType.StringType
+                    defaultValue = "host"
+                },
+                navArgument("code") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            ),
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(300)
+                )
+            }
+        ) { backStackEntry ->
+            val mode = backStackEntry.arguments?.getString("mode") ?: "host"
+            val code = backStackEntry.arguments?.getString("code") ?: ""
+            DeviceSetupScreen(
+                mode = mode,
+                sessionCode = code,
+                onNavigateBack = { navController.popBackStack() },
+                onStartSession = {
+                    navController.navigate(Screen.ActiveSession.createRoute(mode, code))
+                }
+            )
+        }
+
+        // ── 8. ACTIVE LIVE SESSION SCREEN (MEETING SCREENSHOT 2) ──────────────
+        composable(
+            route = Screen.ActiveSession.route,
+            arguments = listOf(
+                navArgument("mode") {
+                    type = NavType.StringType
+                    defaultValue = "host"
+                },
+                navArgument("code") {
+                    type = NavType.StringType
+                    defaultValue = ""
+                }
+            ),
+            enterTransition = {
+                slideIntoContainer(
+                    AnimatedContentTransitionScope.SlideDirection.Start,
+                    animationSpec = tween(350)
+                )
+            },
+            exitTransition = {
+                slideOutOfContainer(
+                    AnimatedContentTransitionScope.SlideDirection.End,
+                    animationSpec = tween(300)
+                )
+            }
+        ) { backStackEntry ->
+            val mode = backStackEntry.arguments?.getString("mode") ?: "host"
+            val code = backStackEntry.arguments?.getString("code") ?: ""
+            ActiveSessionScreen(
+                mode = mode,
+                sessionCode = code,
+                onNavigateBack = {
+                    navController.popBackStack(Screen.LiveSessions.route, inclusive = false)
                 }
             )
         }

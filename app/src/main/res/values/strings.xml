@@ -78,6 +78,29 @@
     <string name="session_code_error_invalid">Invalid format. Please enter a full URL (https://…) or 4–12 character room code.</string>
     <string name="validating_session">Validating session…</string>
 
+    <!-- Device Setup Screen -->
+    <string name="device_setup_title">Device Setup</string>
+    <string name="device_setup_subtitle">Check your camera and microphone</string>
+    <string name="device_setup_mic_label">Microphone</string>
+    <string name="device_setup_mic_value">Built-in Microphone</string>
+    <string name="device_setup_speaker_label">Speaker</string>
+    <string name="device_setup_camera_label">Camera</string>
+    <string name="device_setup_test_button">Test</string>
+    <string name="device_setup_start_session">Start Session</string>
+    <string name="device_setup_waiting_room_notice">You may be placed in a waiting room</string>
+
+    <!-- Active Live Session Screen -->
+    <string name="active_session_badge_host">HOST</string>
+    <string name="active_session_badge_you">You</string>
+    <string name="active_session_switched_network">Switched to mobile network</string>
+    <string name="active_session_mute">Mute</string>
+    <string name="active_session_unmute">Unmute</string>
+    <string name="active_session_stop">Stop</string>
+    <string name="active_session_start_video">Start</string>
+    <string name="active_session_share">Share</string>
+    <string name="active_session_record">Record</string>
+    <string name="active_session_leave">Leave</string>
+
     <!-- Common & Accessibility -->
     <string name="theme_toggle_desc">Toggle theme</string>
     <string name="sign_out_desc">Sign Out</string>

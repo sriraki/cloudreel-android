@@ -20,4 +20,10 @@ sealed class Screen(val route: String) {
     object SignUp : Screen("signup")
     object Streamer : Screen("streamer")
     object Relay : Screen("relay")
+    object DeviceSetup : Screen("device_setup/{mode}/{code}") {
+        fun createRoute(mode: String, code: String) = "device_setup/$mode/$code"
+    }
+    object ActiveSession : Screen("active_session/{mode}/{code}") {
+        fun createRoute(mode: String, code: String) = "active_session/$mode/$code"
+    }
 }
