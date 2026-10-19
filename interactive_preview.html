@@ -1234,21 +1234,13 @@
           </div>
 
           <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:20px; padding:18px; margin-top:14px; margin-bottom:20px;">
-            <div class="input-group" style="margin-bottom:10px;">
+            <div class="input-group" style="margin-bottom:0;">
               <label class="input-label" id="sessionInputLabel">Session URL or Code</label>
               <div class="input-box" id="sessionInputBox" data-a11y-role="Session Code Input (50dp)">
-                <input type="text" id="sessionCodeInput" placeholder="e.g. CR-84920 or session URL" value="CR-84920">
+                <input type="text" id="sessionCodeInput" placeholder="e.g. CR-84920 or session URL" value="">
                 <button class="clear-btn" onclick="clearSessionInput()">✕</button>
               </div>
               <div class="error-text" id="sessionError" style="display:none;"></div>
-            </div>
-
-            <!-- Quick fill helper -->
-            <div style="display:flex; align-items:center; gap:8px; margin-top:8px;">
-              <span style="font-size:11px; color:var(--text-muted);">Quick fill:</span>
-              <span class="chip-btn" onclick="fillSessionCode('CR-84920')">CR-84920</span>
-              <span class="chip-btn" onclick="fillSessionCode('CR-HOST-01')">CR-HOST-01</span>
-              <span class="chip-btn" onclick="fillSessionCode('https://live.cloudreel.com/room')">URL Link</span>
             </div>
           </div>
 
@@ -1558,7 +1550,7 @@
       document.getElementById('sessionEntrySubtitle').textContent = isHost ? 'Enter the session URL or code to continue.' : 'Enter the session URL or code to join.';
       document.getElementById('sessionSubmitBtnText').textContent = isHost ? 'Continue as Host' : 'Join Session';
       document.getElementById('sessionCodeInput').placeholder = isHost ? 'e.g. CR-HOST-01 or session URL' : 'e.g. CR-84920 or session URL';
-      document.getElementById('sessionCodeInput').value = isHost ? 'CR-HOST-01' : 'CR-84920';
+      document.getElementById('sessionCodeInput').value = '';
       document.getElementById('sessionError').style.display = 'none';
       document.getElementById('sessionInputBox').classList.remove('error');
       navigateTo('session-entry');
@@ -1569,12 +1561,6 @@
       document.getElementById('sessionError').style.display = 'none';
       document.getElementById('sessionInputBox').classList.remove('error');
       document.getElementById('sessionCodeInput').focus();
-    }
-
-    function fillSessionCode(code) {
-      document.getElementById('sessionCodeInput').value = code;
-      document.getElementById('sessionError').style.display = 'none';
-      document.getElementById('sessionInputBox').classList.remove('error');
     }
 
     function submitSessionCode() {

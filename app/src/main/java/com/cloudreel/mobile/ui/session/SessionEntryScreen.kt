@@ -299,43 +299,6 @@ fun SessionEntryScreen(
                                 modifier = Modifier.padding(start = 4.dp, top = 6.dp)
                             )
                         }
-
-                        Spacer(modifier = Modifier.height(18.dp))
-
-                        // Quick demo code helper chips
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.spacedBy(8.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Text(
-                                text = "Quick Fill:",
-                                fontSize = 12.sp,
-                                color = MaterialTheme.colorScheme.onSurfaceVariant
-                            )
-
-                            val sampleCodes = if (isHost) listOf("CR-HOST-01", "CR-BROADCAST") else listOf("CR-84920", "CR-ROOM-77")
-                            for (code in sampleCodes) {
-                                Box(
-                                    modifier = Modifier
-                                        .clip(RoundedCornerShape(8.dp))
-                                        .background(MaterialTheme.colorScheme.background)
-                                        .border(1.dp, MaterialTheme.colorScheme.outline, RoundedCornerShape(8.dp))
-                                        .clickable(enabled = !isValidating) {
-                                            inputCode = code
-                                            errorMessage = null
-                                        }
-                                        .padding(horizontal = 8.dp, vertical = 4.dp)
-                                ) {
-                                    Text(
-                                        text = code,
-                                        fontSize = 11.sp,
-                                        fontWeight = FontWeight.Medium,
-                                        color = CRPurple
-                                    )
-                                }
-                            }
-                        }
                     }
                 }
 
