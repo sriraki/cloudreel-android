@@ -39,6 +39,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.res.stringResource
@@ -116,25 +117,29 @@ fun CategorySelectionScreen(
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // ── CATEGORY CARD 1: LIVE SESSIONS ────────────────────────────────
+                // ── CATEGORY CARD 1: LIVE SESSIONS (HERO FILLED GRADIENT) ─────────
                 CategoryCard(
                     title = stringResource(R.string.category_live_sessions_title),
                     description = stringResource(R.string.category_live_sessions_desc),
                     badgeLabel = "Interactive Meetings",
                     icon = Icons.Default.Group,
                     accentColor = CRPurple,
+                    isFilled = true,
+                    featureTags = listOf("Start as Host", "Join as Participant"),
                     onClick = onNavigateToLiveSessions
                 )
 
                 Spacer(modifier = Modifier.height(20.dp))
 
-                // ── CATEGORY CARD 2: BROADCAST ────────────────────────────────────
+                // ── CATEGORY CARD 2: BROADCAST (OUTLINED STUDIO) ───────────────────
                 CategoryCard(
                     title = stringResource(R.string.category_broadcast_title),
                     description = stringResource(R.string.category_broadcast_desc),
                     badgeLabel = "Live Stream & Mesh",
                     icon = Icons.Default.Podcasts,
                     accentColor = CRMagenta,
+                    isFilled = false,
+                    featureTags = listOf("Streamer", "Relay", "Mesh Network"),
                     onClick = onNavigateToBroadcast
                 )
 
@@ -151,6 +156,8 @@ private fun CategoryCard(
     badgeLabel: String,
     icon: ImageVector,
     accentColor: Color,
+    isFilled: Boolean = false,
+    featureTags: List<String> = emptyList(),
     onClick: () -> Unit
 ) {
     val interactionSource = remember { MutableInteractionSource() }
@@ -163,18 +170,36 @@ private fun CategoryCard(
     Card(
         shape = RoundedCornerShape(22.dp),
         colors = CardDefaults.cardColors(
-            containerColor = MaterialTheme.colorScheme.surface
+            containerColor = if (isFilled) Color.Transparent else MaterialTheme.colorScheme.surface
         ),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
         modifier = Modifier
             .fillMaxWidth()
             .scale(scale)
-            .border(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.outline,
-                shape = RoundedCornerShape(22.dp)
-            )
             .clip(RoundedCornerShape(22.dp))
+            .then(
+                if (isFilled) {
+                    Modifier
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(CRPurple, CRViolet)
+                            )
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = Color.White.copy(alpha = 0.25f),
+                            shape = RoundedCornerShape(22.dp)
+                        )
+                } else {
+                    Modifier
+                        .background(MaterialTheme.colorScheme.surface)
+                        .border(
+                            width = 1.5.dp,
+                            color = accentColor.copy(alpha = 0.85f),
+                            shape = RoundedCornerShape(22.dp)
+                        )
+                }
+            )
             .clickable(
                 interactionSource = interactionSource,
                 indication = null,
@@ -195,18 +220,21 @@ private fun CategoryCard(
                 horizontalArrangement = Arrangement.SpaceBetween,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Circular icon container with vibrant brand accent
+                // Circular icon container
                 Box(
                     modifier = Modifier
                         .size(54.dp)
                         .clip(CircleShape)
-                        .background(accentColor.copy(alpha = 0.12f)),
+                        .background(
+                            if (isFilled) Color.White.copy(alpha = 0.22f)
+                            else accentColor.copy(alpha = 0.12f)
+                        ),
                     contentAlignment = Alignment.Center
                 ) {
                     Icon(
                         imageVector = icon,
                         contentDescription = null,
-                        tint = accentColor,
+                        tint = if (isFilled) Color.White else accentColor,
                         modifier = Modifier.size(28.dp)
                     )
                 }
@@ -215,14 +243,23 @@ private fun CategoryCard(
                 Box(
                     modifier = Modifier
                         .clip(RoundedCornerShape(12.dp))
-                        .background(accentColor.copy(alpha = 0.10f))
+                        .background(
+                            if (isFilled) Color.White.copy(alpha = 0.20f)
+                            else accentColor.copy(alpha = 0.10f)
+                        )
+                        .border(
+                            width = 1.dp,
+                            color = if (isFilled) Color.White.copy(alpha = 0.35f)
+                            else accentColor.copy(alpha = 0.25f),
+                            shape = RoundedCornerShape(12.dp)
+                        )
                         .padding(horizontal = 12.dp, vertical = 6.dp)
                 ) {
                     Text(
                         text = badgeLabel,
                         fontSize = 11.sp,
                         fontWeight = FontWeight.Bold,
-                        color = accentColor,
+                        color = if (isFilled) Color.White else accentColor,
                         letterSpacing = 0.4.sp
                     )
                 }
@@ -235,7 +272,7 @@ private fun CategoryCard(
                 text = title,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = if (isFilled) Color.White else MaterialTheme.colorScheme.onSurface
             )
 
             Spacer(modifier = Modifier.height(6.dp))
@@ -244,9 +281,42 @@ private fun CategoryCard(
             Text(
                 text = description,
                 style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                color = if (isFilled) Color.White.copy(alpha = 0.88f) else MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 20.sp
             )
+
+            if (featureTags.isNotEmpty()) {
+                Spacer(modifier = Modifier.height(14.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    for (tag in featureTags) {
+                        Box(
+                            modifier = Modifier
+                                .clip(RoundedCornerShape(8.dp))
+                                .background(
+                                    if (isFilled) Color.White.copy(alpha = 0.18f)
+                                    else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f)
+                                )
+                                .border(
+                                    width = 1.dp,
+                                    color = if (isFilled) Color.White.copy(alpha = 0.28f)
+                                    else accentColor.copy(alpha = 0.22f),
+                                    shape = RoundedCornerShape(8.dp)
+                                )
+                                .padding(horizontal = 10.dp, vertical = 4.dp)
+                        ) {
+                            Text(
+                                text = tag,
+                                fontSize = 11.sp,
+                                fontWeight = FontWeight.SemiBold,
+                                color = if (isFilled) Color.White else MaterialTheme.colorScheme.onSurface
+                            )
+                        }
+                    }
+                }
+            }
 
             Spacer(modifier = Modifier.height(18.dp))
 
@@ -259,12 +329,12 @@ private fun CategoryCard(
                     text = "Open $title",
                     fontSize = 13.sp,
                     fontWeight = FontWeight.SemiBold,
-                    color = accentColor
+                    color = if (isFilled) Color.White else accentColor
                 )
                 Icon(
                     imageVector = Icons.AutoMirrored.Filled.KeyboardArrowRight,
                     contentDescription = null,
-                    tint = accentColor,
+                    tint = if (isFilled) Color.White else accentColor,
                     modifier = Modifier.size(16.dp)
                 )
             }
