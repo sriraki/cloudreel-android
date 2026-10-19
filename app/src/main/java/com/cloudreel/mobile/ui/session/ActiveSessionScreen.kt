@@ -28,6 +28,7 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.CallEnd
 import androidx.compose.material.icons.filled.Cameraswitch
+import androidx.compose.material.icons.filled.CropFree
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.FiberManualRecord
 import androidx.compose.material.icons.filled.Fullscreen
@@ -338,7 +339,7 @@ fun ActiveSessionScreen(
                         contentAlignment = Alignment.Center
                     ) {
                         Icon(
-                            imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.Fullscreen,
+                            imageVector = if (isFullscreen) Icons.Default.FullscreenExit else Icons.Default.CropFree,
                             contentDescription = "Toggle Fullscreen",
                             tint = Color.White,
                             modifier = Modifier.size(18.dp)

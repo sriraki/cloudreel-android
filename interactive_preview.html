@@ -7,7 +7,30 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <!-- Official Google Material Design Icons -->
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons|Material+Icons+Outlined|Material+Symbols+Outlined" rel="stylesheet">
   <style>
+    /* Google Material Design Icons standard style */
+    .material-icons, .material-symbols-outlined {
+      font-family: 'Material Icons';
+      font-weight: normal;
+      font-style: normal;
+      font-size: 24px;
+      line-height: 1;
+      letter-spacing: normal;
+      text-transform: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      white-space: nowrap;
+      word-wrap: normal;
+      direction: ltr;
+      -webkit-font-feature-settings: 'liga';
+      -webkit-font-smoothing: antialiased;
+      vertical-align: middle;
+      user-select: none;
+    }
+
     :root {
       --cr-magenta: #D300EA;
       --cr-purple: #3031CB;
@@ -1338,12 +1361,12 @@
 
       <!-- Theme Switcher -->
       <button class="tool-btn" id="themeToggleBtn" onclick="toggleTheme()">
-        🌙 Dark Mode
+        <span class="material-icons" style="font-size:16px; margin-right:4px;">dark_mode</span> Dark Mode
       </button>
 
       <!-- A11y Inspector -->
       <button class="tool-btn" id="a11yToggleBtn" onclick="toggleA11y()">
-        ♿ A11y Mode
+        <span class="material-icons" style="font-size:16px; margin-right:4px;">accessibility_new</span> A11y Mode
       </button>
     </div>
   </div>
@@ -1366,7 +1389,7 @@
       <div class="app-header" id="screenHeader">
         <div style="display:flex; align-items:center; gap:8px;">
           <button id="backBtn" class="header-btn" style="display:none;" onclick="navigateBack()" data-a11y-role="Back Button (48dp)">
-            ←
+            <span class="material-icons" style="font-size:20px;">arrow_back</span>
           </button>
           <svg viewBox="0 0 559.1 107.6" class="header-logo-svg" role="img" aria-label="CloudReel">
             <g fill="currentColor">
@@ -1386,10 +1409,10 @@
 
         <div class="header-actions">
           <button class="header-btn" onclick="toggleTheme()" title="Toggle Theme" data-a11y-role="Theme Toggle (48dp)">
-            <span id="headerThemeIcon">🌙</span>
+            <span class="material-icons" id="headerThemeIcon" style="font-size:20px;">dark_mode</span>
           </button>
           <button id="signOutBtn" class="header-btn" onclick="logout()" title="Sign Out" data-a11y-role="Sign Out (48dp)">
-            ⎋
+            <span class="material-icons" style="font-size:20px;">logout</span>
           </button>
         </div>
       </div>
@@ -1418,9 +1441,7 @@
           <div class="category-card hero-filled" onclick="navigateTo('live-sessions')" data-a11y-role="Live Sessions Category Card">
             <div class="category-card-header">
               <div class="category-card-icon purple">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
+                <span class="material-icons" style="font-size:28px;">group</span>
               </div>
               <span class="home-card-badge">Interactive Meetings</span>
             </div>
@@ -1432,7 +1453,7 @@
             </div>
             <div class="category-card-footer">
               <span>Open Live Sessions</span>
-              <span style="font-size:16px;">→</span>
+              <span class="material-icons" style="font-size:18px;">arrow_forward</span>
             </div>
           </div>
 
@@ -1440,9 +1461,7 @@
           <div class="category-card outlined-studio" onclick="navigateTo('broadcast')" data-a11y-role="Broadcast Category Card">
             <div class="category-card-header">
               <div class="category-card-icon magenta">
-                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <circle cx="12" cy="11" r="2"/><path d="M7.8 7a6.5 6.5 0 0 0 0 8m8.4-8a6.5 6.5 0 0 1 0 8"/><path d="M4.9 4.2a10.5 10.5 0 0 0 0 13.6m14.2-13.6a10.5 10.5 0 0 1 0 13.6"/><line x1="12" y1="13" x2="12" y2="21"/>
-                </svg>
+                <span class="material-icons" style="font-size:28px;">podcasts</span>
               </div>
               <span class="home-card-badge">Live Stream & Mesh</span>
             </div>
@@ -1455,7 +1474,7 @@
             </div>
             <div class="category-card-footer">
               <span>Open Broadcast</span>
-              <span style="font-size:16px;">→</span>
+              <span class="material-icons" style="font-size:18px;">arrow_forward</span>
             </div>
           </div>
         </div>
@@ -1470,9 +1489,7 @@
           <div class="home-option-card" onclick="openSessionEntry('host')" data-a11y-role="Start as Host (Button)">
             <div style="display:flex; align-items:center;">
               <div class="home-card-icon-box purple">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M12 2a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M19 10v3a7 7 0 0 1-14 0v-3"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
-                </svg>
+                <span class="material-icons" style="font-size:24px;">podcasts</span>
               </div>
               <div>
                 <div class="home-card-title-row">
@@ -1482,16 +1499,14 @@
                 <p class="home-card-desc">Create and host a live session.</p>
               </div>
             </div>
-            <div class="chevron-box">→</div>
+            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
           </div>
 
           <!-- OPTION B: JOIN AS PARTICIPANT -->
           <div class="home-option-card" onclick="openSessionEntry('participant')" data-a11y-role="Join as Participant (Button)">
             <div style="display:flex; align-items:center;">
               <div class="home-card-icon-box violet">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
+                <span class="material-icons" style="font-size:24px;">group</span>
               </div>
               <div>
                 <div class="home-card-title-row">
@@ -1501,7 +1516,7 @@
                 <p class="home-card-desc">Join an existing live session.</p>
               </div>
             </div>
-            <div class="chevron-box">→</div>
+            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
           </div>
         </div>
 
@@ -1515,9 +1530,7 @@
           <div class="home-option-card" onclick="onStreamerTapped()" data-a11y-role="Streamer (Button)">
             <div style="display:flex; align-items:center;">
               <div class="home-card-icon-box purple">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                </svg>
+                <span class="material-icons" style="font-size:24px;">videocam</span>
               </div>
               <div>
                 <div class="home-card-title-row">
@@ -1527,16 +1540,14 @@
                 <p class="home-card-desc">Go live and stream video.</p>
               </div>
             </div>
-            <div class="chevron-box">→</div>
+            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
           </div>
 
           <!-- OPTION B: RELAY -->
           <div class="home-option-card" onclick="navigateTo('relay')" data-a11y-role="Relay (Button)">
             <div style="display:flex; align-items:center;">
               <div class="home-card-icon-box violet">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M2 12h20"/><path d="M6 16l6-8 6 8"/><circle cx="12" cy="8" r="2"/>
-                </svg>
+                <span class="material-icons" style="font-size:24px;">cell_tower</span>
               </div>
               <div>
                 <div class="home-card-title-row">
@@ -1546,16 +1557,14 @@
                 <p class="home-card-desc">Contribute your connection to support a live stream.</p>
               </div>
             </div>
-            <div class="chevron-box">→</div>
+            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
           </div>
 
           <!-- OPTION C: NETWORK CONTRIBUTION (CELLULAR BONDING MESH) -->
           <div class="home-option-card" onclick="navigateTo('mesh')" data-a11y-role="Network Contribution (Button)">
             <div style="display:flex; align-items:center;">
               <div class="home-card-icon-box magenta">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <circle cx="12" cy="12" r="3"/><circle cx="5" cy="6" r="2"/><circle cx="19" cy="6" r="2"/><circle cx="5" cy="18" r="2"/><circle cx="19" cy="18" r="2"/><line x1="7" y1="7" x2="10" y2="10.5"/><line x1="17" y1="7" x2="14" y2="10.5"/><line x1="7" y1="17" x2="10" y2="13.5"/><line x1="17" y1="17" x2="14" y2="13.5"/>
-                </svg>
+                <span class="material-icons" style="font-size:24px;">network_check</span>
               </div>
               <div>
                 <div class="home-card-title-row">
@@ -1565,14 +1574,14 @@
                 <p class="home-card-desc">Share your mobile connection to strengthen a live stream.</p>
               </div>
             </div>
-            <div class="chevron-box">→</div>
+            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
           </div>
 
           <!-- TELEMETRY PREVIEW CARD -->
           <div class="telemetry-card">
             <div class="telemetry-header">
               <span class="telemetry-tag">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span class="material-icons" style="font-size:14px; margin-right:4px;">sensors</span>
                 CELLULAR BONDING MESH
               </span>
               <span class="telemetry-status-ready">● READY</span>
@@ -1658,9 +1667,7 @@
           <div class="home-option-card" onclick="openSessionEntry('host')" data-a11y-role="Start as Host (Button)">
             <div style="display:flex; align-items:center;">
               <div class="home-card-icon-box purple">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M12 2a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M19 10v3a7 7 0 0 1-14 0v-3"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
-                </svg>
+                <span class="material-icons" style="font-size:24px;">podcasts</span>
               </div>
               <div>
                 <div class="home-card-title-row">
@@ -1670,16 +1677,14 @@
                 <p class="home-card-desc">Create or host a live session.</p>
               </div>
             </div>
-            <div class="chevron-box">→</div>
+            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
           </div>
 
           <!-- OPTION 2: JOIN AS PARTICIPANT -->
           <div class="home-option-card" onclick="openSessionEntry('participant')" data-a11y-role="Join as Participant (Button)">
             <div style="display:flex; align-items:center;">
               <div class="home-card-icon-box violet">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M23 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>
-                </svg>
+                <span class="material-icons" style="font-size:24px;">group</span>
               </div>
               <div>
                 <div class="home-card-title-row">
@@ -1689,16 +1694,14 @@
                 <p class="home-card-desc">Join an existing session.</p>
               </div>
             </div>
-            <div class="chevron-box">→</div>
+            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
           </div>
 
           <!-- OPTION 3: STREAMER -->
           <div class="home-option-card" onclick="onStreamerTapped()" data-a11y-role="Streamer (Button)">
             <div style="display:flex; align-items:center;">
               <div class="home-card-icon-box magenta">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M23 7l-7 5 7 5V7z"/><rect x="1" y="5" width="15" height="14" rx="2" ry="2"/>
-                </svg>
+                <span class="material-icons" style="font-size:24px;">videocam</span>
               </div>
               <div>
                 <div class="home-card-title-row">
@@ -1708,16 +1711,14 @@
                 <p class="home-card-desc">Broadcast live using your camera and bonded connections.</p>
               </div>
             </div>
-            <div class="chevron-box">→</div>
+            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
           </div>
 
           <!-- OPTION 4: RELAY -->
           <div class="home-option-card" onclick="navigateTo('relay')" data-a11y-role="Relay (Button)">
             <div style="display:flex; align-items:center;">
               <div class="home-card-icon-box purple">
-                <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2">
-                  <path d="M2 12h20"/><path d="M6 16l6-8 6 8"/><circle cx="12" cy="8" r="2"/>
-                </svg>
+                <span class="material-icons" style="font-size:24px;">cell_tower</span>
               </div>
               <div>
                 <div class="home-card-title-row">
@@ -1727,14 +1728,14 @@
                 <p class="home-card-desc">Contribute your cellular connection to support live broadcasting.</p>
               </div>
             </div>
-            <div class="chevron-box">→</div>
+            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
           </div>
 
           <!-- TELEMETRY PREVIEW CARD -->
           <div class="telemetry-card">
             <div class="telemetry-header">
               <span class="telemetry-tag">
-                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="22 12 18 12 15 21 9 3 6 12 2 12"/></svg>
+                <span class="material-icons" style="font-size:14px; margin-right:4px;">sensors</span>
                 CELLULAR BONDING MESH
               </span>
               <span class="telemetry-status-ready">● READY</span>
@@ -1761,9 +1762,7 @@
           <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
           <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
             <div style="width:48px; height:48px; border-radius:50%; background:var(--cr-gradient); display:flex; align-items:center; justify-content:center; color:white;">
-              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" id="sessionIcon">
-                <path d="M12 2a4 4 0 0 0-4 4v7a4 4 0 0 0 8 0V6a4 4 0 0 0-4-4z"/><path d="M19 10v3a7 7 0 0 1-14 0v-3"/><line x1="12" y1="20" x2="12" y2="23"/><line x1="8" y1="23" x2="16" y2="23"/>
-              </svg>
+              <span class="material-icons" id="sessionIcon" style="font-size:26px;">podcasts</span>
             </div>
             <div>
               <h2 class="screen-title" id="sessionEntryTitle" style="margin-bottom:2px;">Start as Host</h2>
@@ -1776,18 +1775,18 @@
               <label class="input-label" id="sessionInputLabel">Session URL or Code</label>
               <div class="input-box" id="sessionInputBox" data-a11y-role="Session Code Input (50dp)">
                 <input type="text" id="sessionCodeInput" placeholder="e.g. CR-84920 or session URL" value="">
-                <button class="clear-btn" onclick="clearSessionInput()">✕</button>
+                <button class="clear-btn" onclick="clearSessionInput()"><span class="material-icons" style="font-size:16px;">close</span></button>
               </div>
               <div class="error-text" id="sessionError" style="display:none;"></div>
             </div>
           </div>
 
           <button class="btn-gradient" id="sessionSubmitBtn" onclick="submitSessionCode()" data-a11y-role="Continue Action (52dp)">
-            <span id="sessionSubmitBtnText">Continue as Host</span> →
+            <span id="sessionSubmitBtnText">Continue as Host</span> <span class="material-icons" style="font-size:18px; margin-left:6px; vertical-align:middle;">arrow_forward</span>
           </button>
 
           <p style="margin-top:20px; font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+            <span class="material-icons" style="font-size:16px; margin-right:6px; vertical-align:middle;">shield</span>
             Encrypted peer-to-peer session signaling via CloudReel Mesh
           </p>
         </div>
@@ -1797,10 +1796,10 @@
           <!-- Setup Header -->
           <div class="setup-header-row">
             <button class="circular-nav-btn" onclick="navigateTo('session-entry')" title="Back to Entry" data-a11y-role="Back to Entry">
-              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="m15 18-6-6 6-6"/></svg>
+              <span class="material-icons" style="font-size:24px;">chevron_left</span>
             </button>
             <button class="circular-nav-btn" onclick="toggleTheme()" title="Toggle Theme" data-a11y-role="Toggle Theme">
-              <span id="setupThemeIcon">🌙</span>
+              <span class="material-icons" id="setupThemeIcon" style="font-size:20px;">dark_mode</span>
             </button>
           </div>
 
@@ -1871,7 +1870,7 @@
             <!-- Camera Off Placeholder (hidden by default) -->
             <div id="setupCameraOffBox" class="setup-camera-off">
               <div style="width:72px; height:72px; border-radius:50%; background:#282834; display:flex; align-items:center; justify-content:center; margin-bottom:12px;">
-                <svg width="34" height="34" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m16 16 5 3V5l-5 3v2M2 2l20 20M10 4h4a2 2 0 0 1 2 2v2M2 8v10a2 2 0 0 0 2 2h12a2 2 0 0 0 1.4-.6M6.4 6.4 2 2"/></svg>
+                <span class="material-icons" style="font-size:36px; color:var(--text-muted);">videocam_off</span>
               </div>
               <p style="font-size:14px; font-weight:600;">Camera is turned off</p>
             </div>
@@ -1882,14 +1881,10 @@
             <!-- Mic & Camera Action Buttons -->
             <div class="setup-viewport-actions">
               <button class="setup-action-circle" id="setupMicBtn" onclick="toggleSetupMic()" title="Toggle Mic" data-a11y-role="Toggle Microphone">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" id="setupMicIcon">
-                  <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>
-                </svg>
+                <span class="material-icons" id="setupMicIcon" style="font-size:22px;">mic</span>
               </button>
               <button class="setup-action-circle" id="setupCamBtn" onclick="toggleSetupCam()" title="Toggle Camera" data-a11y-role="Toggle Camera">
-                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" id="setupCamIcon">
-                  <path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/>
-                </svg>
+                <span class="material-icons" id="setupCamIcon" style="font-size:22px;">videocam</span>
               </button>
             </div>
           </div>
@@ -1900,7 +1895,7 @@
             <div class="setup-device-row">
               <div class="setup-device-info">
                 <div class="setup-device-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+                  <span class="material-icons" style="font-size:22px; color:var(--cr-purple);">mic</span>
                 </div>
                 <div class="setup-device-text-group">
                   <span class="setup-device-label">Microphone</span>
@@ -1913,15 +1908,18 @@
             <div class="setup-device-row">
               <div class="setup-device-info">
                 <div class="setup-device-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+                  <span class="material-icons" style="font-size:22px; color:var(--cr-purple);">volume_up</span>
                 </div>
                 <div class="setup-device-text-group">
                   <span class="setup-device-label">Speaker</span>
-                  <select class="setup-device-select" id="setupSpeakerSelect" onchange="onSpeakerDeviceChanged(this.value)">
-                    <option value="Speaker">Speaker ⌄</option>
-                    <option value="Earpiece">Earpiece ⌄</option>
-                    <option value="Bluetooth Headset">Bluetooth Headset ⌄</option>
-                  </select>
+                  <div style="display:flex; align-items:center;">
+                    <select class="setup-device-select" id="setupSpeakerSelect" onchange="onSpeakerDeviceChanged(this.value)">
+                      <option value="Speaker">Speaker</option>
+                      <option value="Earpiece">Earpiece</option>
+                      <option value="Bluetooth Headset">Bluetooth Headset</option>
+                    </select>
+                    <span class="material-icons" style="font-size:18px; color:var(--cr-purple); pointer-events:none;">expand_more</span>
+                  </div>
                 </div>
               </div>
               <button class="btn-test-chime" id="speakerTestBtn" onclick="testSpeakerSound()" data-a11y-role="Test Speaker Audio">
@@ -1933,14 +1931,17 @@
             <div class="setup-device-row">
               <div class="setup-device-info">
                 <div class="setup-device-icon">
-                  <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+                  <span class="material-icons" style="font-size:22px; color:var(--cr-purple);">videocam</span>
                 </div>
                 <div class="setup-device-text-group">
                   <span class="setup-device-label">Camera</span>
-                  <select class="setup-device-select" id="setupCameraSelect" onchange="onCameraDeviceChanged(this.value)">
-                    <option value="Front Camera">Front Camera ⌄</option>
-                    <option value="Rear Camera">Rear Camera ⌄</option>
-                  </select>
+                  <div style="display:flex; align-items:center;">
+                    <select class="setup-device-select" id="setupCameraSelect" onchange="onCameraDeviceChanged(this.value)">
+                      <option value="Front Camera">Front Camera</option>
+                      <option value="Rear Camera">Rear Camera</option>
+                    </select>
+                    <span class="material-icons" style="font-size:18px; color:var(--cr-purple); pointer-events:none;">expand_more</span>
+                  </div>
                 </div>
               </div>
             </div>
@@ -1960,22 +1961,24 @@
           <div class="active-session-top-bar">
             <div class="active-top-group-left">
               <div class="active-pill-badge" id="activeTimerBadge" title="Live Session Duration">
-                ⏱ <span id="activeTimerText">00:05</span>
+                <span class="material-icons" style="font-size:16px; margin-right:4px; vertical-align:middle;">schedule</span>
+                <span id="activeTimerText">00:05</span>
               </div>
               <div class="active-pill-badge" style="color:#10B981;" title="Network Connection Excellent">
-                📶
+                <span class="material-icons" style="font-size:16px; vertical-align:middle;">signal_cellular_alt</span>
               </div>
             </div>
 
             <div class="active-top-group-right">
               <button class="circular-nav-btn" style="width:36px; height:36px;" onclick="openSessionModal('settingsModal')" title="Settings" data-a11y-role="Session Settings">
-                ⚙
+                <span class="material-icons" style="font-size:18px;">settings</span>
               </button>
               <button class="circular-nav-btn" style="width:36px; height:36px;" onclick="toggleTheme()" title="Toggle Theme" data-a11y-role="Toggle Theme">
-                <span id="activeThemeIcon">🌙</span>
+                <span class="material-icons" id="activeThemeIcon" style="font-size:18px;">dark_mode</span>
               </button>
               <div class="active-pill-badge" onclick="openSessionModal('participantsModal')" title="Participants List" data-a11y-role="Participants List">
-                👥 <span id="activeParticipantsCount">1</span>
+                <span class="material-icons" style="font-size:16px; margin-right:4px; vertical-align:middle;">group</span>
+                <span id="activeParticipantsCount">1</span>
               </div>
             </div>
           </div>
@@ -1984,19 +1987,14 @@
           <div class="active-video-viewport" id="activeVideoBox">
             <!-- Active Mic Icon Top-Left -->
             <div class="active-corner-mic" id="activeCornerMic">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+              <span class="material-icons" id="activeCornerMicIcon" style="font-size:22px;">mic</span>
             </div>
 
             <!-- Top-Right Indicators -->
             <div class="active-corner-actions">
-              <svg class="signal-bars-svg" width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                <rect x="2" y="16" width="3" height="6" rx="1"/>
-                <rect x="7" y="12" width="3" height="10" rx="1"/>
-                <rect x="12" y="7" width="3" height="15" rx="1"/>
-                <rect x="17" y="2" width="3" height="20" rx="1"/>
-              </svg>
+              <span class="material-icons" style="font-size:20px; color:#10B981;">signal_cellular_alt</span>
               <button class="active-fs-btn" onclick="toggleActiveFullscreen()" title="Fullscreen" data-a11y-role="Toggle Fullscreen">
-                <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
+                <span class="material-icons" id="activeFsIcon" style="font-size:18px;">crop_free</span>
               </button>
             </div>
 
@@ -2039,7 +2037,7 @@
 
             <!-- Camera Flip Overlay Action Bottom-Right -->
             <button class="btn-cam-flip-action" onclick="flipActiveCamera()" title="Flip Camera" data-a11y-role="Flip Camera">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M21.5 2v6h-6M21.34 15.57a10 10 0 1 1-.57-8.38l5.67-5.67"/><path d="M2.5 22v-6h6M2.66 8.43a10 10 0 1 1 .57 8.38l-5.67 5.67"/></svg>
+              <span class="material-icons" style="font-size:22px; color:white;">cameraswitch</span>
             </button>
           </div>
 
@@ -2052,31 +2050,31 @@
           <div class="active-session-control-dock">
             <!-- 1. Mute -->
             <button class="session-dock-btn" id="activeDockMicBtn" onclick="toggleActiveMic()" data-a11y-role="Session Mute">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" id="activeDockMicIcon"><path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/></svg>
+              <span class="material-icons" id="activeDockMicIcon" style="font-size:22px;">mic</span>
               <span class="session-dock-label" id="activeDockMicLabel">Mute</span>
             </button>
 
             <!-- 2. Stop Video -->
             <button class="session-dock-btn" id="activeDockVideoBtn" onclick="toggleActiveVideo()" data-a11y-role="Session Video">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" id="activeDockVideoIcon"><path d="m22 8-6 4 6 4V8z"/><rect x="2" y="6" width="14" height="12" rx="2"/></svg>
+              <span class="material-icons" id="activeDockVideoIcon" style="font-size:22px;">videocam</span>
               <span class="session-dock-label" id="activeDockVideoLabel">Stop</span>
             </button>
 
             <!-- 3. Share -->
             <button class="session-dock-btn" id="activeDockShareBtn" onclick="toggleActiveShare()" data-a11y-role="Screen Share">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" id="activeDockShareIcon"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg>
+              <span class="material-icons" id="activeDockShareIcon" style="font-size:22px;">screen_share</span>
               <span class="session-dock-label" id="activeDockShareLabel">Share</span>
             </button>
 
             <!-- 4. Record -->
             <button class="session-dock-btn" id="activeDockRecordBtn" onclick="toggleActiveRecord()" data-a11y-role="Record Broadcast">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="currentColor" id="activeDockRecordIcon"><circle cx="12" cy="12" r="7"/></svg>
+              <span class="material-icons" id="activeDockRecordIcon" style="font-size:22px;">fiber_manual_record</span>
               <span class="session-dock-label" id="activeDockRecordLabel">Record</span>
             </button>
 
             <!-- 5. Leave -->
             <button class="session-dock-btn danger" onclick="openSessionModal('leaveModal')" data-a11y-role="Leave Session">
-              <svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-6-6 19.8 19.8 0 0 1-3.12-8.68A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/></svg>
+              <span class="material-icons" style="font-size:22px;">call_end</span>
               <span class="session-dock-label">Leave</span>
             </button>
           </div>
@@ -2189,7 +2187,7 @@
           </div>
 
           <button class="btn-gradient" onclick="simulateLogin()" data-a11y-role="Primary Action (52dp)">
-            <span>Sign In to Streamer</span> →
+            <span>Sign In to Streamer</span> <span class="material-icons" style="font-size:18px; margin-left:6px; vertical-align:middle;">arrow_forward</span>
           </button>
 
           <p style="text-align:center; margin-top:24px; font-size:13px; color:var(--text-muted);">
@@ -2226,7 +2224,7 @@
           </div>
 
           <button class="btn-gradient" style="margin-top:12px;" onclick="simulateLogin()" data-a11y-role="Primary Action (52dp)">
-            <span>Create Account & Continue</span> →
+            <span>Create Account & Continue</span> <span class="material-icons" style="font-size:18px; margin-left:6px; vertical-align:middle;">arrow_forward</span>
           </button>
 
           <p style="text-align:center; margin-top:24px; font-size:13px; color:var(--text-muted);">
@@ -2241,7 +2239,9 @@
             <div class="viewfinder-crosshair">+</div>
             <div class="viewfinder-top-bar">
               <span class="live-badge" id="streamerLiveBadge">● LIVE ON-AIR</span>
-              <button class="camera-flip-btn" title="Flip Camera" data-a11y-role="Flip Camera">🔄</button>
+              <button class="camera-flip-btn" title="Flip Camera" data-a11y-role="Flip Camera">
+                <span class="material-icons" style="font-size:20px; color:white;">cameraswitch</span>
+              </button>
             </div>
             <div class="viewfinder-bottom-badge">
               1080p60 • 42.5 Mbps • 18ms latency
@@ -2298,7 +2298,7 @@
       <div class="app-modal-layer" id="leaveModal">
         <div class="app-modal-sheet">
           <div style="width:48px; height:48px; border-radius:50%; background:rgba(239, 68, 68, 0.12); color:#EF4444; display:flex; align-items:center; justify-content:center; margin-bottom:14px;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4"><path d="M10.68 13.31a16 16 0 0 0 3.41 2.6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7 2 2 0 0 1 1.72 2v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.42 19.42 0 0 1-6-6 19.8 19.8 0 0 1-3.12-8.68A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91"/></svg>
+            <span class="material-icons" style="font-size:26px;">call_end</span>
           </div>
           <h3 style="font-size:18px; font-weight:800; margin-bottom:6px;">Leave Session?</h3>
           <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">Are you sure you want to exit this live session? Your video stream and bonded transmission will be disconnected.</p>
@@ -2513,10 +2513,10 @@
       const icon = document.getElementById('setupMicIcon');
       if (isSetupMicOn) {
         btn.classList.remove('off');
-        icon.innerHTML = '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/><line x1="12" y1="19" x2="12" y2="22"/>';
+        icon.textContent = 'mic';
       } else {
         btn.classList.add('off');
-        icon.innerHTML = '<line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="22"/>';
+        icon.textContent = 'mic_off';
       }
     }
 
@@ -2547,7 +2547,7 @@
     function testSpeakerSound() {
       const btn = document.getElementById('speakerTestBtn');
       const originalText = btn.innerHTML;
-      btn.innerHTML = 'Testing... ♫';
+      btn.innerHTML = 'Testing... <span class="material-icons" style="font-size:16px; margin-left:4px; vertical-align:middle;">volume_up</span>';
       btn.style.color = '#10B981';
 
       try {
@@ -2633,17 +2633,20 @@
       const label = document.getElementById('activeDockMicLabel');
       const icon = document.getElementById('activeDockMicIcon');
       const cornerMic = document.getElementById('activeCornerMic');
+      const cornerIcon = document.getElementById('activeCornerMicIcon');
 
       if (isActiveMicMuted) {
         label.textContent = 'Unmute';
         btn.classList.add('danger');
         cornerMic.style.color = '#EF4444';
-        icon.innerHTML = '<line x1="1" y1="1" x2="23" y2="23"/><path d="M9 9v3a3 3 0 0 0 5.12 2.12M15 9.34V4a3 3 0 0 0-5.94-.6"/><path d="M17 16.95A7 7 0 0 1 5 12v-2m14 0v2a7 7 0 0 1-.11 1.23"/><line x1="12" y1="19" x2="12" y2="22"/>';
+        icon.textContent = 'mic_off';
+        if (cornerIcon) cornerIcon.textContent = 'mic_off';
       } else {
         label.textContent = 'Mute';
         btn.classList.remove('danger');
         cornerMic.style.color = '#10B981';
-        icon.innerHTML = '<path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z"/><path d="M19 10v2a7 7 0 0 1-14 0v-2"/>';
+        icon.textContent = 'mic';
+        if (cornerIcon) cornerIcon.textContent = 'mic';
       }
     }
 
@@ -2651,15 +2654,18 @@
       isActiveVideoStopped = !isActiveVideoStopped;
       const btn = document.getElementById('activeDockVideoBtn');
       const label = document.getElementById('activeDockVideoLabel');
+      const icon = document.getElementById('activeDockVideoIcon');
       const stream = document.getElementById('activeVideoStream');
 
       if (isActiveVideoStopped) {
         label.textContent = 'Start';
         btn.classList.add('danger');
+        if (icon) icon.textContent = 'videocam_off';
         stream.style.opacity = '0.15';
       } else {
         label.textContent = 'Stop';
         btn.classList.remove('danger');
+        if (icon) icon.textContent = 'videocam';
         stream.style.opacity = '1';
       }
     }
@@ -2668,13 +2674,16 @@
       isActiveScreenSharing = !isActiveScreenSharing;
       const btn = document.getElementById('activeDockShareBtn');
       const label = document.getElementById('activeDockShareLabel');
+      const icon = document.getElementById('activeDockShareIcon');
 
       if (isActiveScreenSharing) {
         btn.classList.add('active');
         label.textContent = 'Stop Share';
+        if (icon) icon.textContent = 'stop_screen_share';
       } else {
         btn.classList.remove('active');
         label.textContent = 'Share';
+        if (icon) icon.textContent = 'screen_share';
       }
     }
 
@@ -2712,10 +2721,13 @@
     function toggleActiveFullscreen() {
       isFullscreen = !isFullscreen;
       const box = document.getElementById('activeVideoBox');
+      const icon = document.getElementById('activeFsIcon');
       if (isFullscreen) {
         box.classList.add('fullscreen-mode');
+        if (icon) icon.textContent = 'fullscreen_exit';
       } else {
         box.classList.remove('fullscreen-mode');
+        if (icon) icon.textContent = 'crop_free';
       }
     }
 
@@ -2748,11 +2760,14 @@
     function toggleTheme() {
       isDark = !isDark;
       document.body.classList.toggle('dark', isDark);
-      const iconText = isDark ? '☀️' : '🌙';
-      if (document.getElementById('headerThemeIcon')) document.getElementById('headerThemeIcon').textContent = iconText;
-      if (document.getElementById('setupThemeIcon')) document.getElementById('setupThemeIcon').textContent = iconText;
-      if (document.getElementById('activeThemeIcon')) document.getElementById('activeThemeIcon').textContent = iconText;
-      if (document.getElementById('themeToggleBtn')) document.getElementById('themeToggleBtn').textContent = isDark ? '☀️ Light Mode' : '🌙 Dark Mode';
+      const iconName = isDark ? 'light_mode' : 'dark_mode';
+      if (document.getElementById('headerThemeIcon')) document.getElementById('headerThemeIcon').textContent = iconName;
+      if (document.getElementById('setupThemeIcon')) document.getElementById('setupThemeIcon').textContent = iconName;
+      if (document.getElementById('activeThemeIcon')) document.getElementById('activeThemeIcon').textContent = iconName;
+      const themeBtn = document.getElementById('themeToggleBtn');
+      if (themeBtn) {
+        themeBtn.innerHTML = `<span class="material-icons" style="font-size:16px; margin-right:4px;">${iconName}</span> ${isDark ? 'Light Mode' : 'Dark Mode'}`;
+      }
     }
 
     function toggleA11y() {
