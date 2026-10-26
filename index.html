@@ -1353,10 +1353,12 @@
     .cam-btn { width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(0,0,0,0.55); color: #fff;
       display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
     .cam-btn .material-icons { font-size: 22px; }
-    .cam-btn.on { background: rgba(211,0,234,0.85); }
+    .cam-btn.on { background: rgba(59,130,246,0.85); }
+    .cam-btn.warn { background: rgba(239,68,68,0.85); }
     .cam-btn:disabled { opacity: 0.4; cursor: default; }
-    .cam-top { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; flex-direction: column; gap: 8px; }
-    .cam-row { display: flex; align-items: center; gap: 8px; }
+    .cam-back { position: absolute; top: 12px; left: 12px; }
+    .cam-status { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+    .cam-row { display: flex; align-items: center; gap: 12px; }
     .cam-pill { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 24px; border: 0;
       background: rgba(0,0,0,0.55); color: #fff; text-align: left; font-family: inherit; cursor: pointer; }
     .cam-pill:disabled { cursor: default; }
@@ -1374,19 +1376,14 @@
     .cam-btn b { font-size: 11px; }
     .cam-zoombar { display: none; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; }
     .cam-zoombar.open { display: flex; }
-    .cam-zoombar input { width: 210px; accent-color: #D300EA; }
+    .cam-zoombar input { width: 210px; accent-color: #3B82F6; }
     .cam-utils { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
     .cam-bottom { position: absolute; left: 12px; right: 12px; bottom: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
     .cam-tools { display: none; gap: 4px; padding: 5px; border-radius: 26px; background: rgba(0,0,0,0.55); max-width: 100%; overflow-x: auto; }
     .cam-tools.open { display: flex; }
     .cam-tools .cam-btn { background: transparent; }
-    .cam-tools .cam-btn.on { background: rgba(211,0,234,0.85); }
-    .cam-mode { display: flex; padding: 4px; border-radius: 24px; background: rgba(0,0,0,0.55); }
-    .cam-mode button { border: 0; background: transparent; color: #fff; padding: 9px 18px; border-radius: 20px;
-      font-weight: 600; font-size: 12.5px; cursor: pointer; font-family: inherit; }
-    .cam-mode button.on { background: #3B82F6; }
+    .cam-tools .cam-btn.on { background: rgba(59,130,246,0.85); }
     .cam-transport { display: none; gap: 12px; }
-    .cam.active .cam-mode { display: none; }
     .cam.active .cam-transport { display: flex; }
     .cam-shutter { width: 100%; display: flex; align-items: center; justify-content: space-evenly; }
     .cam-rec { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; color: #fff;
@@ -1397,13 +1394,13 @@
     .cam.connecting .cam-rec-core { background: #F59E0B; animation: pulseLogo 1s infinite; }
     /* Landscape: rotate/tools/settings move to the top right, mode or transport sits beside the record column. */
     .cam.landscape .cam-utils { top: 12px; transform: none; flex-direction: row; gap: 8px; }
-    .cam.landscape .cam-left { top: calc(50% + 46px); }
-    .cam.landscape .cam-bottom { inset: 12px; display: grid; grid-template-columns: 1fr auto auto; grid-template-rows: 1fr auto auto; row-gap: 8px;
+    .cam.landscape .cam-bottom { inset: 12px; display: grid; grid-template-columns: 1fr auto auto; grid-template-rows: 1fr auto auto auto; row-gap: 8px;
       align-items: center; justify-items: center; column-gap: 16px; }
     .cam.landscape .cam-zoombar { grid-column: 1 / span 2; grid-row: 2; }
     .cam.landscape .cam-tools { grid-column: 1 / span 2; grid-row: 3; }
-    .cam.landscape .cam-mode, .cam.landscape .cam-transport { grid-column: 2; grid-row: 1; }
-    .cam.landscape .cam-shutter { grid-column: 3; grid-row: 1 / span 3; width: auto; flex-direction: column; gap: 10px; }
+    .cam.landscape .cam-transport { grid-column: 2; grid-row: 1; }
+    .cam.landscape .cam-row { grid-column: 1 / span 2; grid-row: 4; }
+    .cam.landscape .cam-shutter { grid-column: 3; grid-row: 1 / span 4; width: auto; flex-direction: column; gap: 10px; }
     .cam-hint { position: absolute; left: 50%; bottom: 46%; transform: translateX(-50%); padding: 6px 12px; border-radius: 14px;
       background: rgba(0,0,0,0.6); font-size: 11.5px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
     .cam-hint.show { opacity: 1; }
@@ -2324,28 +2321,14 @@
             <div class="cam-feed" id="camFeed" ondblclick="camToggleOverlays()" data-a11y-role="Camera Preview (double-tap hides controls)"></div>
             <div class="cam-hint" id="camHint">Double-tap to show controls</div>
             <div class="cam-ui">
-              <div class="cam-top">
-                <div class="cam-row">
-                  <button class="cam-btn" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
-                  <button class="cam-pill" id="camStatus" onclick="openSessionModal('settingsModal')" title="Video quality">
-                    <span class="cam-dot" id="camDot"></span>
-                    <span>
-                      <span class="cam-pill-main"><b id="camLabel">READY</b><span id="camTimer"></span></span>
-                      <span class="cam-pill-sub" id="camDetails"></span>
-                    </span>
-                  </button>
-                </div>
-                <div class="cam-row">
-                  <div class="cam-links">
-                    <span><span class="material-icons">wifi</span>18.4</span>
-                    <span><span class="material-icons">cell_tower</span>24.1</span>
-                    <span><span class="material-icons">public</span>ok</span>
-                    <span class="off"><span class="material-icons">cable</span>off</span>
-                    <span style="opacity:0.6;">Mbps</span>
-                  </div>
-                  <div class="cam-meter"><i id="camMeter"></i></div>
-                </div>
-              </div>
+              <button class="cam-btn cam-back" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
+              <button class="cam-pill cam-status" id="camStatus" onclick="openSessionModal('settingsModal')" title="Video quality">
+                <span class="cam-dot" id="camDot"></span>
+                <span>
+                  <span class="cam-pill-main"><b id="camLabel">READY</b><span id="camTimer"></span></span>
+                  <span class="cam-pill-sub" id="camDetails"></span>
+                </span>
+              </button>
 
               <div class="cam-left">
                 <button class="cam-btn" onclick="this.classList.toggle('on')" title="Metadata"><span class="material-icons">sell</span></button>
@@ -2372,13 +2355,9 @@
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Grid"><span class="material-icons">grid_off</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Exposure lock"><span class="material-icons">lock_open</span></button>
                 </div>
-                <div class="cam-mode">
-                  <button class="on" id="camModeLive" onclick="camSetMode('live')">Live</button>
-                  <button id="camModeStore" onclick="camSetMode('store')">Store</button>
-                </div>
                 <div class="cam-transport">
-                  <button class="cam-btn" id="camPauseBtn" onclick="camPause()" title="Pause recording"><span class="material-icons">pause</span></button>
-                  <button class="cam-btn" id="camPlayBtn" onclick="camResume()" title="Resume recording"><span class="material-icons">play_arrow</span></button>
+                  <button class="cam-btn" id="camPauseBtn" onclick="camPause()" title="Pause"><span class="material-icons">pause</span></button>
+                  <button class="cam-btn" id="camPlayBtn" onclick="camResume()" title="Resume"><span class="material-icons">play_arrow</span></button>
                   <button class="cam-btn" id="camStopBtn" onclick="camStop()" title="Stop"><span class="material-icons">stop</span></button>
                 </div>
                 <div class="cam-shutter">
@@ -2388,6 +2367,16 @@
                     <span id="camRecLabel">Go live</span>
                   </button>
                   <button class="cam-btn" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
+                </div>
+                <div class="cam-row">
+                  <div class="cam-links">
+                    <span><span class="material-icons">wifi</span>18.4</span>
+                    <span><span class="material-icons">cell_tower</span>24.1</span>
+                    <span><span class="material-icons">public</span>ok</span>
+                    <span class="off"><span class="material-icons">cable</span>off</span>
+                    <span style="opacity:0.6;">Mbps</span>
+                  </div>
+                  <div class="cam-meter"><i id="camMeter"></i></div>
                 </div>
               </div>
             </div>
@@ -2968,9 +2957,7 @@
       document.getElementById('camTimer').textContent = ['live', 'recording', 'paused'].includes(cam.phase) ? camFmt(cam.elapsed) : '';
       document.getElementById('camDetails').textContent = '1080p · 30' + (cam.mode === 'live' ? ' · 2s' : '') + ' · ' + camLeftText(cam.left);
       document.getElementById('camStatus').disabled = isActive;
-      document.getElementById('camModeLive').classList.toggle('on', cam.mode === 'live');
-      document.getElementById('camModeStore').classList.toggle('on', cam.mode === 'store');
-      document.getElementById('camPauseBtn').disabled = !(cam.mode === 'store' && cam.phase === 'recording');
+      document.getElementById('camPauseBtn').disabled = !(cam.phase === 'live' || cam.phase === 'recording');
       document.getElementById('camPlayBtn').disabled = cam.phase !== 'paused';
       document.getElementById('camStopBtn').disabled = cam.phase === 'connecting';
       document.getElementById('camFlipBtn').disabled = isActive;
@@ -2980,7 +2967,7 @@
       document.getElementById('camTools').classList.toggle('open', cam.tools);
       document.getElementById('camToolsBtn').classList.toggle('on', cam.tools);
       const mic = document.getElementById('camMicBtn');
-      mic.classList.toggle('on', !cam.mic);
+      mic.classList.toggle('warn', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
       document.getElementById('camFeed').style.transform = `scale(${cam.zoom}) scaleX(${cam.front ? -1 : 1})`;
       const zoomText = cam.zoom.toFixed(1) + '×';
@@ -3019,7 +3006,7 @@
     }
 
     function camPause() { cam.phase = 'paused'; camRender(); }
-    function camResume() { cam.phase = 'recording'; camRender(); }
+    function camResume() { cam.phase = cam.mode === 'live' ? 'live' : 'recording'; camRender(); }
     function camStop() {
       clearInterval(cam.clock);
       cam.phase = 'idle';
@@ -3028,7 +3015,6 @@
       camRender();
     }
 
-    function camSetMode(mode) { cam.mode = mode; camRender(); }
     function camToggleTools() { cam.tools = !cam.tools; camRender(); }
     function camToggleMic() { cam.mic = !cam.mic; camRender(); }
     function camFlip() { cam.front = !cam.front; camRender(); }
