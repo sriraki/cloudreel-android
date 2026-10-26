@@ -1358,7 +1358,7 @@
     .cam-btn:disabled { opacity: 0.4; cursor: default; }
     .cam-back { position: absolute; top: 12px; left: 12px; }
     .cam-status { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
-    .cam-row { display: flex; align-items: center; gap: 12px; }
+    .cam-row { position: relative; width: 100%; min-height: 78px; display: flex; align-items: flex-end; justify-content: center; }
     .cam-pill { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 24px; border: 0;
       background: rgba(0,0,0,0.55); color: #fff; text-align: left; font-family: inherit; cursor: pointer; }
     .cam-pill:disabled { cursor: default; }
@@ -1370,8 +1370,15 @@
       background: rgba(0,0,0,0.55); font-size: 11px; }
     .cam-links .material-icons { font-size: 14px; color: #10B981; vertical-align: -3px; margin-right: 2px; }
     .cam-links .off .material-icons { color: #EF4444; }
-    .cam-meter { width: 64px; height: 7px; border-radius: 4px; background: rgba(0,0,0,0.55); overflow: hidden; }
-    .cam-meter i { display: block; height: 100%; width: 0; background: #10B981; transition: width 0.3s; }
+    /* Stereo meter: 12 segments over -60..0 dBFS, green / yellow / red, peak held 1s. */
+    .cam-vu { position: absolute; left: 0; bottom: 0; padding: 5px 5px 2px; border-radius: 8px; background: rgba(0,0,0,0.45); }
+    .cam-vu-bars { display: flex; gap: 3px; }
+    .cam-vu-bar { display: flex; flex-direction: column-reverse; gap: 2px; }
+    .cam-vu-bar i { width: 6px; height: 3px; border-radius: 1px; background: #10B981; opacity: 0.18; }
+    .cam-vu-bar i:nth-child(n+9) { background: #F59E0B; }
+    .cam-vu-bar i:nth-child(n+11) { background: #EF4444; }
+    .cam-vu-bar i.lit { opacity: 1; }
+    .cam-vu-labels { display: flex; justify-content: space-between; font-size: 8px; opacity: 0.75; margin-top: 2px; }
     .cam-left { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .cam-btn b { font-size: 11px; }
     .cam-zoombar { display: none; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; }
@@ -1403,6 +1410,39 @@
     .cam.landscape .cam-shutter { grid-column: 3; grid-row: 1 / span 4; width: auto; flex-direction: column; gap: 10px; }
     .cam-hint { position: absolute; left: 50%; bottom: 46%; transform: translateX(-50%); padding: 6px 12px; border-radius: 14px;
       background: rgba(0,0,0,0.6); font-size: 11.5px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+
+    /* ── STREAMER SETTINGS (mirrors StreamerSettingsScreen.kt) ── */
+    .cs { position: absolute; inset: 0; z-index: 5; display: none; flex-direction: column; background: var(--bg-device); color: var(--text-main); }
+    .cs.open { display: flex; }
+    .cs-head { display: flex; align-items: center; gap: 6px; padding: 10px 6px; font-size: 17px; font-weight: 700; }
+    .cs-head button { border: 0; background: none; color: inherit; cursor: pointer; padding: 6px; display: flex; }
+    .cs-body { flex: 1; overflow-y: auto; padding: 0 16px 16px; }
+    .cs-section { color: #3B82F6; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; margin: 18px 0 2px; }
+    .cs-row { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 0; border: 0; border-bottom: 1px solid var(--border-device);
+      background: none; color: inherit; text-align: left; font: inherit; cursor: pointer; }
+    .cs-row:disabled { opacity: 0.5; cursor: default; }
+    .cs-row.info { cursor: default; }
+    .cs-text { flex: 1; min-width: 0; }
+    .cs-title { display: block; font-size: 14.5px; }
+    .cs-value { display: block; font-size: 12.5px; color: var(--text-muted); margin-top: 2px; overflow-wrap: anywhere; }
+    .cs-note { display: block; font-size: 10.5px; color: var(--text-muted); opacity: 0.75; margin-top: 2px; }
+    .cs-row > .material-icons { color: var(--text-muted); font-size: 20px; }
+    .cs-switch { width: 38px; height: 22px; border-radius: 11px; background: var(--border-device); position: relative; flex-shrink: 0; transition: background 0.2s; }
+    .cs-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left 0.2s; }
+    .cs-switch.on { background: #3B82F6; }
+    .cs-switch.on::after { left: 19px; }
+    .cs-dialog { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 24px; }
+    .cs-dialog.open { display: flex; }
+    .cs-card { width: 100%; max-width: 320px; border-radius: 20px; padding: 20px; background: var(--bg-device-surface); }
+    .cs-card h4 { font-size: 17px; margin-bottom: 10px; }
+    .cs-option { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
+    .cs-option .material-icons { color: var(--text-muted); }
+    .cs-option.selected .material-icons { color: #3B82F6; }
+    .cs-stepper { display: flex; align-items: center; justify-content: space-between; font-size: 22px; font-weight: 600; }
+    .cs-stepper button { border: 0; background: none; color: inherit; cursor: pointer; display: flex; padding: 6px; }
+    .cs-card input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-device); background: transparent; color: inherit; font: inherit; }
+    .cs-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 14px; }
+    .cs-actions button { border: 0; background: none; color: #3B82F6; font: inherit; font-weight: 700; cursor: pointer; padding: 8px 10px; }
     .cam-hint.show { opacity: 1; }
   </style>
 </head>
@@ -2322,7 +2362,7 @@
             <div class="cam-hint" id="camHint">Double-tap to show controls</div>
             <div class="cam-ui">
               <button class="cam-btn cam-back" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
-              <button class="cam-pill cam-status" id="camStatus" onclick="openSessionModal('settingsModal')" title="Video quality">
+              <button class="cam-pill cam-status" id="camStatus" onclick="csOpen('session')" title="Session settings">
                 <span class="cam-dot" id="camDot"></span>
                 <span>
                   <span class="cam-pill-main"><b id="camLabel">READY</b><span id="camTimer"></span></span>
@@ -2339,7 +2379,7 @@
               <div class="cam-utils">
                 <button class="cam-btn" id="camRotateBtn" onclick="camToggleRotate()" title="Rotate screen"><span class="material-icons">screen_rotation</span></button>
                 <button class="cam-btn" id="camToolsBtn" onclick="camToggleTools()" title="Show camera tools"><span class="material-icons">tune</span></button>
-                <button class="cam-btn" onclick="openSessionModal('settingsModal')" title="Settings"><span class="material-icons">settings</span></button>
+                <button class="cam-btn" onclick="csOpen('list')" title="Settings"><span class="material-icons">settings</span></button>
               </div>
 
               <div class="cam-bottom">
@@ -2355,6 +2395,13 @@
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Grid"><span class="material-icons">grid_off</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Exposure lock"><span class="material-icons">lock_open</span></button>
                 </div>
+                <div class="cam-row">
+                  <div class="cam-vu" title="Audio level (L / R)">
+                    <div class="cam-vu-bars"><div class="cam-vu-bar" id="camVuL"></div><div class="cam-vu-bar" id="camVuR"></div></div>
+                    <div class="cam-vu-labels"><span>L</span><span>R</span></div>
+                  </div>
+                  <div class="cam-links" id="camLinks"></div>
+                </div>
                 <div class="cam-transport">
                   <button class="cam-btn" id="camPauseBtn" onclick="camPause()" title="Pause"><span class="material-icons">pause</span></button>
                   <button class="cam-btn" id="camPlayBtn" onclick="camResume()" title="Resume"><span class="material-icons">play_arrow</span></button>
@@ -2368,17 +2415,16 @@
                   </button>
                   <button class="cam-btn" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
                 </div>
-                <div class="cam-row">
-                  <div class="cam-links">
-                    <span><span class="material-icons">wifi</span>18.4</span>
-                    <span><span class="material-icons">cell_tower</span>24.1</span>
-                    <span><span class="material-icons">public</span>ok</span>
-                    <span class="off"><span class="material-icons">cable</span>off</span>
-                    <span style="opacity:0.6;">Mbps</span>
-                  </div>
-                  <div class="cam-meter"><i id="camMeter"></i></div>
-                </div>
               </div>
+            </div>
+
+            <div class="cs" id="camSettings">
+              <div class="cs-head">
+                <button onclick="csBack()" title="Back"><span class="material-icons">arrow_back</span></button>
+                <span id="csTitle">Settings</span>
+              </div>
+              <div class="cs-body" id="csBody"></div>
+              <div class="cs-dialog" id="csDialog" onclick="if (event.target === this) csCloseDialog()"><div class="cs-card" id="csCard"></div></div>
             </div>
           </div>
         </div>
@@ -2940,7 +2986,7 @@
     document.getElementById('systemTime').textContent = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     // ── Streamer camera screen (mirrors StreamerScreen.kt) ──
-    const cam = { mode: 'live', phase: 'idle', elapsed: 0, left: 2 * 3600, tools: false, mic: true, zoom: 1, zoomOpen: false, front: false, clock: null };
+    const cam = { mode: 'live', phase: 'idle', elapsed: 0, left: 2 * 3600, tools: false, mic: true, zoom: 1, zoomOpen: false, front: false, clock: null, peak: 0, peakAt: 0 };
 
     function camFmt(t) { return [Math.floor(t / 3600), Math.floor(t / 60) % 60, t % 60].map(n => String(n).padStart(2, '0')).join(':'); }
     function camLeftText(t) { const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60; return h > 0 ? `${h}h ${m}m left` : `${m}m left`; }
@@ -2955,7 +3001,14 @@
       document.getElementById('camLabel').textContent = label;
       document.getElementById('camDot').style.background = color;
       document.getElementById('camTimer').textContent = ['live', 'recording', 'paused'].includes(cam.phase) ? camFmt(cam.elapsed) : '';
-      document.getElementById('camDetails').textContent = '1080p · 30' + (cam.mode === 'live' ? ' · 2s' : '') + ' · ' + camLeftText(cam.left);
+      const settings = cs.values;
+      document.getElementById('camDetails').textContent =
+        `${settings.resolution} · ${parseInt(settings.frameRate)} · ${settings.delay.replace(' sec', 's')} · ${camLeftText(cam.left)}`;
+      document.getElementById('camLinks').innerHTML = [['wifi', 'wifi', '18.4'], ['cellular', 'cell_tower', '24.1'], [null, 'public', 'ok'], ['wired', 'cable', 'on']]
+        .map(([key, icon, reading]) => {
+          const isOn = !key || settings[key];
+          return `<span class="${isOn ? '' : 'off'}"><span class="material-icons">${icon}</span>${isOn ? reading : 'off'}</span>`;
+        }).join('') + '<span style="opacity:0.6;">Mbps</span>';
       document.getElementById('camStatus').disabled = isActive;
       document.getElementById('camPauseBtn').disabled = !(cam.phase === 'live' || cam.phase === 'recording');
       document.getElementById('camPlayBtn').disabled = cam.phase !== 'paused';
@@ -2969,7 +3022,9 @@
       const mic = document.getElementById('camMicBtn');
       mic.classList.toggle('warn', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
-      document.getElementById('camFeed').style.transform = `scale(${cam.zoom}) scaleX(${cam.front ? -1 : 1})`;
+      const mirrorX = (cam.front ? -1 : 1) * (settings.mirroring === 'Horizontally' ? -1 : 1);
+      const mirrorY = settings.mirroring === 'Vertically' ? -1 : 1;
+      document.getElementById('camFeed').style.transform = `scale(${cam.zoom}) scale(${mirrorX}, ${mirrorY})`;
       const zoomText = cam.zoom.toFixed(1) + '×';
       document.getElementById('camZoomBar').classList.toggle('open', cam.zoomOpen);
       document.getElementById('camZoomVal').textContent = zoomText;
@@ -2985,8 +3040,8 @@
           cam.elapsed++;
           cam.left = Math.max(0, cam.left - 1);
         }
-        document.getElementById('camMeter').style.width =
-          (cam.mic && (cam.phase === 'live' || cam.phase === 'recording')) ? `${20 + Math.random() * 60}%` : '0';
+        // Speech-like level between -30 and -8 dBFS; L and R share the combined level, like the app.
+        camSetMeter(cam.mic && (cam.phase === 'live' || cam.phase === 'recording') ? -30 + Math.random() * 22 : -60);
         camRender();
       }, 1000);
     }
@@ -3011,8 +3066,18 @@
       clearInterval(cam.clock);
       cam.phase = 'idle';
       cam.elapsed = 0;
-      document.getElementById('camMeter').style.width = '0';
+      cam.peak = 0;
+      camSetMeter(-60);
       camRender();
+    }
+
+    const CAM_VU_SEGMENTS = 12;
+    document.querySelectorAll('.cam-vu-bar').forEach(bar => { bar.innerHTML = '<i></i>'.repeat(CAM_VU_SEGMENTS); });
+    function camSetMeter(decibels) {
+      const litCount = Math.round((Math.max(-60, Math.min(0, decibels)) + 60) / 60 * CAM_VU_SEGMENTS);
+      if (litCount >= cam.peak || Date.now() - cam.peakAt > 1000) { cam.peak = litCount; cam.peakAt = Date.now(); }
+      document.querySelectorAll('.cam-vu-bar').forEach(bar => [...bar.children].forEach((segment, index) =>
+        segment.classList.toggle('lit', index < litCount || index === cam.peak - 1)));
     }
 
     function camToggleTools() { cam.tools = !cam.tools; camRender(); }
@@ -3034,13 +3099,22 @@
       camArmZoomHide();
     }
 
+    // The rotate button writes the saved orientation; Settings > Advanced can set it back to Auto.
     function camToggleRotate() {
-      const isLandscape = !document.getElementById('mobileDevice').classList.contains('landscape');
+      const isLandscape = document.getElementById('cam').classList.contains('landscape');
+      cs.values.orientation = isLandscape ? 'Portrait' : 'Landscape';
+      camApplyOrientation();
+    }
+
+    // shortcut: the simulator has no sensor, so Auto shows portrait
+    function camApplyOrientation() {
+      const isLandscape = cs.values.orientation === 'Landscape';
       document.getElementById('mobileDevice').classList.toggle('landscape', isLandscape);
       document.getElementById('cam').classList.toggle('landscape', isLandscape);
     }
 
     function camToggleOverlays() {
+      if (!cs.values.doubleTap) return;
       const isHidden = document.getElementById('cam').classList.toggle('overlays-hidden');
       const hint = document.getElementById('camHint');
       hint.classList.toggle('show', isHidden);
@@ -3053,6 +3127,190 @@
       document.getElementById('mobileDevice').classList.remove('landscape');
       const el = document.getElementById('cam');
       el.classList.remove('landscape', 'overlays-hidden');
+      document.getElementById('camSettings').classList.remove('open');
+    }
+
+    // ── Streamer settings (mirrors StreamerSettingsScreen.kt) ──
+    const cs = {
+      page: 'list',
+      dialogRow: null,
+      dialogValue: null,
+      values: {
+        resolution: '1080p', frameRate: '30 fps', delay: '2 sec', cbr: false, channels: 'Stereo', ifb: true, ifbLow: true, ifbVolume: 10,
+        promptOnStart: false, metaEnabled: true, slugline: '', crewName: '', storyId: '', usageTerms: '', provider: '', reporter: '', keywords: '', comments: '',
+        wifi: true, cellular: true, wired: false, bonding: true, totalBandwidth: 8000, cellularBandwidth: 12000, wifiBandwidth: 12000,
+        location: 'While app is running', server: '',
+        orientation: 'Auto', mirroring: 'Off', doubleTap: true, prefix: 'CR', filenameTime: 'Local time', passThrough: false, tally: false, severity: 'Info'
+      }
+    };
+    const CS_NOT_ACTIVE = { note: 'Not active yet' };
+    const csSection = title => ({ type: 'section', title });
+    const csNav = (title, page, extra) => ({ type: 'nav', title, page, ...extra });
+    const csChoice = (title, key, options, extra) => ({ type: 'choice', title, key, options, ...extra });
+    const csSwitch = (title, key, extra) => ({ type: 'switch', title, key, ...extra });
+    const csNumber = (title, key, min, max, step, unit, extra) => ({ type: 'number', title, key, min, max, step, unit, ...extra });
+    const csText = (title, key, extra) => ({ type: 'text', title, key, ...extra });
+    const csInfo = (title, value) => ({ type: 'info', title, value });
+    const CS_BANDWIDTH = [500, 20000, 500, 'kbps'];
+    const CS_METADATA_FIELDS = [['Slugline', 'slugline'], ['Crew name', 'crewName'], ['Story ID', 'storyId'], ['Usage terms', 'usageTerms'],
+      ['Provider', 'provider'], ['Reporter', 'reporter'], ['Keywords', 'keywords'], ['Comments', 'comments']];
+
+    const CS_PAGES = {
+      list: { title: 'Settings', rows: () => ['session', 'metadata', 'network', 'advanced', 'account', 'about'].map(page => csNav(CS_PAGES[page].title, page)) },
+      session: { title: 'Session Settings', back: 'list', rows: () => [
+        csSection('Video'),
+        csChoice('Resolution', 'resolution', ['720p', '1080p'], { lock: true }),
+        csChoice('Frame rate', 'frameRate', ['30 fps', '60 fps'], { lock: true }),
+        csChoice('Video delay', 'delay', ['0.5 sec', '1 sec', '2 sec', '5 sec'], { lock: true }),
+        csSwitch('CBR encoding', 'cbr', { lock: true, ...CS_NOT_ACTIVE }),
+        csSection('Audio'),
+        csChoice('Channels', 'channels', ['Mono', 'Stereo'], { lock: true, ...CS_NOT_ACTIVE }),
+        csSection('Return audio (IFB)'),
+        csSwitch('IFB', 'ifb', CS_NOT_ACTIVE),
+        csSwitch('IFB low delay', 'ifbLow', CS_NOT_ACTIVE),
+        csNumber('IFB volume', 'ifbVolume', 0, 10, 1, '', CS_NOT_ACTIVE)
+      ] },
+      metadata: { title: 'Metadata', back: 'list', rows: () => [
+        csSwitch('Ask before going live', 'promptOnStart', { value: 'Show this form each time you tap Go live' }),
+        csSwitch('Send with the live stream', 'metaEnabled'),
+        csSection('Fields'),
+        ...CS_METADATA_FIELDS.map(([title, key]) => csText(title, key, { disabled: !cs.values.metaEnabled }))
+      ] },
+      network: { title: 'Network Settings', back: 'list', rows: () => [
+        csSection('Connections'),
+        csSwitch('Wi-Fi', 'wifi'), csSwitch('Cellular', 'cellular'), csSwitch('Wired', 'wired'),
+        csSwitch('Bonding', 'bonding', { value: 'Combine connections into one stream', ...CS_NOT_ACTIVE }),
+        csSection('Bandwidth limits'),
+        csNumber('Total', 'totalBandwidth', ...CS_BANDWIDTH, CS_NOT_ACTIVE),
+        csNumber('Cellular', 'cellularBandwidth', ...CS_BANDWIDTH, CS_NOT_ACTIVE),
+        csNumber('Wi-Fi', 'wifiBandwidth', ...CS_BANDWIDTH, CS_NOT_ACTIVE),
+        csSection('Other'),
+        csChoice('Location sharing', 'location', ['Never', 'Always', 'While app is running'], CS_NOT_ACTIVE),
+        csText('Server', 'server', { empty: 'Default', ...CS_NOT_ACTIVE })
+      ] },
+      advanced: { title: 'Advanced', back: 'list', rows: () => [
+        csSection('Preview'),
+        csChoice('Orientation', 'orientation', ['Auto', 'Portrait', 'Landscape'], { lock: true }),
+        csChoice('Mirroring', 'mirroring', ['Off', 'Horizontally', 'Vertically']),
+        csSwitch('Double tap hides controls', 'doubleTap'),
+        csSection('Recordings'),
+        csText('File prefix', 'prefix'),
+        csChoice('Time in file names', 'filenameTime', ['Local time', 'UTC+0']),
+        csSection('Device'),
+        csSwitch('Audio pass-through', 'passThrough', CS_NOT_ACTIVE),
+        csSwitch('Tally light', 'tally', { value: 'Flash light while live', ...CS_NOT_ACTIVE }),
+        csNav('System logs', 'logs')
+      ] },
+      logs: { title: 'System Logs', back: 'advanced', rows: () => [
+        csChoice('Severity', 'severity', ['Error', 'Warning', 'Info', 'Verbose'], CS_NOT_ACTIVE),
+        csNav('Clear logs', null, CS_NOT_ACTIVE),
+        csNav('Report an issue', null, CS_NOT_ACTIVE)
+      ] },
+      account: { title: 'Account & Plan', back: 'list', rows: () => [
+        csSection('Account'), csInfo('Signed in as', document.getElementById('loginEmail').value || 'Not signed in'),
+        csSection('Plan'), csInfo('Streaming time', camLeftText(cam.left)),
+        csSection('This device'), csInfo('Device', 'Simulator')
+      ] },
+      about: { title: 'About', back: 'list', rows: () => [
+        csInfo('App', 'CloudReel Streamer'), csInfo('Version', '1.0.0'), csInfo('Device ID', 'simulator')
+      ] }
+    };
+
+    function csEscape(text) { return String(text).replace(/[&<>"']/g, ch => `&#${ch.charCodeAt(0)};`); }
+
+    function csRowValue(row) {
+      const value = cs.values[row.key];
+      if (row.type === 'number') return `${value} ${row.unit}`.trim();
+      if (row.type === 'text') return value || row.empty || 'Not set';
+      return row.type === 'choice' ? value : row.value;
+    }
+
+    function csRenderPage() {
+      const page = CS_PAGES[cs.page];
+      document.getElementById('csTitle').textContent = page.title;
+      document.getElementById('csBody').innerHTML = page.rows().map((row, index) => {
+        if (row.type === 'section') return `<div class="cs-section">${row.title}</div>`;
+        const isLocked = row.lock && cam.phase !== 'idle';
+        const value = csRowValue(row);
+        const note = isLocked ? 'Can\'t change while live' : row.note;
+        const text = `<span class="cs-text"><span class="cs-title">${row.title}</span>` +
+          (value ? `<span class="cs-value">${csEscape(value)}</span>` : '') +
+          (note ? `<span class="cs-note">${note}</span>` : '') + '</span>';
+        if (row.type === 'info') return `<div class="cs-row info">${text}</div>`;
+        const end = row.type === 'switch' ? `<span class="cs-switch${cs.values[row.key] ? ' on' : ''}"></span>`
+          : `<span class="material-icons">${isLocked ? 'lock' : 'chevron_right'}</span>`;
+        return `<button class="cs-row" ${isLocked || row.disabled ? 'disabled' : ''} onclick="csTap(${index})">${text}${end}</button>`;
+      }).join('');
+    }
+
+    function csOpen(page) {
+      cs.page = page;
+      csRenderPage();
+      document.getElementById('camSettings').classList.add('open');
+    }
+
+    function csBack() {
+      const back = CS_PAGES[cs.page].back;
+      if (back) csOpen(back);
+      else document.getElementById('camSettings').classList.remove('open');
+    }
+
+    function csTap(index) {
+      const row = CS_PAGES[cs.page].rows()[index];
+      if (row.type === 'nav') return row.page && csOpen(row.page);
+      if (row.type === 'switch') return csSet(row.key, !cs.values[row.key]);
+      cs.dialogRow = row;
+      cs.dialogValue = cs.values[row.key];
+      csRenderDialog();
+      document.getElementById('csDialog').classList.add('open');
+    }
+
+    function csRenderDialog() {
+      const row = cs.dialogRow;
+      const actions = (withOk) => `<div class="cs-actions"><button onclick="csCloseDialog()">Cancel</button>${withOk ? '<button onclick="csConfirmDialog()">OK</button>' : ''}</div>`;
+      let body = '';
+      if (row.type === 'choice') {
+        body = row.options.map((option, index) => {
+          const isSelected = option === cs.dialogValue;
+          return `<button class="cs-option${isSelected ? ' selected' : ''}" onclick="csSet('${row.key}', ${JSON.stringify(option).replace(/"/g, '&quot;')}); csCloseDialog()">` +
+            `<span class="material-icons">${isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}</span>${option}</button>`;
+        }).join('') + actions(false);
+      } else if (row.type === 'number') {
+        body = `<div class="cs-stepper"><button onclick="csStep(-1)" title="Decrease"><span class="material-icons">remove</span></button>` +
+          `<span>${`${cs.dialogValue} ${row.unit}`.trim()}</span><button onclick="csStep(1)" title="Increase"><span class="material-icons">add</span></button></div>` + actions(true);
+      } else {
+        body = `<input id="csInput" value="${csEscape(cs.dialogValue)}">` + actions(true);
+      }
+      document.getElementById('csCard').innerHTML = `<h4>${row.title}</h4>${body}`;
+      if (row.type === 'text') document.getElementById('csInput').focus();
+    }
+
+    function csStep(direction) {
+      const row = cs.dialogRow;
+      cs.dialogValue = Math.min(row.max, Math.max(row.min, cs.dialogValue + direction * row.step));
+      csRenderDialog();
+    }
+
+    function csConfirmDialog() {
+      const row = cs.dialogRow;
+      if (row.type === 'text') {
+        let typed = document.getElementById('csInput').value.trim();
+        if (row.key === 'prefix') typed = typed.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 12) || cs.values.prefix;
+        csSet(row.key, typed);
+      } else {
+        csSet(row.key, cs.dialogValue);
+      }
+      csCloseDialog();
+    }
+
+    function csCloseDialog() { document.getElementById('csDialog').classList.remove('open'); }
+
+    function csSet(key, value) {
+      cs.values[key] = value;
+      if (key === 'orientation') camApplyOrientation();
+      if (key === 'doubleTap' && !value) document.getElementById('cam').classList.remove('overlays-hidden');
+      csRenderPage();
+      camRender();
     }
 
     camRender();
