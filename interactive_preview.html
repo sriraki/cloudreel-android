@@ -1467,11 +1467,17 @@
     .cam-meta-head h4 { margin: 0; }
     .cam-meta-head .cs-switch { cursor: pointer; }
     .cam-meta-fields { overflow-y: auto; }
-    .cam-meta-row { display: flex; align-items: center; gap: 12px; padding: 4px 0; font-size: 14px; }
-    .cam-meta-row label { flex: 0 0 38%; }
-    .cam-meta .cam-meta-row input { flex: 1; width: auto; min-width: 0; border: 0; border-bottom: 1px solid var(--text-muted); border-radius: 0; padding: 8px 2px; }
-    .cam-meta .cam-meta-row input:focus { outline: none; border-bottom: 2px solid #3B82F6; }
-    .cam-meta .cam-meta-row input:disabled { opacity: 0.45; }
+    /* Outlined fields with the label on the top border; two columns in landscape, like MetadataForm. */
+    .cam-meta-fields { display: grid; grid-template-columns: 1fr; gap: 14px; padding-top: 8px; }
+    .cam.landscape .cam-meta .cs-card { max-width: 560px; }
+    .cam.landscape .cam-meta-fields { grid-template-columns: 1fr 1fr; }
+    .cam-field { position: relative; }
+    .cam-field label { position: absolute; top: -8px; left: 10px; padding: 0 4px; font-size: 11.5px; color: var(--text-muted); background: var(--bg-device-surface); }
+    .cam-meta .cam-field input, .cam-meta .cam-field textarea { width: 100%; padding: 12px; border: 1px solid var(--text-muted); border-radius: 8px;
+      background: transparent; color: inherit; font: inherit; font-size: 14px; resize: none; }
+    .cam-meta .cam-field input:focus, .cam-meta .cam-field textarea:focus { outline: none; border: 2px solid #3B82F6; padding: 11px; }
+    .cam-field:focus-within label { color: #3B82F6; }
+    .cam-meta .cam-field :disabled { opacity: 0.45; }
     .cam-hint.show { opacity: 1; }
   </style>
 </head>
@@ -3129,9 +3135,15 @@
     function camToggleMetaSend() { cs.values.metaEnabled = !cs.values.metaEnabled; camRenderMetadata(); }
     function camRenderMetadata() {
       document.getElementById('camMetaSwitch').classList.toggle('on', cs.values.metaEnabled);
-      document.getElementById('camMetaFields').innerHTML = CS_METADATA_FIELDS.map(([title, key]) =>
-        `<div class="cam-meta-row"><label for="camMeta-${key}">${title}</label>` +
-        `<input id="camMeta-${key}" value="${csEscape(cs.values[key])}" ${cs.values.metaEnabled ? '' : 'disabled'} oninput="cs.values.${key} = this.value"></div>`).join('');
+      // Disabled fields keep their text, so switching sending back on loses nothing.
+      const disabled = cs.values.metaEnabled ? '' : 'disabled';
+      document.getElementById('camMetaFields').innerHTML = CS_METADATA_FIELDS.map(([title, key]) => {
+        const attributes = `id="camMeta-${key}" ${disabled} oninput="cs.values.${key} = this.value"`;
+        const input = key === 'comments'
+          ? `<textarea rows="3" ${attributes}>${csEscape(cs.values[key])}</textarea>`
+          : `<input ${attributes} value="${csEscape(cs.values[key])}">`;
+        return `<div class="cam-field"><label for="camMeta-${key}">${title}</label>${input}</div>`;
+      }).join('');
     }
     function camToggleFormats() { cam.formatsOpen = !cam.formatsOpen; camRender(); }
     function camSelectFormat(index) {
