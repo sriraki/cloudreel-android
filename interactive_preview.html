@@ -1460,6 +1460,18 @@
     .cs-card input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-device); background: transparent; color: inherit; font: inherit; }
     .cs-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 14px; }
     .cs-actions button { border: 0; background: none; color: #3B82F6; font: inherit; font-weight: 700; cursor: pointer; padding: 8px 10px; }
+    /* Metadata popup on the camera: title + send switch, then label | underlined field rows. */
+    .cam-meta { z-index: 6; }
+    .cam-meta .cs-card { color: var(--text-main); max-height: 100%; display: flex; flex-direction: column; }
+    .cam-meta-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+    .cam-meta-head h4 { margin: 0; }
+    .cam-meta-head .cs-switch { cursor: pointer; }
+    .cam-meta-fields { overflow-y: auto; }
+    .cam-meta-row { display: flex; align-items: center; gap: 12px; padding: 4px 0; font-size: 14px; }
+    .cam-meta-row label { flex: 0 0 38%; }
+    .cam-meta .cam-meta-row input { flex: 1; width: auto; min-width: 0; border: 0; border-bottom: 1px solid var(--text-muted); border-radius: 0; padding: 8px 2px; }
+    .cam-meta .cam-meta-row input:focus { outline: none; border-bottom: 2px solid #3B82F6; }
+    .cam-meta .cam-meta-row input:disabled { opacity: 0.45; }
     .cam-hint.show { opacity: 1; }
   </style>
 </head>
@@ -2391,7 +2403,7 @@
               <div class="cam-formats" id="camFormats"></div>
 
               <div class="cam-left">
-                <button class="cam-btn" onclick="this.classList.toggle('on')" title="Metadata"><span class="material-icons">sell</span></button>
+                <button class="cam-btn" id="camMetaBtn" onclick="camOpenMetadata()" title="Metadata"><span class="material-icons">sell</span></button>
                 <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
                 <button class="cam-btn" id="camZoomBtn" onclick="camToggleZoomBar()" title="Zoom"><span class="material-icons">zoom_in</span></button>
               </div>
@@ -2432,6 +2444,14 @@
                   <button class="cam-btn" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
                   <button class="cam-btn" id="camPauseBtn" onclick="camTogglePause()" title="Pause" hidden><span class="material-icons">pause</span></button>
                 </div>
+              </div>
+            </div>
+
+            <div class="cs-dialog cam-meta" id="camMetaDialog" onclick="if (event.target === this) camCloseMetadata()">
+              <div class="cs-card">
+                <div class="cam-meta-head"><h4>Metadata</h4><span class="cs-switch" id="camMetaSwitch" role="switch" title="Send with the live stream" onclick="camToggleMetaSend()"></span></div>
+                <div class="cam-meta-fields" id="camMetaFields"></div>
+                <div class="cs-actions"><button onclick="camCloseMetadata()">OK</button></div>
               </div>
             </div>
 
@@ -3053,6 +3073,8 @@
         cam.phase === 'connecting' ? 'Connecting' : isActive ? 'Stop' : cam.mode === 'live' ? 'Go live' : 'Record';
       document.getElementById('camTools').classList.toggle('open', cam.tools);
       document.getElementById('camToolsBtn').classList.toggle('on', cam.tools);
+      document.getElementById('camMetaBtn').classList.toggle('on',
+        settings.metaEnabled && CS_METADATA_FIELDS.some(([, key]) => settings[key].trim()));
       const mic = document.getElementById('camMicBtn');
       mic.classList.toggle('warn', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
@@ -3075,7 +3097,6 @@
           cam.left = Math.max(0, cam.left - 1);
         }
         // Speech-like level between -30 and -8 dBFS; L and R share the combined level, like the app.
-        camSetMeter(cam.mic && (cam.phase === 'live' || cam.phase === 'recording') ? -30 + Math.random() * 22 : -60);
         camRender();
       }, 1000);
     }
@@ -3103,6 +3124,15 @@
     const CAM_FORMATS = [['1080p', '60', true], ['1080p', '50', true], ['1080p', '30', true], ['1080i', '60', false], ['1080i', '50', false],
       ['720p', '60', true], ['720p', '50', true], ['720p', '30', true], ['576i', '25', false], ['576i', 'Auto', false],
       ['480i', '30', false], ['480i', 'Auto', false]].map(([label, rate, isNative]) => ({ label, rate, isNative, name: `${label} ${rate}` }));
+    function camOpenMetadata() { camRenderMetadata(); document.getElementById('camMetaDialog').classList.add('open'); }
+    function camCloseMetadata() { document.getElementById('camMetaDialog').classList.remove('open'); camRender(); }
+    function camToggleMetaSend() { cs.values.metaEnabled = !cs.values.metaEnabled; camRenderMetadata(); }
+    function camRenderMetadata() {
+      document.getElementById('camMetaSwitch').classList.toggle('on', cs.values.metaEnabled);
+      document.getElementById('camMetaFields').innerHTML = CS_METADATA_FIELDS.map(([title, key]) =>
+        `<div class="cam-meta-row"><label for="camMeta-${key}">${title}</label>` +
+        `<input id="camMeta-${key}" value="${csEscape(cs.values[key])}" ${cs.values.metaEnabled ? '' : 'disabled'} oninput="cs.values.${key} = this.value"></div>`).join('');
+    }
     function camToggleFormats() { cam.formatsOpen = !cam.formatsOpen; camRender(); }
     function camSelectFormat(index) {
       cam.formatsOpen = false;
@@ -3113,12 +3143,13 @@
       cam.phase = 'idle';
       cam.elapsed = 0;
       cam.peak = 0;
-      camSetMeter(-60);
       camRender();
     }
 
     const CAM_VU_SEGMENTS = 12;
     document.querySelectorAll('.cam-vu-bar').forEach(bar => { bar.innerHTML = '<i></i>'.repeat(CAM_VU_SEGMENTS); });
+    // The meter always shows the mic, idle or live (speech-like -30..-8 dBFS here); muted reads silence.
+    setInterval(() => camSetMeter(cam.mic ? -30 + Math.random() * 22 : -60), 150);
     function camSetMeter(decibels) {
       const litCount = Math.round((Math.max(-60, Math.min(0, decibels)) + 60) / 60 * CAM_VU_SEGMENTS);
       if (litCount >= cam.peak || Date.now() - cam.peakAt > 1000) { cam.peak = litCount; cam.peakAt = Date.now(); }
