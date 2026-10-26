@@ -1371,10 +1371,10 @@
     .cam-meter { width: 64px; height: 7px; border-radius: 4px; background: rgba(0,0,0,0.55); overflow: hidden; }
     .cam-meter i { display: block; height: 100%; width: 0; background: #10B981; transition: width 0.3s; }
     .cam-left { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .cam-zoom { display: flex; flex-direction: column; gap: 4px; padding: 4px; border-radius: 24px; background: rgba(0,0,0,0.55); }
-    .cam-zoom button { width: 36px; height: 36px; border-radius: 50%; border: 0; background: transparent; color: #fff;
-      font-weight: 700; font-size: 12px; cursor: pointer; font-family: inherit; }
-    .cam-zoom button.on { background: #fff; color: #000; }
+    .cam-btn b { font-size: 11px; }
+    .cam-zoombar { display: none; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; }
+    .cam-zoombar.open { display: flex; }
+    .cam-zoombar input { width: 210px; accent-color: #D300EA; }
     .cam-utils { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
     .cam-bottom { position: absolute; left: 12px; right: 12px; bottom: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
     .cam-tools { display: none; gap: 4px; padding: 5px; border-radius: 26px; background: rgba(0,0,0,0.55); max-width: 100%; overflow-x: auto; }
@@ -1384,7 +1384,7 @@
     .cam-mode { display: flex; padding: 4px; border-radius: 24px; background: rgba(0,0,0,0.55); }
     .cam-mode button { border: 0; background: transparent; color: #fff; padding: 9px 18px; border-radius: 20px;
       font-weight: 600; font-size: 12.5px; cursor: pointer; font-family: inherit; }
-    .cam-mode button.on { background: #D300EA; }
+    .cam-mode button.on { background: #3B82F6; }
     .cam-transport { display: none; gap: 12px; }
     .cam.active .cam-mode { display: none; }
     .cam.active .cam-transport { display: flex; }
@@ -1398,11 +1398,12 @@
     /* Landscape: rotate/tools/settings move to the top right, mode or transport sits beside the record column. */
     .cam.landscape .cam-utils { top: 12px; transform: none; flex-direction: row; gap: 8px; }
     .cam.landscape .cam-left { top: calc(50% + 46px); }
-    .cam.landscape .cam-bottom { inset: 12px; display: grid; grid-template-columns: 1fr auto auto; grid-template-rows: 1fr auto;
+    .cam.landscape .cam-bottom { inset: 12px; display: grid; grid-template-columns: 1fr auto auto; grid-template-rows: 1fr auto auto; row-gap: 8px;
       align-items: center; justify-items: center; column-gap: 16px; }
-    .cam.landscape .cam-tools { grid-column: 1 / span 2; grid-row: 2; }
+    .cam.landscape .cam-zoombar { grid-column: 1 / span 2; grid-row: 2; }
+    .cam.landscape .cam-tools { grid-column: 1 / span 2; grid-row: 3; }
     .cam.landscape .cam-mode, .cam.landscape .cam-transport { grid-column: 2; grid-row: 1; }
-    .cam.landscape .cam-shutter { grid-column: 3; grid-row: 1 / span 2; width: auto; flex-direction: column; gap: 10px; }
+    .cam.landscape .cam-shutter { grid-column: 3; grid-row: 1 / span 3; width: auto; flex-direction: column; gap: 10px; }
     .cam-hint { position: absolute; left: 50%; bottom: 46%; transform: translateX(-50%); padding: 6px 12px; border-radius: 14px;
       background: rgba(0,0,0,0.6); font-size: 11.5px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
     .cam-hint.show { opacity: 1; }
@@ -2349,10 +2350,7 @@
               <div class="cam-left">
                 <button class="cam-btn" onclick="this.classList.toggle('on')" title="Metadata"><span class="material-icons">sell</span></button>
                 <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
-                <div class="cam-zoom">
-                  <button class="on" onclick="camZoom(1, this)">1×</button>
-                  <button onclick="camZoom(2, this)">2×</button>
-                </div>
+                <button class="cam-btn" id="camZoomBtn" onclick="camToggleZoomBar()" title="Zoom"><span class="material-icons">zoom_in</span></button>
               </div>
 
               <div class="cam-utils">
@@ -2362,12 +2360,15 @@
               </div>
 
               <div class="cam-bottom">
+                <div class="cam-zoombar" id="camZoomBar">
+                  <input type="range" id="camZoomRange" min="1" max="5" step="0.1" value="1" oninput="camSetZoom(this.value)" aria-label="Zoom">
+                  <span id="camZoomVal">1.0×</span>
+                </div>
                 <div class="cam-tools" id="camTools">
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Autofocus"><span class="material-icons">center_focus_strong</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Flash"><span class="material-icons">flash_off</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Exposure"><span class="material-icons">exposure</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="White balance"><span class="material-icons">wb_auto</span></button>
-                  <button class="cam-btn" onclick="this.classList.toggle('on')" title="Zoom"><span class="material-icons">zoom_in</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Grid"><span class="material-icons">grid_off</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Exposure lock"><span class="material-icons">lock_open</span></button>
                 </div>
@@ -2950,7 +2951,7 @@
     document.getElementById('systemTime').textContent = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     // ── Streamer camera screen (mirrors StreamerScreen.kt) ──
-    const cam = { mode: 'live', phase: 'idle', elapsed: 0, left: 2 * 3600, tools: false, mic: true, zoom: 1, front: false, clock: null };
+    const cam = { mode: 'live', phase: 'idle', elapsed: 0, left: 2 * 3600, tools: false, mic: true, zoom: 1, zoomOpen: false, front: false, clock: null };
 
     function camFmt(t) { return [Math.floor(t / 3600), Math.floor(t / 60) % 60, t % 60].map(n => String(n).padStart(2, '0')).join(':'); }
     function camLeftText(t) { const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60; return h > 0 ? `${h}h ${m}m left` : `${m}m left`; }
@@ -2982,6 +2983,12 @@
       mic.classList.toggle('on', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
       document.getElementById('camFeed').style.transform = `scale(${cam.zoom}) scaleX(${cam.front ? -1 : 1})`;
+      const zoomText = cam.zoom.toFixed(1) + '×';
+      document.getElementById('camZoomBar').classList.toggle('open', cam.zoomOpen);
+      document.getElementById('camZoomVal').textContent = zoomText;
+      const zoomBtn = document.getElementById('camZoomBtn');
+      zoomBtn.classList.toggle('on', cam.zoomOpen);
+      zoomBtn.innerHTML = Math.abs(cam.zoom - 1) < 0.05 ? '<span class="material-icons">zoom_in</span>' : `<b>${zoomText}</b>`;
     }
 
     function camStartClock() {
@@ -3025,10 +3032,20 @@
     function camToggleTools() { cam.tools = !cam.tools; camRender(); }
     function camToggleMic() { cam.mic = !cam.mic; camRender(); }
     function camFlip() { cam.front = !cam.front; camRender(); }
-    function camZoom(level, btn) {
-      cam.zoom = level;
-      btn.parentElement.querySelectorAll('button').forEach(b => b.classList.toggle('on', b === btn));
+    // Zoom bar: snaps to 1× and 2× when dragged close, closes 3s after the last change.
+    let camZoomHideTimer = null;
+    function camArmZoomHide() {
+      clearTimeout(camZoomHideTimer);
+      if (cam.zoomOpen) camZoomHideTimer = setTimeout(() => { cam.zoomOpen = false; camRender(); }, 3000);
+    }
+    function camToggleZoomBar() { cam.zoomOpen = !cam.zoomOpen; camRender(); camArmZoomHide(); }
+    function camSetZoom(value) {
+      let zoom = parseFloat(value);
+      const snap = [1, 2].find(point => Math.abs(point - zoom) < 0.1);
+      if (snap) { zoom = snap; document.getElementById('camZoomRange').value = snap; }
+      cam.zoom = zoom;
       camRender();
+      camArmZoomHide();
     }
 
     function camToggleRotate() {
