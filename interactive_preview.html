@@ -1357,7 +1357,26 @@
     .cam-btn.warn { background: rgba(239,68,68,0.85); }
     .cam-btn:disabled { opacity: 0.4; cursor: default; }
     .cam-back { position: absolute; top: 12px; left: 12px; }
-    .cam-status { position: absolute; top: 12px; left: 50%; transform: translateX(-50%); white-space: nowrap; }
+    .cam-status { position: absolute; top: 12px; left: 64px; white-space: nowrap; cursor: default; }
+    .cam-format { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 10px;
+      border: 0; border-radius: 12px; background: rgba(0,0,0,0.55); color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; pointer-events: auto; }
+    .cam-format.on { background: rgba(59,130,246,0.85); }
+    .cam-format:disabled { opacity: 0.5; cursor: default; }
+    .cam-format i { font-style: normal; font-size: 10px; color: #000; background: #fff; border-radius: 3px; padding: 0 4px; }
+    .cam-formats { position: absolute; top: 68px; right: 12px; z-index: 2; display: none; flex-direction: column; padding: 4px; max-height: 380px;
+      overflow-y: auto; border-radius: 16px; background: rgba(0,0,0,0.82); pointer-events: auto; }
+    .cam [hidden] { display: none !important; }
+    .cam-formats.open { display: flex; }
+    .cam-format-item { width: 76px; display: flex; flex-direction: column; align-items: center; padding: 6px 0; border: 0; border-radius: 10px;
+      background: none; color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .cam-format-item.selected { color: #3B82F6; }
+    .cam-format-icon { position: relative; display: flex; align-items: center; }
+    .cam-format-icon .material-icons-outlined { font-size: 36px; }
+    .cam-format-icon b { position: absolute; left: 3px; width: 22px; text-align: center; font-size: 10px; }
+    .cam-format-item small { font-size: 9px; font-weight: 400; opacity: 0.6; }
+    .cam-thumb { width: 52px; height: 52px; border-radius: 12px; border: 2px solid #fff; background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; }
+    .cam-slot { width: 52px; height: 52px; }
     .cam-row { position: relative; width: 100%; min-height: 78px; display: flex; align-items: flex-end; justify-content: center; }
     .cam-pill { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 24px; border: 0;
       background: rgba(0,0,0,0.55); color: #fff; text-align: left; font-family: inherit; cursor: pointer; }
@@ -1390,8 +1409,6 @@
     .cam-tools.open { display: flex; }
     .cam-tools .cam-btn { background: transparent; }
     .cam-tools .cam-btn.on { background: rgba(59,130,246,0.85); }
-    .cam-transport { display: none; gap: 12px; }
-    .cam.active .cam-transport { display: flex; }
     .cam-shutter { width: 100%; display: flex; align-items: center; justify-content: space-evenly; }
     .cam-rec { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; color: #fff;
       cursor: pointer; font-family: inherit; font-size: 10.5px; font-weight: 600; }
@@ -1400,12 +1417,12 @@
     .cam.active .cam-rec-core { width: 24px; height: 24px; border-radius: 6px; }
     .cam.connecting .cam-rec-core { background: #F59E0B; animation: pulseLogo 1s infinite; }
     /* Landscape: rotate/tools/settings move to the top right, mode or transport sits beside the record column. */
-    .cam.landscape .cam-utils { top: 12px; transform: none; flex-direction: row; gap: 8px; }
+    .cam.landscape .cam-formats { right: 96px; max-height: calc(100% - 80px); }
+    .cam.landscape .cam-utils { top: 12px; right: 84px; transform: none; flex-direction: row; gap: 8px; }
     .cam.landscape .cam-bottom { inset: 12px; display: grid; grid-template-columns: 1fr auto auto; grid-template-rows: 1fr auto auto auto; row-gap: 8px;
       align-items: center; justify-items: center; column-gap: 16px; }
     .cam.landscape .cam-zoombar { grid-column: 1 / span 2; grid-row: 2; }
     .cam.landscape .cam-tools { grid-column: 1 / span 2; grid-row: 3; }
-    .cam.landscape .cam-transport { grid-column: 2; grid-row: 1; }
     .cam.landscape .cam-row { grid-column: 1 / span 2; grid-row: 4; }
     .cam.landscape .cam-shutter { grid-column: 3; grid-row: 1 / span 4; width: auto; flex-direction: column; gap: 10px; }
     .cam-hint { position: absolute; left: 50%; bottom: 46%; transform: translateX(-50%); padding: 6px 12px; border-radius: 14px;
@@ -2362,13 +2379,16 @@
             <div class="cam-hint" id="camHint">Double-tap to show controls</div>
             <div class="cam-ui">
               <button class="cam-btn cam-back" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
-              <button class="cam-pill cam-status" id="camStatus" onclick="csOpen('session')" title="Session settings">
+              <div class="cam-pill cam-status" id="camStatus">
                 <span class="cam-dot" id="camDot"></span>
                 <span>
                   <span class="cam-pill-main"><b id="camLabel">READY</b><span id="camTimer"></span></span>
                   <span class="cam-pill-sub" id="camDetails"></span>
                 </span>
-              </button>
+              </div>
+
+              <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Video format"><span id="camFormatLabel">1080P</span><i id="camFormatRate">30</i></button>
+              <div class="cam-formats" id="camFormats"></div>
 
               <div class="cam-left">
                 <button class="cam-btn" onclick="this.classList.toggle('on')" title="Metadata"><span class="material-icons">sell</span></button>
@@ -2402,18 +2422,15 @@
                   </div>
                   <div class="cam-links" id="camLinks"></div>
                 </div>
-                <div class="cam-transport">
-                  <button class="cam-btn" id="camPauseBtn" onclick="camPause()" title="Pause"><span class="material-icons">pause</span></button>
-                  <button class="cam-btn" id="camPlayBtn" onclick="camResume()" title="Resume"><span class="material-icons">play_arrow</span></button>
-                  <button class="cam-btn" id="camStopBtn" onclick="camStop()" title="Stop"><span class="material-icons">stop</span></button>
-                </div>
                 <div class="cam-shutter">
-                  <button class="cam-btn" onclick="alert('Recordings: saved clips and cloud upload')" title="Recordings and upload"><span class="material-icons">cloud_upload</span></button>
+                  <button class="cam-thumb" id="camThumb" onclick="alert('Recordings: saved clips and upload')" title="Recordings"><span class="material-icons">video_library</span></button>
+                  <span class="cam-slot" id="camThumbSlot" hidden></span>
                   <button class="cam-rec" onclick="camRecord()" data-a11y-role="Record (68dp)">
                     <span class="cam-rec-ring"><span class="cam-rec-core"></span></span>
                     <span id="camRecLabel">Go live</span>
                   </button>
                   <button class="cam-btn" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
+                  <button class="cam-btn" id="camPauseBtn" onclick="camTogglePause()" title="Pause" hidden><span class="material-icons">pause</span></button>
                 </div>
               </div>
             </div>
@@ -2986,7 +3003,7 @@
     document.getElementById('systemTime').textContent = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     // ── Streamer camera screen (mirrors StreamerScreen.kt) ──
-    const cam = { mode: 'live', phase: 'idle', elapsed: 0, left: 2 * 3600, tools: false, mic: true, zoom: 1, zoomOpen: false, front: false, clock: null, peak: 0, peakAt: 0 };
+    const cam = { mode: 'live', phase: 'idle', elapsed: 0, left: 2 * 3600, tools: false, mic: true, zoom: 1, zoomOpen: false, front: false, clock: null, peak: 0, peakAt: 0, formatsOpen: false };
 
     function camFmt(t) { return [Math.floor(t / 3600), Math.floor(t / 60) % 60, t % 60].map(n => String(n).padStart(2, '0')).join(':'); }
     function camLeftText(t) { const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60; return h > 0 ? `${h}h ${m}m left` : `${m}m left`; }
@@ -3003,17 +3020,34 @@
       document.getElementById('camTimer').textContent = ['live', 'recording', 'paused'].includes(cam.phase) ? camFmt(cam.elapsed) : '';
       const settings = cs.values;
       document.getElementById('camDetails').textContent =
-        `${settings.resolution} · ${parseInt(settings.frameRate)} · ${settings.delay.replace(' sec', 's')} · ${camLeftText(cam.left)}`;
+        `${settings.delay.replace(' sec', 's')} delay · ${camLeftText(cam.left)}`;
+      const format = CAM_FORMATS.find(option => option.name === settings.format);
+      document.getElementById('camFormatLabel').textContent = format.label.toUpperCase();
+      document.getElementById('camFormatRate').textContent = format.rate;
+      const formatChip = document.getElementById('camFormatChip');
+      formatChip.disabled = isActive;
+      formatChip.classList.toggle('on', cam.formatsOpen && !isActive);
+      document.getElementById('camFormats').classList.toggle('open', cam.formatsOpen && !isActive);
+      document.getElementById('camFormats').innerHTML = CAM_FORMATS.map((option, index) => {
+        const badge = option.rate === 'Auto' ? 'A' : ['25', '30'].includes(option.rate) ? '' : option.rate;
+        return `<button class="cam-format-item${option.name === settings.format ? ' selected' : ''}" onclick="camSelectFormat(${index})" title="${option.label} ${option.rate}">` +
+          `<span class="cam-format-icon"><span class="material-icons-outlined">videocam</span><b>${badge}</b></span>${option.label}` +
+          (option.isNative ? '' : '<small>not active</small>') + '</button>';
+      }).join('');
       document.getElementById('camLinks').innerHTML = [['wifi', 'wifi', '18.4'], ['cellular', 'cell_tower', '24.1'], [null, 'public', 'ok'], ['wired', 'cable', 'on']]
         .map(([key, icon, reading]) => {
           const isOn = !key || settings[key];
           return `<span class="${isOn ? '' : 'off'}"><span class="material-icons">${icon}</span>${isOn ? reading : 'off'}</span>`;
         }).join('') + '<span style="opacity:0.6;">Mbps</span>';
-      document.getElementById('camStatus').disabled = isActive;
-      document.getElementById('camPauseBtn').disabled = !(cam.phase === 'live' || cam.phase === 'recording');
-      document.getElementById('camPlayBtn').disabled = cam.phase !== 'paused';
-      document.getElementById('camStopBtn').disabled = cam.phase === 'connecting';
-      document.getElementById('camFlipBtn').disabled = isActive;
+      // Three fixed slots: recordings | record | flip while idle, empty | stop | pause-resume while running.
+      document.getElementById('camThumb').hidden = isActive;
+      document.getElementById('camThumbSlot').hidden = !isActive;
+      document.getElementById('camFlipBtn').hidden = isActive;
+      const pauseBtn = document.getElementById('camPauseBtn');
+      pauseBtn.hidden = !isActive;
+      pauseBtn.disabled = cam.phase === 'connecting';
+      pauseBtn.title = cam.phase === 'paused' ? 'Resume' : 'Pause';
+      pauseBtn.querySelector('.material-icons').textContent = cam.phase === 'paused' ? 'play_arrow' : 'pause';
       document.getElementById('camRotateBtn').disabled = isActive;
       document.getElementById('camRecLabel').textContent =
         cam.phase === 'connecting' ? 'Connecting' : isActive ? 'Stop' : cam.mode === 'live' ? 'Go live' : 'Record';
@@ -3060,8 +3094,20 @@
       camRender();
     }
 
-    function camPause() { cam.phase = 'paused'; camRender(); }
-    function camResume() { cam.phase = cam.mode === 'live' ? 'live' : 'recording'; camRender(); }
+    function camTogglePause() {
+      cam.phase = cam.phase === 'paused' ? (cam.mode === 'live' ? 'live' : 'recording') : 'paused';
+      camRender();
+    }
+
+    // Mirrors VideoFormat in StreamerModels.kt; interlaced and SD are saved as a label only.
+    const CAM_FORMATS = [['1080p', '60', true], ['1080p', '50', true], ['1080p', '30', true], ['1080i', '60', false], ['1080i', '50', false],
+      ['720p', '60', true], ['720p', '50', true], ['720p', '30', true], ['576i', '25', false], ['576i', 'Auto', false],
+      ['480i', '30', false], ['480i', 'Auto', false]].map(([label, rate, isNative]) => ({ label, rate, isNative, name: `${label} ${rate}` }));
+    function camToggleFormats() { cam.formatsOpen = !cam.formatsOpen; camRender(); }
+    function camSelectFormat(index) {
+      cam.formatsOpen = false;
+      csSet('format', CAM_FORMATS[index].name);
+    }
     function camStop() {
       clearInterval(cam.clock);
       cam.phase = 'idle';
@@ -3136,7 +3182,7 @@
       dialogRow: null,
       dialogValue: null,
       values: {
-        resolution: '1080p', frameRate: '30 fps', delay: '2 sec', cbr: false, channels: 'Stereo', ifb: true, ifbLow: true, ifbVolume: 10,
+        format: '1080p 30', delay: '2 sec', cbr: false, channels: 'Stereo', ifb: true, ifbLow: true, ifbVolume: 10,
         promptOnStart: false, metaEnabled: true, slugline: '', crewName: '', storyId: '', usageTerms: '', provider: '', reporter: '', keywords: '', comments: '',
         wifi: true, cellular: true, wired: false, bonding: true, totalBandwidth: 8000, cellularBandwidth: 12000, wifiBandwidth: 12000,
         location: 'While app is running', server: '',
@@ -3159,8 +3205,8 @@
       list: { title: 'Settings', rows: () => ['session', 'metadata', 'network', 'advanced', 'account', 'about'].map(page => csNav(CS_PAGES[page].title, page)) },
       session: { title: 'Session Settings', back: 'list', rows: () => [
         csSection('Video'),
-        csChoice('Resolution', 'resolution', ['720p', '1080p'], { lock: true }),
-        csChoice('Frame rate', 'frameRate', ['30 fps', '60 fps'], { lock: true }),
+        csChoice('Video format', 'format', CAM_FORMATS.map(option => option.name),
+          { lock: true, note: CAM_FORMATS.find(option => option.name === cs.values.format).isNative ? null : 'Not active yet' }),
         csChoice('Video delay', 'delay', ['0.5 sec', '1 sec', '2 sec', '5 sec'], { lock: true }),
         csSwitch('CBR encoding', 'cbr', { lock: true, ...CS_NOT_ACTIVE }),
         csSection('Audio'),
