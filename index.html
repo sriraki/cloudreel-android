@@ -2577,7 +2577,10 @@
     let isCameraFlippedFront = false;
     let isFullscreen = false;
 
+    // The camera screen opens from Broadcast or, for host and participant, from Device Setup; Back returns there.
+    let streamerBackTo = 'broadcast';
     function navigateTo(screenId) {
+      if (screenId === 'streamer' && currentScreen !== 'streamer') streamerBackTo = currentScreen === 'device-setup' ? 'device-setup' : 'broadcast';
       if (currentScreen === 'streamer' && screenId !== 'streamer') camLeave();
       currentScreen = screenId;
       document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active-screen'));
@@ -2639,7 +2642,9 @@
     function navigateBack() {
       if (currentScreen === 'live-sessions' || currentScreen === 'broadcast') {
         navigateTo('category-selection');
-      } else if (currentScreen === 'mesh' || currentScreen === 'streamer' || currentScreen === 'relay') {
+      } else if (currentScreen === 'streamer') {
+        navigateTo(streamerBackTo);
+      } else if (currentScreen === 'mesh' || currentScreen === 'relay') {
         navigateTo('broadcast');
       } else if (currentScreen === 'session-entry') {
         navigateTo('live-sessions');
@@ -2790,7 +2795,7 @@
     }
 
     function startActiveSession() {
-      navigateTo('active-session');
+      navigateTo('streamer');
     }
 
     // ── Active Live Session (Screenshot 2) Controls ──
