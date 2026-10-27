@@ -2417,7 +2417,7 @@
               <div class="cam-utils">
                 <button class="cam-btn" id="camRotateBtn" onclick="camToggleRotate()" title="Rotate screen"><span class="material-icons">screen_rotation</span></button>
                 <button class="cam-btn" id="camToolsBtn" onclick="camToggleTools()" title="Show camera tools"><span class="material-icons">tune</span></button>
-                <button class="cam-btn" onclick="csOpen('list')" title="Settings"><span class="material-icons">settings</span></button>
+                <button class="cam-btn" id="camSettingsBtn" onclick="csOpen('list')" title="Settings"><span class="material-icons">settings</span></button>
               </div>
 
               <div class="cam-bottom">
@@ -3069,6 +3069,7 @@
       document.getElementById('camThumb').hidden = isActive;
       document.getElementById('camThumbSlot').hidden = !isActive;
       document.getElementById('camFlipBtn').hidden = isActive;
+      document.getElementById('camSettingsBtn').disabled = isActive;
       const pauseBtn = document.getElementById('camPauseBtn');
       pauseBtn.hidden = !isActive;
       pauseBtn.disabled = cam.phase === 'connecting';
@@ -3283,8 +3284,8 @@
         csChoice('Mirroring', 'mirroring', ['Off', 'Horizontally', 'Vertically']),
         csSwitch('Double tap hides controls', 'doubleTap'),
         csSection('Recordings'),
-        csText('File prefix', 'prefix'),
-        csChoice('Time in file names', 'filenameTime', ['Local time', 'UTC+0']),
+        csText('File prefix', 'prefix', CS_NOT_ACTIVE),
+        csChoice('Time in file names', 'filenameTime', ['Local time', 'UTC+0'], CS_NOT_ACTIVE),
         csSection('Device'),
         csSwitch('Audio pass-through', 'passThrough', CS_NOT_ACTIVE),
         csSwitch('Tally light', 'tally', { value: 'Flash light while live', ...CS_NOT_ACTIVE }),
