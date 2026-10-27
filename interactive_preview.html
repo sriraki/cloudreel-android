@@ -726,22 +726,8 @@
     }
 
     /* Splash Screen Style */
-    .splash-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 100%;
-      padding-bottom: 80px;
-    }
-
-    .splash-wordmark { width: 200px; height: auto; margin-top: 15px; color: var(--text-main); }
-
-    .splash-logo {
-      width: 110px;
-      height: auto;
-      animation: pulseLogo 2s ease-in-out infinite;
-    }
+    #screen-splash { padding: 0; position: relative; background: #0F0D1B; }
+    .splash-video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; background: #0F0D1B; }
 
     @keyframes pulseLogo {
       0% { transform: scale(0.96); opacity: 0.9; }
@@ -1445,12 +1431,8 @@
 
         <!-- 1. SPLASH SCREEN -->
         <div class="app-screen" id="screen-splash">
-          <div class="splash-container">
-            <!-- CR_stacked.svg: gradient mark over the wordmark, which follows the text colour for light and dark. -->
-            <svg viewBox="0 0 204.38 132.59" class="splash-logo" aria-hidden="true"><defs><linearGradient id="splash-grad" gradientUnits="userSpaceOnUse" x1="0.44" y1="0" x2="203.9" y2="0"><stop offset="0" stop-color="#D300EA"/><stop offset="1" stop-color="#3031CB"/></linearGradient></defs><path fill="url(#splash-grad)" d="M200.2,123.67h-37.02c-0.82,0,-1.58,-0.41,-2.03,-1.08l-16.6,-22.49c-0.6,-0.89,-0.55,-2.06,0.12,-2.89l9.52,-11.97c0.48,-0.6,1.21,-0.94,1.98,-0.93c1.41,0.03,3.7,0.08,4.99,0.08c7.06,0,12.78,-4.92,12.78,-10.99s-5.73,-10.79,-12.78,-10.98c-7.07,-0.2,-11.82,6.77,-12.01,7.21l-18.35,24.7l-6.2,8.34s-13.87,19.04,-37.61,26.08c-7.26,2.41,-15.08,3.59,-23.21,3.29c-34.1,-1.25,-61.93,-28.98,-63.28,-63.07C-1,31.42,29.01,0.5,66.24,0.5c22.28,0,41.98,11.08,53.88,28.03c0.81,1.16,0.65,2.74,-0.41,3.68c-0.69,0.61,-1.35,1.24,-1.99,1.9c-0.01,-0.04,-0.03,-0.07,-0.04,-0.11c-6.51,6.02,-11.29,13.42,-18.09,23.32c-1.14,1.66,-3.71,1.33,-4.35,-0.59c-4.19,-12.7,-16.49,-21.72,-30.78,-20.91c-15.82,0.89,-28.49,14.12,-28.76,29.96c-0.29,17.11,13.49,31.06,30.53,31.06c0,0,0.04,0,0.1,0c0.02,0,0.04,0,0.06,0c0.04,0,0.1,0,0.16,0c0.03,0,0.06,0,0.09,0c0.28,-0.01,0.71,-0.03,1.25,-0.08c0.07,0,0.14,-0.01,0.21,-0.02c0.29,-0.03,0.6,-0.06,0.95,-0.09c0.08,0,0.17,-0.02,0.26,-0.03c0.45,-0.05,0.94,-0.11,1.47,-0.19c0.2,-0.03,0.4,-0.06,0.6,-0.09c0.12,-0.02,0.24,-0.04,0.36,-0.06c0.11,-0.02,0.23,-0.04,0.35,-0.06c0.12,-0.02,0.23,-0.04,0.35,-0.06c0.48,-0.08,0.97,-0.18,1.49,-0.29c8.15,-1.71,21.09,-6.39,30.32,-19.19c10.39,-14.4,15.87,-24.29,24.14,-31.94c0.01,0.04,0.03,0.07,0.04,0.11c7.84,-8,19.58,-13.08,32.71,-13.08c23.61,0,42.74,16.44,42.74,36.73c0,11.68,-6.35,22.09,-16.24,28.81c-1.12,0.77,-1.4,2.31,-0.61,3.42l15.15,19.09c1.14,1.62,-0.02,3.86,-2,3.86Z"/></svg>
-            <svg viewBox="0 0 369.37 60.79" class="splash-wordmark" role="img" aria-label="CloudReel"><path fill="currentColor" d="M250.68,59.56l-11.17,-16.95l-13.96,0.05v16.84s-10.65,0.04,-10.65,0.04l-0.02,-58.95l30.36,0.25c10.79,0.09,18.09,10.33,17.57,20.66c0.5,8.46,-3.57,15.64,-11.46,19.52l12.01,18.42l-12.68,0.13ZM251.99,23.26c0.78,-5,-1.91,-12.08,-7.27,-12.17l-19.19,-0.33l0.06,22.02l15.81,0.02c5.48,0,9.95,-3.66,10.59,-9.53Z"/><path fill="currentColor" d="M295.37,46.33l11.2,0.05c-3.96,13.53,-21.12,17.54,-32.86,10.51c-6.48,-3.88,-9.28,-11.04,-9.3,-18.42s3,-15.26,9.93,-18.9c8.38,-4.4,18.53,-4.06,26.02,1.68c6.31,4.84,8.37,12.76,7.42,20.56h-32.62c0.6,4.94,4.21,8.09,8.98,8.76c4.14,0.59,8.37,-0.55,11.23,-4.25ZM296.06,32.28c-1.11,-3.37,-3.71,-4.98,-6.67,-5.68c-5.37,-1.27,-11,0.54,-13.74,5.69h20.41Z"/><path fill="currentColor" d="M341.95,46.41l11.38,-0.05c-2.71,10.45,-14.2,15.35,-24.44,13.58c-7.06,-1.22,-13.11,-5.17,-15.81,-11.91c-2.17,-5.41,-2.3,-11.41,-0.79,-17.14c2,-7.59,8.38,-12.49,15.97,-13.86l7.51,-0.26c13.41,1.41,20.24,11.74,18.9,25.05h-32.66c0.52,4.44,3.67,7.63,7.94,8.5c4.33,1.01,9,0.33,12,-3.91ZM343.17,32.28c-2.32,-5.04,-7.15,-6.57,-11.75,-5.97c-3.82,0.5,-7.06,2.35,-8.72,5.99l20.47,-0.02Z"/><path fill="currentColor" d="M184.03,58.98c-11.71,-0.85,-18.66,-10.04,-18.38,-21.04c0.3,-11.9,9.03,-20.69,21.11,-19.83c5.61,0.4,9.63,2.6,13.03,7.96l0.12,-24.69h6.62s-0.05,42.01,-0.05,42.01c-2.22,9.18,-9.39,14.95,-18.55,15.6h-3.9ZM185.25,53.14c8.21,0.52,14.18,-5.11,14.62,-13.01c0.26,-4.78,-0.79,-9.82,-4.64,-12.99c-6.23,-5.13,-16.05,-4.09,-20.42,2.74c-2.61,4.08,-2.84,9.19,-1.65,13.61c1.54,5.74,5.96,9.27,12.1,9.66Z"/><path fill="currentColor" d="M28.44,53.14c6.64,0.05,12.18,-1.71,16.63,-6.44l6.14,4.04l-5.69,4.47c-13.96,8.04,-34.27,4.7,-41.26,-9.21c-7.98,-15.88,-3.44,-38.93,14.99,-44.14c10.89,-3.07,24.35,-1.13,31.67,7.53l-5.73,3.82c-4.15,-4.09,-9.13,-6.09,-14.69,-6.43c-11.42,-0.71,-21.02,6.7,-22.25,18.13c-0.37,3.42,-0.43,6.74,0,10.18c1.25,10.31,9.47,17.96,20.2,18.04Z"/><path fill="currentColor" d="M114.92,38.65c0,11.5,-9.32,20.82,-20.82,20.82s-20.82,-9.32,-20.82,-20.82s9.32,-20.82,20.82,-20.82s20.82,9.32,20.82,20.82ZM106.2,46.12c2.85,-5.81,2.38,-13.3,-2.21,-18.05c-5.49,-5.68,-15.13,-5.24,-20.18,0.35c-2.92,3.23,-3.24,6.69,-3.36,10.55c-0.25,8.22,5.48,14.45,13.78,14.25c5,-0.12,9.51,-2.07,11.97,-7.1Z"/><path fill="currentColor" d="M151.7,18.97l6.22,-0.02l-0.12,25.72c-0.04,8.81,-9.3,15.56,-20.41,14.32c-7.59,-0.85,-14.55,-6.3,-15.19,-14.56l-0.26,-25.34l6.64,-0.18l0.08,23.03c0,1.78,0.85,5.01,1.83,6.45c3.29,4.85,9.35,5.69,14.67,3.8c4.04,-1.43,6.36,-5.67,6.39,-10.01l0.15,-23.22Z"/><path fill="currentColor" d="M358.24,0.58h10.63v58.97h-10.63Z"/><path fill="currentColor" d="M59.19,1.29h6.84v57h-6.84Z"/></svg>
-            <p style="font-size:12px; color:var(--text-muted); margin-top:8px;">Directing to Category Selection...</p>
-          </div>
+          <!-- Mirrors SplashScreen.kt: the logo reveal video fills the screen, then the app moves on. -->
+          <video class="splash-video" id="splashVideo" src="videos/splash_reveal.mp4" playsinline preload="auto" aria-label="CloudReel"></video>
         </div>
 
         <!-- 2. CATEGORY SELECTION SCREEN (NEW ROOT POST-SPLASH) -->
@@ -2460,9 +2442,7 @@
       if (screenId === 'splash' || screenId === 'device-setup' || screenId === 'active-session' || screenId === 'streamer') {
         header.style.display = 'none';
         if (screenId === 'splash') {
-          setTimeout(() => {
-            if (currentScreen === 'splash') navigateTo('category-selection');
-          }, 1600);
+          playSplashReveal();
         }
       } else {
         header.style.display = 'flex';
@@ -2485,6 +2465,24 @@
       } else {
         signOutBtn.style.display = 'none';
       }
+    }
+
+    // Browsers only allow sound after the visitor has interacted with the page, so the first
+    // autoplay may be muted; the app itself always plays with sound.
+    let splashFallbackTimer = null;
+    function playSplashReveal() {
+      const video = document.getElementById('splashVideo');
+      const leave = () => {
+        clearTimeout(splashFallbackTimer);
+        if (currentScreen === 'splash') navigateTo('category-selection');
+      };
+      video.onended = leave;
+      video.onerror = leave;
+      clearTimeout(splashFallbackTimer);
+      splashFallbackTimer = setTimeout(leave, 7000);
+      video.currentTime = 0;
+      video.muted = false;
+      video.play().catch(() => { video.muted = true; video.play().catch(leave); });
     }
 
     function navigateBack() {
