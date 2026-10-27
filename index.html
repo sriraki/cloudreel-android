@@ -542,179 +542,40 @@
       margin-left: 10px;
     }
 
-    /* ── CATEGORY SELECTION CARDS ──────────────────────────── */
-    .category-card {
-      border-radius: 22px;
-      padding: 22px;
-      cursor: pointer;
-      margin-bottom: 16px;
-      display: flex;
-      flex-direction: column;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
-      background: var(--bg-device-card);
-      border: 1px solid var(--border-device);
-      text-align: left;
-    }
-
-    .category-card:hover {
-      box-shadow: 0 8px 24px rgba(0,0,0,0.06);
-    }
-
-    .category-card:active {
-      transform: scale(0.98);
-    }
-
-    /* Hero Filled Card (Live Sessions) */
-    .category-card.hero-filled {
-      background: linear-gradient(135deg, #3031CB 0%, #7928CA 100%);
-      border: 1px solid rgba(255, 255, 255, 0.25);
-      box-shadow: 0 10px 28px rgba(48, 49, 203, 0.32);
-      color: #FFFFFF;
-    }
-
-    .category-card.hero-filled:hover {
-      border-color: rgba(255, 255, 255, 0.45);
-      box-shadow: 0 14px 34px rgba(48, 49, 203, 0.42);
-    }
-
-    .category-card.hero-filled .category-card-icon {
-      background: rgba(255, 255, 255, 0.22);
-      color: #FFFFFF;
-    }
-
-    .category-card.hero-filled .home-card-badge {
-      background: rgba(255, 255, 255, 0.20);
-      border: 1px solid rgba(255, 255, 255, 0.35);
-      color: #FFFFFF;
-    }
-
-    .category-card.hero-filled .category-card-title {
-      color: #FFFFFF;
-    }
-
-    .category-card.hero-filled .category-card-desc {
-      color: rgba(255, 255, 255, 0.88);
-    }
-
-    .category-card.hero-filled .category-feature-pill {
-      background: rgba(255, 255, 255, 0.18);
-      border: 1px solid rgba(255, 255, 255, 0.30);
-      color: #FFFFFF;
-    }
-
-    .category-card.hero-filled .category-card-footer {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 14px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #FFFFFF;
-    }
-
-    /* Outlined Studio Card (Broadcast) */
-    .category-card.outlined-studio {
-      background: var(--bg-device-card);
-      border: 1.5px solid #D300EA;
-      box-shadow: 0 4px 16px rgba(211, 0, 234, 0.08);
-    }
-
-    .category-card.outlined-studio:hover {
-      border-color: #E22BFA;
-      box-shadow: 0 8px 24px rgba(211, 0, 234, 0.20);
-    }
-
-    .category-card.outlined-studio .category-card-icon {
-      background: rgba(211, 0, 234, 0.12);
-      color: #D300EA;
-    }
-
-    .category-card.outlined-studio .home-card-badge {
-      background: rgba(211, 0, 234, 0.10);
-      border: 1px solid rgba(211, 0, 234, 0.30);
-      color: #D300EA;
-    }
-
-    .category-card.outlined-studio .category-card-title {
-      color: var(--text-main);
-    }
-
-    .category-card.outlined-studio .category-card-desc {
-      color: var(--text-muted);
-    }
-
-    .category-card.outlined-studio .category-feature-pill {
-      background: var(--bg-device-subtle);
-      border: 1px solid rgba(211, 0, 234, 0.22);
-      color: var(--text-main);
-    }
-
-    .category-card.outlined-studio .category-card-footer {
-      display: flex;
-      align-items: center;
-      gap: 6px;
-      margin-top: 14px;
-      font-size: 13px;
-      font-weight: 600;
-      color: #D300EA;
-    }
-
-    .category-card-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      margin-bottom: 16px;
-    }
-
-    .category-card-icon {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-    }
-
-    .category-card-icon.purple {
-      background: rgba(48, 49, 203, 0.12);
-      color: #3031CB;
-    }
-
-    .category-card-icon.magenta {
-      background: rgba(211, 0, 234, 0.12);
-      color: #D300EA;
-    }
-
-    .category-card-title {
-      font-size: 20px;
-      font-weight: 800;
-      letter-spacing: -0.4px;
-      color: var(--text-main);
-      margin-bottom: 6px;
-    }
-
-    .category-card-desc {
-      font-size: 13px;
-      color: var(--text-muted);
-      line-height: 1.45;
-      margin-bottom: 14px;
-    }
-
-    .category-features-row {
-      display: flex;
-      gap: 8px;
-      flex-wrap: wrap;
-    }
-
-    .category-feature-pill {
-      font-size: 11px;
-      font-weight: 600;
-      padding: 4px 10px;
-      border-radius: 8px;
-      background: var(--bg-device-subtle);
-      color: var(--text-muted);
-      border: 1px solid var(--border-device);
-    }
+    /* ── CATEGORY CARDS: a still of each mode's real UI behind the text (mirrors CategorySelectionScreen.kt) ── */
+    .cat-card { position: relative; height: 230px; border-radius: 22px; overflow: hidden; background: #0E1218; color: #fff;
+      cursor: pointer; margin-bottom: 18px; transition: transform 0.15s; }
+    .cat-card.short { height: 196px; }
+    .cat-card:active { transform: scale(0.98); }
+    .cat-preview { position: absolute; inset: 0; }
+    .cat-debate { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; padding: 10px; }
+    .cat-tile { position: relative; border-radius: 12px; background: linear-gradient(180deg, #2A3140, #151A23);
+      display: flex; align-items: center; justify-content: center; }
+    .cat-tile.host { grid-row: 1 / span 2; box-shadow: inset 0 0 0 2px #10B981; }
+    .cat-tile .material-icons { font-size: 34px; color: rgba(255,255,255,0.28); }
+    .cat-tile.host .material-icons { font-size: 56px; }
+    .cat-tile b { position: absolute; right: 8px; top: 8px; font-size: 10px; font-weight: 600; padding: 2px 7px; border-radius: 6px; background: rgba(0,0,0,0.55); }
+    .cat-camera { background: radial-gradient(ellipse 55% 50% at 50% 45%, #5b6476 0%, transparent 70%),
+      radial-gradient(ellipse at 50% 30%, #2e3442 0%, #161a22 60%, #08090c 100%); }
+    .cat-corner { position: absolute; width: 18px; height: 18px; border: 0 solid rgba(255,255,255,0.7); }
+    .cat-corner.tl { top: 14px; left: 14px; border-top-width: 2px; border-left-width: 2px; }
+    .cat-corner.tr { top: 14px; right: 14px; border-top-width: 2px; border-right-width: 2px; }
+    .cat-corner.bl { bottom: 14px; left: 14px; border-bottom-width: 2px; border-left-width: 2px; }
+    .cat-corner.br { bottom: 14px; right: 14px; border-bottom-width: 2px; border-right-width: 2px; }
+    .cat-chip { position: absolute; top: 26px; right: 26px; display: flex; flex-direction: column; align-items: center; gap: 1px;
+      padding: 4px 8px; border-radius: 10px; background: rgba(0,0,0,0.55); font-size: 10px; font-weight: 700; }
+    .cat-chip i { font-style: normal; font-size: 9px; color: #000; background: #fff; border-radius: 3px; padding: 0 4px; }
+    .cat-live { position: absolute; display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 14px;
+      background: rgba(0,0,0,0.55); font-size: 11px; font-weight: 700; letter-spacing: 0.04em; }
+    .cat-live span { font-weight: 500; letter-spacing: 0; }
+    .cat-live i { width: 7px; height: 7px; border-radius: 50%; background: #EF4444; animation: catPulse 0.9s ease-in-out infinite alternate; }
+    @keyframes catPulse { to { opacity: 0.25; } }
+    @media (prefers-reduced-motion: reduce) { .cat-live i { animation: none; } }
+    .cat-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.88) 100%); }
+    .cat-text { position: absolute; left: 20px; right: 20px; bottom: 18px; }
+    .cat-text h3 { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
+    .cat-text p { font-size: 13px; line-height: 1.5; opacity: 0.85; margin: 0 0 10px; }
+    .cat-open { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; }
 
     /* Mesh Toggles & Controls */
     .mesh-toggle-row {
@@ -1600,44 +1461,33 @@
           <h2 class="screen-title">How would you like to use CloudReel?</h2>
           <p class="screen-subtitle">Choose your live production or participation mode below.</p>
 
-          <!-- CATEGORY CARD 1: LIVE SESSIONS (HERO FILLED) -->
-          <div class="category-card hero-filled" onclick="navigateTo('live-sessions')" data-a11y-role="Live Sessions Category Card">
-            <div class="category-card-header">
-              <div class="category-card-icon purple">
-                <span class="material-icons" style="font-size:28px;">group</span>
-              </div>
-              <span class="home-card-badge">Interactive Meetings</span>
+          <!-- Each card shows a still of what that mode looks like, with the text over a dark fade. -->
+          <div class="cat-card" role="button" onclick="navigateTo('live-sessions')" data-a11y-role="Live Sessions Category Card">
+            <div class="cat-preview cat-debate" aria-hidden="true">
+              <div class="cat-tile host"><b>Host</b><span class="material-icons">person</span></div>
+              <div class="cat-tile"><b>Guest 1</b><span class="material-icons">person</span></div>
+              <div class="cat-tile"><b>Guest 2</b><span class="material-icons">person</span></div>
+              <div class="cat-live" style="top:18px; left:18px;"><i></i>LIVE</div>
             </div>
-            <h3 class="category-card-title">Live Sessions</h3>
-            <p class="category-card-desc">Host a session or join an existing one.</p>
-            <div class="category-features-row">
-              <span class="category-feature-pill">Start as Host</span>
-              <span class="category-feature-pill">Join as Participant</span>
-            </div>
-            <div class="category-card-footer">
-              <span>Open Live Sessions</span>
-              <span class="material-icons" style="font-size:18px;">arrow_forward</span>
+            <div class="cat-scrim"></div>
+            <div class="cat-text">
+              <h3>Live Sessions</h3>
+              <p>Host a session or join an existing one.</p>
+              <div class="cat-open">Open Live Sessions <span class="material-icons" style="font-size:16px;">chevron_right</span></div>
             </div>
           </div>
 
-          <!-- CATEGORY CARD 2: BROADCAST (OUTLINED STUDIO) -->
-          <div class="category-card outlined-studio" onclick="navigateTo('broadcast')" data-a11y-role="Broadcast Category Card">
-            <div class="category-card-header">
-              <div class="category-card-icon magenta">
-                <span class="material-icons" style="font-size:28px;">podcasts</span>
-              </div>
-              <span class="home-card-badge">Live Stream & Mesh</span>
+          <div class="cat-card short" role="button" onclick="navigateTo('broadcast')" data-a11y-role="Broadcast Category Card">
+            <div class="cat-preview cat-camera" aria-hidden="true">
+              <span class="cat-corner tl"></span><span class="cat-corner tr"></span><span class="cat-corner bl"></span><span class="cat-corner br"></span>
+              <div class="cat-live" style="top:26px; left:26px;"><i></i>LIVE <span>00:12:48</span></div>
+              <div class="cat-chip">1080P<i>30</i></div>
             </div>
-            <h3 class="category-card-title">Broadcast</h3>
-            <p class="category-card-desc">Stream live video or contribute your mobile connection to strengthen a live stream.</p>
-            <div class="category-features-row">
-              <span class="category-feature-pill">Streamer</span>
-              <span class="category-feature-pill">Relay</span>
-              <span class="category-feature-pill">Cellular Bonding Mesh</span>
-            </div>
-            <div class="category-card-footer">
-              <span>Open Broadcast</span>
-              <span class="material-icons" style="font-size:18px;">arrow_forward</span>
+            <div class="cat-scrim"></div>
+            <div class="cat-text">
+              <h3>Broadcast</h3>
+              <p>Stream live video or contribute your mobile connection to strengthen a live stream.</p>
+              <div class="cat-open">Open Broadcast <span class="material-icons" style="font-size:16px;">chevron_right</span></div>
             </div>
           </div>
         </div>
