@@ -1466,18 +1466,24 @@
     .cam-meta-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
     .cam-meta-head h4 { margin: 0; }
     .cam-meta-head .cs-switch { cursor: pointer; }
-    .cam-meta-fields { overflow-y: auto; }
+    .cam-meta-body { overflow-y: auto; }
     /* Outlined fields with the label on the top border; two columns in landscape, like MetadataForm. */
-    .cam-meta-fields { display: grid; grid-template-columns: 1fr; gap: 14px; padding-top: 8px; }
+    /* Login-style fields (.input-label / .input-box) with a blue focus; two columns in landscape, like MetadataForm. */
+    .meta-fields { display: grid; grid-template-columns: 1fr; gap: 14px; padding-top: 8px; }
     .cam.landscape .cam-meta .cs-card { max-width: 560px; }
-    .cam.landscape .cam-meta-fields { grid-template-columns: 1fr 1fr; }
-    .cam-field { position: relative; }
-    .cam-field label { position: absolute; top: -8px; left: 10px; padding: 0 4px; font-size: 11.5px; color: var(--text-muted); background: var(--bg-device-surface); }
-    .cam-meta .cam-field input, .cam-meta .cam-field textarea { width: 100%; padding: 12px; border: 1px solid var(--text-muted); border-radius: 8px;
-      background: transparent; color: inherit; font: inherit; font-size: 14px; resize: none; }
-    .cam-meta .cam-field input:focus, .cam-meta .cam-field textarea:focus { outline: none; border: 2px solid #3B82F6; padding: 11px; }
-    .cam-field:focus-within label { color: #3B82F6; }
-    .cam-meta .cam-field :disabled { opacity: 0.45; }
+    .cam.landscape .meta-fields { grid-template-columns: 1fr 1fr; }
+    .meta-fields .input-label { color: var(--text-main); }
+    .meta-fields .input-box input { border: none; border-radius: 0; padding: 0; background: transparent; }
+    .meta-fields .input-box:focus-within { border-color: #3B82F6; box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.15); }
+    .meta-fields textarea { border: none; background: transparent; outline: none; width: 100%; font: inherit; font-size: 14px; color: inherit; resize: none; }
+    .meta-fields :disabled { opacity: 0.45; }
+    .meta-summary { display: grid; gap: 10px; padding-top: 8px; }
+    .meta-summary small { display: block; font-size: 11.5px; color: var(--text-muted); }
+    .meta-summary span { font-size: 14.5px; overflow-wrap: anywhere; }
+    .meta-buttons { display: flex; justify-content: flex-end; gap: 8px; margin: 12px 0 4px; }
+    .meta-buttons button { border: 0; border-radius: 20px; padding: 9px 18px; font: inherit; font-weight: 700; cursor: pointer; background: none; color: #3B82F6; }
+    .meta-buttons button.primary { background: #3B82F6; color: #fff; }
+    .meta-buttons button.outline { border: 1px solid var(--border-device); }
     .cam-hint.show { opacity: 1; }
   </style>
 </head>
@@ -2456,8 +2462,8 @@
             <div class="cs-dialog cam-meta" id="camMetaDialog" onclick="if (event.target === this) camCloseMetadata()">
               <div class="cs-card">
                 <div class="cam-meta-head"><h4>Metadata</h4><span class="cs-switch" id="camMetaSwitch" role="switch" title="Send with the live stream" onclick="camToggleMetaSend()"></span></div>
-                <div class="cam-meta-fields" id="camMetaFields"></div>
-                <div class="cs-actions"><button onclick="camCloseMetadata()">OK</button></div>
+                <div class="cam-meta-body" id="camMetaBody"></div>
+                <div class="cs-actions" id="camMetaActions"></div>
               </div>
             </div>
 
@@ -3131,21 +3137,48 @@
     const CAM_FORMATS = [['1080p', '60', true], ['1080p', '50', true], ['1080p', '30', true], ['1080i', '60', false], ['1080i', '50', false],
       ['720p', '60', true], ['720p', '50', true], ['720p', '30', true], ['576i', '25', false], ['576i', 'Auto', false],
       ['480i', '30', false], ['480i', 'Auto', false]].map(([label, rate, isNative]) => ({ label, rate, isNative, name: `${label} ${rate}` }));
-    function camOpenMetadata() { camRenderMetadata(); document.getElementById('camMetaDialog').classList.add('open'); }
-    function camCloseMetadata() { document.getElementById('camMetaDialog').classList.remove('open'); camRender(); }
-    function camToggleMetaSend() { cs.values.metaEnabled = !cs.values.metaEnabled; camRenderMetadata(); }
-    function camRenderMetadata() {
-      document.getElementById('camMetaSwitch').classList.toggle('on', cs.values.metaEnabled);
+    // Metadata: read-only until Edit, edits stay a draft until Save (mirrors MetadataDialog / MetadataPage).
+    const hasMetadata = () => CS_METADATA_FIELDS.some(([, key]) => cs.values[key].trim());
+    const meta = { popupEditing: false, pageEditing: false, draft: {} };
+    function metaStartDraft() { meta.draft = Object.fromEntries(CS_METADATA_FIELDS.map(([, key]) => [key, cs.values[key]])); }
+    function metaSaveDraft() { Object.assign(cs.values, meta.draft); camRender(); }
+    function metaFormHtml(idPrefix) {
       // Disabled fields keep their text, so switching sending back on loses nothing.
       const disabled = cs.values.metaEnabled ? '' : 'disabled';
-      document.getElementById('camMetaFields').innerHTML = CS_METADATA_FIELDS.map(([title, key]) => {
-        const attributes = `id="camMeta-${key}" ${disabled} oninput="cs.values.${key} = this.value"`;
+      return '<div class="meta-fields">' + CS_METADATA_FIELDS.map(([title, key]) => {
+        const attributes = `id="${idPrefix}-${key}" ${disabled} oninput="meta.draft.${key} = this.value"`;
         const input = key === 'comments'
-          ? `<textarea rows="3" ${attributes}>${csEscape(cs.values[key])}</textarea>`
-          : `<input ${attributes} value="${csEscape(cs.values[key])}">`;
-        return `<div class="cam-field"><label for="camMeta-${key}">${title}</label>${input}</div>`;
-      }).join('');
+          ? `<textarea rows="3" ${attributes}>${csEscape(meta.draft[key])}</textarea>`
+          : `<input ${attributes} value="${csEscape(meta.draft[key])}">`;
+        return `<div><label class="input-label" for="${idPrefix}-${key}">${title}</label><div class="input-box">${input}</div></div>`;
+      }).join('') + '</div>';
     }
+    function metaSummaryHtml() {
+      return '<div class="meta-summary">' + CS_METADATA_FIELDS.map(([title, key]) =>
+        `<div><small>${title}</small><span>${csEscape(cs.values[key].trim() || '-')}</span></div>`).join('') + '</div>';
+    }
+
+    function camOpenMetadata() {
+      metaStartDraft();
+      meta.popupEditing = !hasMetadata();
+      camRenderMetadata();
+      document.getElementById('camMetaDialog').classList.add('open');
+    }
+    function camCloseMetadata() { document.getElementById('camMetaDialog').classList.remove('open'); camRender(); }
+    function camToggleMetaSend() { cs.values.metaEnabled = !cs.values.metaEnabled; camRenderMetadata(); camRender(); }
+    function camMetaEdit() { metaStartDraft(); meta.popupEditing = true; camRenderMetadata(); }
+    function camMetaSave() { metaSaveDraft(); meta.popupEditing = false; camRenderMetadata(); }
+    function camRenderMetadata() {
+      document.getElementById('camMetaSwitch').classList.toggle('on', cs.values.metaEnabled);
+      document.getElementById('camMetaBody').innerHTML = meta.popupEditing ? metaFormHtml('camMeta') : metaSummaryHtml();
+      document.getElementById('camMetaActions').innerHTML = meta.popupEditing
+        ? '<button onclick="camCloseMetadata()">Cancel</button><button onclick="camMetaSave()">Save</button>'
+        : '<button onclick="camCloseMetadata()">Close</button><button onclick="camMetaEdit()">Edit</button>';
+    }
+
+    function csMetaEdit() { metaStartDraft(); meta.pageEditing = true; csRenderPage(); }
+    function csMetaCancel() { meta.pageEditing = false; csRenderPage(); }
+    function csMetaSave() { metaSaveDraft(); meta.pageEditing = false; csRenderPage(); }
     function camToggleFormats() { cam.formatsOpen = !cam.formatsOpen; camRender(); }
     function camSelectFormat(index) {
       cam.formatsOpen = false;
@@ -3264,7 +3297,9 @@
         csSwitch('Ask before going live', 'promptOnStart', { value: 'Show this form each time you tap Go live' }),
         csSwitch('Send with the live stream', 'metaEnabled'),
         csSection('Fields'),
-        ...CS_METADATA_FIELDS.map(([title, key]) => csText(title, key, { disabled: !cs.values.metaEnabled }))
+        { type: 'html', html: meta.pageEditing
+          ? metaFormHtml('csMeta') + '<div class="meta-buttons"><button onclick="csMetaCancel()">Cancel</button><button class="primary" onclick="csMetaSave()">Save</button></div>'
+          : metaSummaryHtml() + '<div class="meta-buttons" style="justify-content:flex-start"><button class="outline" onclick="csMetaEdit()">Edit</button></div>' }
       ] },
       network: { title: 'Network Settings', back: 'list', rows: () => [
         csSection('Connections'),
@@ -3320,6 +3355,7 @@
       document.getElementById('csTitle').textContent = page.title;
       document.getElementById('csBody').innerHTML = page.rows().map((row, index) => {
         if (row.type === 'section') return `<div class="cs-section">${row.title}</div>`;
+        if (row.type === 'html') return row.html;
         const isLocked = row.lock && cam.phase !== 'idle';
         const value = csRowValue(row);
         const note = isLocked ? 'Can\'t change while live' : row.note;
@@ -3334,6 +3370,7 @@
     }
 
     function csOpen(page) {
+      if (page === 'metadata' && cs.page !== 'metadata') { metaStartDraft(); meta.pageEditing = !hasMetadata(); }
       cs.page = page;
       csRenderPage();
       document.getElementById('camSettings').classList.add('open');
