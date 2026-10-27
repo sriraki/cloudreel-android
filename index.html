@@ -545,7 +545,6 @@
     /* ── CATEGORY CARDS: a still of each mode's real UI behind the text (mirrors CategorySelectionScreen.kt) ── */
     .cat-card { position: relative; height: 230px; border-radius: 22px; overflow: hidden; background: #0E1218; color: #fff;
       cursor: pointer; margin-bottom: 18px; transition: transform 0.15s; }
-    .cat-card.short { height: 196px; }
     .cat-card:active { transform: scale(0.98); }
     .cat-preview { position: absolute; inset: 0; }
     .cat-debate { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; padding: 10px; }
@@ -1475,7 +1474,7 @@
             </div>
           </div>
 
-          <div class="cat-card short" role="button" onclick="navigateTo('broadcast')" data-a11y-role="Broadcast Category Card">
+          <div class="cat-card" role="button" onclick="navigateTo('broadcast')" data-a11y-role="Broadcast Category Card">
             <div class="cat-preview cat-camera" aria-hidden="true">
               <span class="cat-corner tl"></span><span class="cat-corner tr"></span><span class="cat-corner bl"></span><span class="cat-corner br"></span>
               <div class="cat-live" style="top:26px; left:26px;"><i></i>LIVE <span>00:12:48</span></div>
