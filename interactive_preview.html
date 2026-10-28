@@ -618,22 +618,19 @@
       cursor: pointer; margin-bottom: 18px; transition: transform 0.15s; }
     .cat-card:active { filter: brightness(0.85); }
     /* Home (CategorySelectionScreen.kt): app-sized title, cards share the screen height (min 200px). */
-    .home-title { font-size: 24px; font-weight: 700; line-height: 1.25; color: var(--text-main); margin: 0 0 16px; }
-    .join-card { background: var(--cr-gradient); color: #fff; border-radius: 20px; padding: 20px; cursor: pointer; }
+    .join-card { background: var(--cr-gradient); color: #fff; border-radius: 20px; padding: 20px; cursor: pointer; margin: 8px 0 16px; }
     .join-card:active { filter: brightness(0.9); }
-    .join-card h3 { font-size: 22px; font-weight: 700; margin: 12px 0 4px; }
+    .join-card h3 { font-size: 22px; font-weight: 700; margin: 0 0 4px; }
     .join-card p { font-size: 14px; line-height: 1.45; opacity: 0.9; margin: 0 0 16px; }
     .join-card-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 20px; border: none; border-radius: 20px; background: #fff; color: #3031CB; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .home-section { font-size: 14px; font-weight: 500; color: var(--text-muted); margin: 24px 0 8px 4px; }
-    .action-card { display: flex; align-items: center; gap: 14px; padding: 12px; margin-bottom: 12px; border-radius: 16px; background: var(--list-group-bg); cursor: pointer; }
-    .action-card:active { filter: brightness(0.95); }
-    .action-thumb { position: relative; width: 96px; height: 112px; flex-shrink: 0; border-radius: 12px; overflow: hidden; }
-    .action-thumb img { width: 100%; height: 100%; object-fit: cover; display: block; }
-    .action-thumb .cat-live { top: 6px; left: 6px; color: #fff; }
-    .action-body { flex: 1; min-width: 0; }
-    .action-body h3 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0 0 2px; }
-    .action-body p { font-size: 14px; line-height: 1.4; color: var(--text-muted); margin: 0 0 10px; }
-    .action-btn { display: inline-flex; align-items: center; gap: 6px; height: 36px; padding: 0 16px; border: none; border-radius: 18px; background: color-mix(in srgb, var(--cr-violet) 18%, transparent); color: var(--text-main); font-size: 14px; font-weight: 600; cursor: pointer; }
+    .action-tiles { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+    .action-tile { border-radius: 16px; overflow: hidden; background: var(--list-group-bg); cursor: pointer; }
+    .action-tile:active { filter: brightness(0.95); }
+    .action-tile img { width: 100%; aspect-ratio: 4 / 3; object-fit: cover; display: block; }
+    .action-tile > div { padding: 12px 14px; }
+    .action-tile h3 { font-size: 16px; font-weight: 700; color: var(--text-main); margin: 0 0 4px; }
+    .action-tile > div > span { display: inline-flex; align-items: center; gap: 4px; font-size: 14px; font-weight: 600; color: var(--cr-violet); }
+    .action-tile .material-icons { font-size: 16px; }
     .cat-preview { position: absolute; inset: 0; }
     .cat-debate { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; padding: 10px; }
     .cat-tile { position: relative; border-radius: 12px; overflow: hidden; background: #151A23; }
@@ -1534,31 +1531,21 @@
 
         <!-- 2. CATEGORY SELECTION SCREEN (NEW ROOT POST-SPLASH) -->
         <div class="app-screen active-screen" id="screen-category-selection">
-          <!-- Mirrors CategorySelectionScreen.kt: join-with-code first, then two compact action cards. -->
-          <h2 class="home-title">Go live or join a debate</h2>
-
+          <!-- Mirrors CategorySelectionScreen.kt: join-with-code first, then two half-width tiles. -->
           <div class="join-card" role="button" onclick="openSessionEntry('participant')" data-a11y-role="Join a debate (Button)">
-            <span class="material-icons" style="font-size:28px;">groups</span>
             <h3>Join a debate</h3>
-            <p>Got a session code or link from your channel? Join the live debate in seconds.</p>
+            <p>Enter the code from your channel.</p>
             <button class="join-card-btn" onclick="event.stopPropagation(); openSessionEntry('participant')">Enter code <span class="material-icons" style="font-size:18px;">arrow_forward</span></button>
           </div>
 
-          <p class="home-section">Start something</p>
-          <div class="action-card" role="button" onclick="navigateTo('live-sessions')" data-a11y-role="Live Sessions (Button)">
-            <div class="action-thumb"><img src="images/category/category_host.webp" alt=""><div class="cat-live"><i></i>LIVE</div></div>
-            <div class="action-body">
-              <h3>Live Sessions</h3>
-              <p>Host a live debate, or join one as a guest.</p>
-              <button class="action-btn" onclick="event.stopPropagation(); navigateTo('live-sessions')">Host or join <span class="material-icons" style="font-size:16px;">arrow_forward</span></button>
+          <div class="action-tiles">
+            <div class="action-tile" role="button" onclick="navigateTo('live-sessions')" aria-label="Live Sessions. Host a live debate, or join one as a guest.">
+              <img src="images/category/category_host.webp" alt="">
+              <div><h3>Live Sessions</h3><span>Host or join <span class="material-icons">arrow_forward</span></span></div>
             </div>
-          </div>
-          <div class="action-card" role="button" onclick="navigateTo('broadcast')" data-a11y-role="Broadcast (Button)">
-            <div class="action-thumb"><img src="images/category/category_broadcast.webp" alt=""><div class="cat-live"><i></i>LIVE</div></div>
-            <div class="action-body">
-              <h3>Broadcast</h3>
-              <p>Report live from any location for your channel.</p>
-              <button class="action-btn" onclick="event.stopPropagation(); navigateTo('broadcast')">Go live <span class="material-icons" style="font-size:16px;">arrow_forward</span></button>
+            <div class="action-tile" role="button" onclick="navigateTo('broadcast')" aria-label="Broadcast. Report live from any location for your channel.">
+              <img src="images/category/category_broadcast.webp" alt="">
+              <div><h3>Broadcast</h3><span>Go live <span class="material-icons">arrow_forward</span></span></div>
             </div>
           </div>
         </div>
