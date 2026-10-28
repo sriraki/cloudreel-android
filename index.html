@@ -44,6 +44,7 @@
       --bg-device: #FFFFFF;
       --bg-device-surface: #FFFFFF;
       --bg-device-subtle: #F9FAFB;
+      --list-group-bg: #F3F4F6;
       --bg-device-card: #FFFFFF;
       --border-device: #E5E7EB;
       --text-main: #111111;
@@ -58,6 +59,7 @@
       --bg-device: #121212;
       --bg-device-surface: #181822;
       --bg-device-subtle: #1F1F2B;
+      --list-group-bg: #23232E;
       --bg-device-card: #181822;
       --border-device: #2B2B38;
       --text-main: #FFFFFF;
@@ -288,6 +290,32 @@
     .app-header:not(.is-home) .header-actions { display: none; }
     #backBtn { width: 48px; height: 48px; border: none; background: transparent; flex-shrink: 0; }
     #backBtn:active { background: var(--border-device); }
+
+    /* Grouped list rows, mirroring ListGroup.kt (Material ListItem inside a rounded group). */
+    .list-group { background: var(--list-group-bg); border-radius: 16px; overflow: hidden; }
+    .list-row { --accent: var(--cr-violet); position: relative; display: flex; align-items: center; gap: 16px; padding: 12px 16px; min-height: 56px; }
+    .list-row[onclick] { cursor: pointer; }
+    .list-row[onclick]:active { background: var(--border-device); }
+    .list-row + .list-row::before { content: ''; position: absolute; top: 0; left: 72px; right: 0; border-top: 1px solid var(--border-device); }
+    .list-icon { width: 40px; height: 40px; border-radius: 12px; flex-shrink: 0; display: flex; align-items: center; justify-content: center; color: var(--accent); background: color-mix(in srgb, var(--accent) 15%, transparent); }
+    .list-icon .material-icons { font-size: 22px; }
+    .list-text { flex: 1; min-width: 0; }
+    .list-tag { font-size: 11px; font-weight: 500; letter-spacing: 0.5px; color: var(--accent); }
+    .list-title { font-size: 16px; font-weight: 600; color: var(--text-main); }
+    .list-sub { font-size: 14px; line-height: 1.4; color: var(--text-muted); margin-top: 2px; }
+    .list-value { font-size: 14px; font-weight: 600; color: var(--text-main); white-space: nowrap; }
+    .list-chevron { color: var(--text-muted); font-size: 24px; }
+    .list-section-title { font-size: 14px; font-weight: 600; color: var(--text-muted); margin: 24px 0 8px 16px; }
+    .list-text-btn { background: none; border: none; color: var(--cr-violet); font-size: 14px; font-weight: 600; padding: 10px 12px; cursor: pointer; border-radius: 20px; }
+    .list-text-btn:active { background: var(--border-device); }
+
+    /* Top-of-screen status for Relay and Network contribution (StatusHeader). */
+    .status-header { padding: 8px 0 4px; }
+    .status-state { display: flex; align-items: center; gap: 8px; font-size: 14px; font-weight: 600; color: var(--cr-success); }
+    .status-state::before { content: ''; width: 8px; height: 8px; border-radius: 50%; background: currentColor; }
+    .status-header.paused .status-state { color: var(--text-muted); }
+    .status-value { font-size: 34px; font-weight: 700; letter-spacing: -0.5px; line-height: 1.2; color: var(--text-main); margin-top: 4px; }
+    .status-caption { font-size: 14px; color: var(--text-muted); margin-top: 4px; }
 
     /* Main button pinned in the thumb zone, like BottomActionBar.kt. */
     .bottom-action {
@@ -1184,6 +1212,12 @@
       transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
+    /* Bottom-anchored variant: slides up from the bottom edge with a drag handle, like ModalBottomSheet. */
+    .app-modal-layer.bottom-sheet { align-items: flex-end; padding: 0; backdrop-filter: none; background: rgba(0, 0, 0, 0.45); }
+    .app-modal-layer.bottom-sheet .app-modal-sheet { border-radius: 28px 28px 0 0; border: none; transform: translateY(100%); transition: transform 0.25s cubic-bezier(0.2, 0, 0, 1); }
+    .app-modal-layer.bottom-sheet .app-modal-sheet::before { content: ''; display: block; width: 32px; height: 4px; border-radius: 2px; background: var(--text-muted); opacity: 0.4; margin: 6px auto 4px; }
+    .app-modal-layer.bottom-sheet.open .app-modal-sheet { transform: none; }
+
     .app-modal-layer.open .app-modal-sheet {
       transform: scale(1);
     }
@@ -1496,38 +1530,10 @@
         <div class="app-screen" id="screen-live-sessions">
           <p class="screen-subtitle">Host or join an interactive live session.</p>
 
-          <!-- OPTION A: START AS HOST -->
-          <div class="home-option-card" onclick="openSessionEntry('host')" data-a11y-role="Start as Host (Button)">
-            <div style="display:flex; align-items:center;">
-              <div class="home-card-icon-box purple">
-                <span class="material-icons" style="font-size:24px;">podcasts</span>
-              </div>
-              <div>
-                <div class="home-card-title-row">
-                  <span class="home-card-title">Start as Host</span>
-                  <span class="home-card-badge">Host Mode</span>
-                </div>
-                <p class="home-card-desc">Create and host a live session.</p>
-              </div>
-            </div>
-            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
-          </div>
-
-          <!-- OPTION B: JOIN AS PARTICIPANT -->
-          <div class="home-option-card" onclick="openSessionEntry('participant')" data-a11y-role="Join as Participant (Button)">
-            <div style="display:flex; align-items:center;">
-              <div class="home-card-icon-box violet">
-                <span class="material-icons" style="font-size:24px;">group</span>
-              </div>
-              <div>
-                <div class="home-card-title-row">
-                  <span class="home-card-title">Join as Participant</span>
-                  <span class="home-card-badge">Receiver Mode</span>
-                </div>
-                <p class="home-card-desc">Join an existing live session.</p>
-              </div>
-            </div>
-            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
+          <!-- Mirrors LiveSessionsScreen.kt: options as rows in one group. -->
+          <div class="list-group">
+            <div class="list-row" style="--accent:var(--cr-purple);" onclick="openSessionEntry('host')" role="button"><div class="list-icon"><span class="material-icons">podcasts</span></div><div class="list-text"><div class="list-tag">Host Mode</div><div class="list-title">Start as Host</div><div class="list-sub">Create and host a live session.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
+            <div class="list-row" style="--accent:var(--cr-violet);" onclick="openSessionEntry('participant')" role="button"><div class="list-icon"><span class="material-icons">group</span></div><div class="list-text"><div class="list-tag">Receiver Mode</div><div class="list-title">Join as Participant</div><div class="list-sub">Join an existing live session.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
           </div>
         </div>
 
@@ -1535,133 +1541,51 @@
         <div class="app-screen" id="screen-broadcast">
           <p class="screen-subtitle">Live streaming & network contribution.</p>
 
-          <!-- OPTION A: STREAMER -->
-          <div class="home-option-card broadcast-card purple" onclick="onStreamerTapped()" data-a11y-role="Streamer (Button)">
-            <div style="display:flex; align-items:center;">
-              <div class="home-card-icon-box purple">
-                <span class="material-icons" style="font-size:24px;">videocam</span>
-              </div>
-              <div>
-                <div class="home-card-title-row">
-                  <span class="home-card-title">Streamer</span>
-                  <span class="home-card-badge">Camera + Bonding</span>
-                </div>
-                <p class="home-card-desc">Go live and stream video.</p>
-              </div>
-            </div>
-            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
+<!-- Mirrors BroadcastScreen.kt: options as rows, mesh summary as one status row. -->
+          <div class="list-group">
+            <div class="list-row" style="--accent:var(--cr-purple);" onclick="onStreamerTapped()" role="button"><div class="list-icon"><span class="material-icons">videocam</span></div><div class="list-text"><div class="list-tag">Camera + Bonding</div><div class="list-title">Streamer</div><div class="list-sub">Go live and stream video.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
+            <div class="list-row" style="--accent:#4F46E5;" onclick="navigateTo('relay')" role="button"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-tag">Donate Cellular</div><div class="list-title">Relay</div><div class="list-sub">Contribute your connection to support a live stream.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
+            <div class="list-row" style="--accent:var(--cr-magenta);" onclick="navigateTo('mesh')" role="button"><div class="list-icon"><span class="material-icons">network_check</span></div><div class="list-text"><div class="list-tag">Cellular Bonding Mesh</div><div class="list-title">Network Contribution</div><div class="list-sub">Share your mobile connection to strengthen a live stream.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
           </div>
 
-          <!-- OPTION B: RELAY -->
-          <div class="home-option-card broadcast-card violet" onclick="navigateTo('relay')" data-a11y-role="Relay (Button)">
-            <div style="display:flex; align-items:center;">
-              <div class="home-card-icon-box violet">
-                <span class="material-icons" style="font-size:24px;">cell_tower</span>
-              </div>
-              <div>
-                <div class="home-card-title-row">
-                  <span class="home-card-title">Relay</span>
-                  <span class="home-card-badge">Donate Cellular</span>
-                </div>
-                <p class="home-card-desc">Contribute your connection to support a live stream.</p>
-              </div>
-            </div>
-            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
-          </div>
-
-          <!-- OPTION C: NETWORK CONTRIBUTION (CELLULAR BONDING MESH) -->
-          <div class="home-option-card broadcast-card magenta" onclick="navigateTo('mesh')" data-a11y-role="Network Contribution (Button)">
-            <div style="display:flex; align-items:center;">
-              <div class="home-card-icon-box magenta">
-                <span class="material-icons" style="font-size:24px;">network_check</span>
-              </div>
-              <div>
-                <div class="home-card-title-row">
-                  <span class="home-card-title">Network Contribution</span>
-                  <span class="home-card-badge">Cellular Bonding Mesh</span>
-                </div>
-                <p class="home-card-desc">Share your mobile connection to strengthen a live stream.</p>
-              </div>
-            </div>
-            <div class="chevron-box"><span class="material-icons" style="font-size:20px;">chevron_right</span></div>
-          </div>
-
-          <!-- TELEMETRY PREVIEW CARD -->
-          <div class="telemetry-card broadcast-summary">
-            <div class="telemetry-header">
-              <span class="telemetry-tag">
-                <span class="material-icons" style="font-size:14px; margin-right:4px;">sensors</span>
-                CELLULAR BONDING MESH
-              </span>
-              <span class="telemetry-status-ready">● READY</span>
-            </div>
-            <div class="telemetry-grid">
-              <div>
-                <p class="telemetry-item-title">WiFi Uplink</p>
-                <p class="telemetry-item-val">18.4 Mbps</p>
-              </div>
-              <div>
-                <p class="telemetry-item-title">Cellular 5G</p>
-                <p class="telemetry-item-val">24.1 Mbps</p>
-              </div>
-              <div>
-                <p class="telemetry-item-title">Total Bonded</p>
-                <p class="telemetry-item-val" style="color:var(--cr-violet);">42.5 Mbps</p>
-              </div>
-            </div>
+          <p class="list-section-title">Network status</p>
+          <div class="list-group">
+            <div class="list-row" style="--accent:var(--cr-success);"><div class="list-icon"><span class="material-icons">network_check</span></div><div class="list-text"><div class="list-tag">Ready</div><div class="list-title">Cellular Bonding Mesh</div><div class="list-sub">Wi-Fi 18.4 Mbps · 5G 24.1 Mbps</div></div><span class="list-value">142.5 Mbps</span></div>
           </div>
         </div>
 
-        <!-- 5. CELLULAR BONDING MESH SCREEN (FULL WORKFLOW) -->
+                <!-- 5. CELLULAR BONDING MESH SCREEN (FULL WORKFLOW) -->
         <div class="app-screen" id="screen-mesh">
-          <div style="display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:10px; background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.35); color:var(--cr-success); font-size:11px; font-weight:800; margin-bottom:12px;">
-            ● CONTRIBUTING TO MESH
-          </div>
-          <p class="screen-subtitle">Share your mobile connection to strengthen a live stream.</p>
+          <p class="screen-subtitle" style="margin-bottom:16px;">Share your mobile connection to strengthen a live stream.</p>
 
-          <!-- Telemetry Stats Card -->
-          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:20px; padding:18px; margin-bottom:14px;">
-            <p style="font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing:0.5px; margin-bottom:12px;">BONDED UPLINK CHANNELS</p>
-            <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:12px;">
-              <div style="background:var(--bg-device-subtle); border-radius:12px; padding:12px; border:1px solid var(--border-device);">
-                <p style="font-size:11px; color:var(--text-muted);">SIM 1 • Jio True 5G</p>
-                <p style="font-size:16px; font-weight:800; color:var(--text-main); margin-top:2px;" id="meshCellularSpeed">24.1 Mbps</p>
-                <p style="font-size:10px; color:var(--cr-success); margin-top:2px;">Signal: -82 dBm (Strong)</p>
-              </div>
-              <div style="background:var(--bg-device-subtle); border-radius:12px; padding:12px; border:1px solid var(--border-device);">
-                <p style="font-size:11px; color:var(--text-muted);">Wi-Fi 6 Uplink</p>
-                <p style="font-size:16px; font-weight:800; color:var(--text-main); margin-top:2px;" id="meshWifiSpeed">18.4 Mbps</p>
-                <p style="font-size:10px; color:var(--cr-success); margin-top:2px;">Signal: -54 dBm (Optimal)</p>
-              </div>
-            </div>
-            <div style="display:flex; justify-content:space-between; align-items:center; padding-top:8px; border-top:1px solid var(--border-device);">
-              <span style="font-size:12px; color:var(--text-muted);">Total Contributed Throughput</span>
-              <span style="font-size:15px; font-weight:800; color:var(--cr-violet);" id="meshTotalSpeed">42.5 Mbps</span>
-            </div>
+          <!-- Mirrors CellularBondingMeshScreen.kt -->
+          <div class="status-header" id="meshStatus">
+            <div class="status-state" id="meshState">Contributing</div>
+            <div class="status-value" id="meshValue">52.4 Mbps</div>
+            <div class="status-caption">Contributed bandwidth · Bonded 5G + Wi-Fi</div>
           </div>
 
-          <!-- Configuration & Toggles Card -->
-          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:20px; padding:18px; margin-bottom:18px;">
-            <p style="font-size:11px; font-weight:700; color:var(--text-muted); letter-spacing:0.5px; margin-bottom:8px;">CONTRIBUTION PREFERENCES</p>
-            <div class="mesh-toggle-row">
-              <div>
-                <p style="font-size:13px; font-weight:700; color:var(--text-main);">Background Contribution</p>
-                <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Keep contributing when screen locks</p>
-              </div>
-              <div class="toggle-switch active" id="bgContribToggle" onclick="toggleSwitch('bgContribToggle')"></div>
-            </div>
-            <div class="mesh-toggle-row">
-              <div>
-                <p style="font-size:13px; font-weight:700; color:var(--text-main);">Battery Saver Throttling</p>
-                <p style="font-size:11px; color:var(--text-muted); margin-top:2px;">Pause automatically below 20% battery</p>
-              </div>
-              <div class="toggle-switch active" id="batterySaverToggle" onclick="toggleSwitch('batterySaverToggle')"></div>
-            </div>
+          <p class="list-section-title">Supported sessions</p>
+          <div class="list-group">
+            <div class="list-row"><div class="list-icon"><span class="material-icons">hub</span></div><div class="list-text"><div class="list-title"><span id="meshSessions">2 active</span></div><div class="list-sub">CR-8492-HOST, Stage-1</div></div></div>
+          </div>
+
+          <p class="list-section-title">Bonded interfaces · 18 ms latency</p>
+          <div class="list-group">
+            <div class="list-row"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-title">Cellular 5G SA</div><div class="list-sub">Primary SIM · Bonded</div></div><span class="list-value" id="meshCellularSpeed">24.1 Mbps</span></div>
+            <div class="list-row"><div class="list-icon"><span class="material-icons">wifi</span></div><div class="list-text"><div class="list-title">Wi-Fi 6 uplink</div><div class="list-sub">5 GHz · Bonded</div></div><span class="list-value" id="meshWifiSpeed">18.4 Mbps</span></div>
+            <div class="list-row"><div class="list-icon"><span class="material-icons">network_check</span></div><div class="list-text"><div class="list-title">Aggregated mesh channel</div><div class="list-sub">Optimized</div></div><span class="list-value" id="meshTotalSpeed">142.5 Mbps</span></div>
+          </div>
+
+          <p class="list-section-title">Settings</p>
+          <div class="list-group">
+            <div class="list-row" onclick="toggleSwitch('batterySaverToggle')" role="button"><div class="list-icon"><span class="material-icons">battery_charging_full</span></div><div class="list-text"><div class="list-title">Thermal &amp; battery throttling</div></div><div class="toggle-switch active" id="batterySaverToggle"></div></div>
+            <div class="list-row" onclick="toggleSwitch('bgContribToggle')" role="button"><div class="list-icon"><span class="material-icons">data_usage</span></div><div class="list-text"><div class="list-title">Background contribution</div></div><div class="toggle-switch active" id="bgContribToggle"></div></div>
           </div>
 
           <div class="bottom-action">
             <button class="btn-secondary" id="meshPauseBtn" onclick="toggleMeshContribution()">
-              Pause Mesh Contribution
+              Pause Network Contribution
             </button>
           </div>
         </div>
@@ -1875,62 +1799,11 @@
             </div>
           </div>
 
-          <!-- Device Selector Card -->
-          <div class="setup-device-card">
-            <!-- 1. Microphone -->
-            <div class="setup-device-row">
-              <div class="setup-device-info">
-                <div class="setup-device-icon">
-                  <span class="material-icons" style="font-size:22px; color:var(--cr-purple);">mic</span>
-                </div>
-                <div class="setup-device-text-group">
-                  <span class="setup-device-label">Microphone</span>
-                  <span class="setup-device-val">Built-in Microphone</span>
-                </div>
-              </div>
-            </div>
-
-            <!-- 2. Speaker -->
-            <div class="setup-device-row">
-              <div class="setup-device-info">
-                <div class="setup-device-icon">
-                  <span class="material-icons" style="font-size:22px; color:var(--cr-purple);">volume_up</span>
-                </div>
-                <div class="setup-device-text-group">
-                  <span class="setup-device-label">Speaker</span>
-                  <div style="display:flex; align-items:center;">
-                    <select class="setup-device-select" id="setupSpeakerSelect" onchange="onSpeakerDeviceChanged(this.value)">
-                      <option value="Speaker">Speaker</option>
-                      <option value="Earpiece">Earpiece</option>
-                      <option value="Bluetooth Headset">Bluetooth Headset</option>
-                    </select>
-                    <span class="material-icons" style="font-size:18px; color:var(--cr-purple); pointer-events:none;">expand_more</span>
-                  </div>
-                </div>
-              </div>
-              <button class="btn-test-chime" id="speakerTestBtn" onclick="testSpeakerSound()" data-a11y-role="Test Speaker Audio">
-                Test
-              </button>
-            </div>
-
-            <!-- 3. Camera -->
-            <div class="setup-device-row">
-              <div class="setup-device-info">
-                <div class="setup-device-icon">
-                  <span class="material-icons" style="font-size:22px; color:var(--cr-purple);">videocam</span>
-                </div>
-                <div class="setup-device-text-group">
-                  <span class="setup-device-label">Camera</span>
-                  <div style="display:flex; align-items:center;">
-                    <select class="setup-device-select" id="setupCameraSelect" onchange="onCameraDeviceChanged(this.value)">
-                      <option value="Front Camera">Front Camera</option>
-                      <option value="Rear Camera">Rear Camera</option>
-                    </select>
-                    <span class="material-icons" style="font-size:18px; color:var(--cr-purple); pointer-events:none;">expand_more</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <!-- Mirrors DeviceSetupScreen.kt: device rows open a bottom sheet. -->
+          <div class="list-group" style="margin-top:16px;">
+            <div class="list-row"><div class="list-icon"><span class="material-icons">mic</span></div><div class="list-text"><div class="list-title">Microphone</div><div class="list-sub">Built-in Microphone</div></div></div>
+            <div class="list-row" onclick="openDevicePicker('speaker')" role="button"><div class="list-icon"><span class="material-icons">volume_up</span></div><div class="list-text"><div class="list-title">Speaker</div><div class="list-sub"><span id="setupSpeakerValue">Speaker</span></div></div><button class="list-text-btn" id="speakerTestBtn" onclick="event.stopPropagation(); testSpeakerSound()" data-a11y-role="Test Speaker Audio">Test</button></div>
+            <div class="list-row" onclick="openDevicePicker('camera')" role="button"><div class="list-icon"><span class="material-icons">videocam</span></div><div class="list-text"><div class="list-title">Camera</div><div class="list-sub"><span id="setupCameraValue">Front Camera</span></div></div><span class="material-icons list-chevron">chevron_right</span></div>
           </div>
 
           <div class="bottom-action">
@@ -2304,12 +2177,24 @@
 
         <!-- 9. RELAY SCREEN -->
         <div class="app-screen" id="screen-relay">
-          <p class="screen-subtitle">Your device is contributing uplink bandwidth to CloudReel Mesh.</p>
+          <p class="screen-subtitle" style="margin-bottom:16px;">Your cellular connection is securely bonded into the CloudReel enterprise broadcast mesh.</p>
 
-          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:18px; padding:18px; margin-bottom:18px;">
-            <p style="font-size:11px; color:var(--text-muted); font-weight:700;">CONTRIBUTED BANDWIDTH</p>
-            <p style="font-size:28px; font-weight:800; color:var(--cr-success); margin-top:4px;" id="relayBandwidthVal">48.2 Mbps</p>
-            <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">100% encrypted passthrough. Zero media stored on device.</p>
+          <!-- Mirrors RelayScreen.kt -->
+          <div class="status-header" id="relayStatus">
+            <div class="status-state" id="relayState">Relaying</div>
+            <div class="status-value" id="relayBandwidthVal">48.2 Mbps</div>
+            <div class="status-caption">Bandwidth contributed · Bonded 5G Sub-6</div>
+          </div>
+
+          <p class="list-section-title">Connection</p>
+          <div class="list-group">
+            <div class="list-row"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-title">Primary SIM 1 (5G SA)</div><div class="list-sub">Signal -82 dBm · Excellent</div></div></div>
+            <div class="list-row"><div class="list-icon"><span class="material-icons">data_usage</span></div><div class="list-text"><div class="list-title">Data donated</div><div class="list-sub">This session</div></div><span class="list-value">1.84 GB</span></div>
+          </div>
+
+          <p class="list-section-title">Settings</p>
+          <div class="list-group">
+            <div class="list-row" onclick="toggleSwitch('relayThrottleToggle')" role="button"><div class="list-icon"><span class="material-icons">battery_charging_full</span></div><div class="list-text"><div class="list-title">Thermal &amp; battery throttling</div></div><div class="toggle-switch active" id="relayThrottleToggle"></div></div>
           </div>
 
           <div class="bottom-action">
@@ -2322,6 +2207,14 @@
       </div>
 
       <!-- MODAL SHEETS -->
+      <!-- Device picker (DevicePickerSheet in DeviceSetupScreen.kt) -->
+      <div class="app-modal-layer bottom-sheet" id="devicePickerModal" onclick="if (event.target === this) closeSessionModal('devicePickerModal')">
+        <div class="app-modal-sheet" style="padding:8px 0 24px;">
+          <h3 id="devicePickerTitle" style="font-size:16px; font-weight:600; padding:12px 24px 8px;"></h3>
+          <div id="devicePickerOptions"></div>
+        </div>
+      </div>
+
       <!-- 1. Leave Confirmation Modal -->
       <div class="app-modal-layer" id="leaveModal">
         <div class="app-modal-sheet">
@@ -2598,19 +2491,28 @@
       }
     }
 
-    function onSpeakerDeviceChanged(val) {
-      console.log('Selected speaker route:', val);
+    const DEVICE_PICKERS = {
+      speaker: { title: 'Speaker', options: ['Speaker', 'Earpiece', 'Bluetooth Headset'], valueId: 'setupSpeakerValue' },
+      camera: { title: 'Camera', options: ['Front Camera', 'Back Camera'], valueId: 'setupCameraValue' }
+    };
+    function openDevicePicker(kind) {
+      const picker = DEVICE_PICKERS[kind];
+      const current = document.getElementById(picker.valueId).textContent;
+      document.getElementById('devicePickerTitle').textContent = picker.title;
+      document.getElementById('devicePickerOptions').innerHTML = picker.options.map(option =>
+        `<div class="list-row" role="radio" onclick="pickDevice('${kind}', '${option}')"><div class="list-text"><div class="list-title" style="font-weight:400;">${option}</div></div>` +
+        (option === current ? '<span class="material-icons" style="color:var(--cr-violet);">check</span>' : '') + '</div>').join('');
+      openSessionModal('devicePickerModal');
     }
-
-    function onCameraDeviceChanged(val) {
-      console.log('Selected camera:', val);
+    function pickDevice(kind, option) {
+      document.getElementById(DEVICE_PICKERS[kind].valueId).textContent = option;
+      closeSessionModal('devicePickerModal');
     }
 
     function testSpeakerSound() {
       const btn = document.getElementById('speakerTestBtn');
       const originalText = btn.innerHTML;
-      btn.innerHTML = 'Testing... <span class="material-icons" style="font-size:16px; margin-left:4px; vertical-align:middle;">volume_up</span>';
-      btn.style.color = '#10B981';
+      btn.textContent = 'Playing…';
 
       try {
         const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
@@ -2852,16 +2754,11 @@
     function toggleRelay() {
       isRelaying = !isRelaying;
       const btn = document.getElementById('relayToggleBtn');
-      const val = document.getElementById('relayBandwidthVal');
-      if (isRelaying) {
-        btn.textContent = 'Pause Connection Donation';
-        val.textContent = '48.2 Mbps';
-        val.style.color = 'var(--cr-success)';
-      } else {
-        btn.textContent = 'Resume Connection Donation';
-        val.textContent = '0.0 Mbps';
-        val.style.color = 'var(--text-muted)';
-      }
+      document.getElementById('relayBandwidthVal').textContent = isRelaying ? '48.2 Mbps' : '0.0 Mbps';
+      document.getElementById('relayState').textContent = isRelaying ? 'Relaying' : 'Paused';
+      document.getElementById('relayStatus').classList.toggle('paused', !isRelaying);
+      btn.textContent = isRelaying ? 'Pause Connection Donation' : 'Resume Cellular Donation';
+      btn.className = isRelaying ? 'btn-secondary' : 'btn-gradient';
     }
 
     function toggleSwitch(id) {
@@ -2875,17 +2772,15 @@
       const cell = document.getElementById('meshCellularSpeed');
       const wifi = document.getElementById('meshWifiSpeed');
       const total = document.getElementById('meshTotalSpeed');
-      if (isContributingMesh) {
-        btn.textContent = 'Pause Mesh Contribution';
-        cell.textContent = '24.1 Mbps';
-        wifi.textContent = '18.4 Mbps';
-        total.textContent = '42.5 Mbps';
-      } else {
-        btn.textContent = 'Resume Mesh Contribution';
-        cell.textContent = '0.0 Mbps';
-        wifi.textContent = '0.0 Mbps';
-        total.textContent = '0.0 Mbps';
-      }
+      cell.textContent = isContributingMesh ? '24.1 Mbps' : 'Standby';
+      wifi.textContent = isContributingMesh ? '18.4 Mbps' : 'Standby';
+      total.textContent = isContributingMesh ? '142.5 Mbps' : 'Idle';
+      document.getElementById('meshValue').textContent = isContributingMesh ? '52.4 Mbps' : '0.0 Mbps';
+      document.getElementById('meshSessions').textContent = isContributingMesh ? '2 active' : '0 active';
+      document.getElementById('meshState').textContent = isContributingMesh ? 'Contributing' : 'Paused';
+      document.getElementById('meshStatus').classList.toggle('paused', !isContributingMesh);
+      btn.textContent = isContributingMesh ? 'Pause Network Contribution' : 'Resume Network Contribution';
+      btn.className = isContributingMesh ? 'btn-secondary' : 'btn-gradient';
     }
 
     // Set system time
