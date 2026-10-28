@@ -293,7 +293,10 @@
 
     /* Inner screens show a native app bar (back + title); the logo, theme and sign-out stay on home only. */
     .header-title { font-size: 20px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-    .app-header.is-home { padding: 8px 16px; }
+    .app-header.is-home { padding: 4px 4px 4px 16px; }
+    .header-actions { gap: 0; }
+    .header-actions .header-btn { width: 48px; height: 48px; border: none; background: transparent; }
+    .header-actions .header-btn:active { background: var(--border-device); }
     .app-header.is-home .header-title,
     .app-header:not(.is-home) .header-logo-svg,
     .app-header:not(.is-home) .header-actions { display: none; }
@@ -601,7 +604,12 @@
     /* ── CATEGORY CARDS: a still of each mode's real UI behind the text (mirrors CategorySelectionScreen.kt) ── */
     .cat-card { position: relative; height: 230px; border-radius: 22px; overflow: hidden; background: #0E1218; color: #fff;
       cursor: pointer; margin-bottom: 18px; transition: transform 0.15s; }
-    .cat-card:active { transform: scale(0.98); }
+    .cat-card:active { filter: brightness(0.85); }
+    /* Home (CategorySelectionScreen.kt): app-sized title, cards share the screen height (min 200px). */
+    .home-title { font-size: 24px; font-weight: 700; line-height: 1.25; color: var(--text-main); margin: 0 0 16px; }
+    #screen-category-selection .cat-card { height: auto; flex: 1 1 0; min-height: 200px; margin-bottom: 16px; }
+    #screen-category-selection .cat-card:last-child { margin-bottom: 0; }
+    .cat-go { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; background: rgba(255,255,255,0.2); font-size: 22px; }
     .cat-preview { position: absolute; inset: 0; }
     .cat-debate { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; padding: 10px; }
     .cat-tile { position: relative; border-radius: 12px; overflow: hidden; background: #151A23; }
@@ -625,10 +633,10 @@
     @keyframes catPulse { to { opacity: 0.25; } }
     @media (prefers-reduced-motion: reduce) { .cat-live i { animation: none; } }
     .cat-scrim { position: absolute; inset: 0; background: linear-gradient(180deg, transparent 35%, rgba(0,0,0,0.88) 100%); }
-    .cat-text { position: absolute; left: 20px; right: 20px; bottom: 18px; }
+    .cat-text { position: absolute; left: 20px; right: 20px; bottom: 20px; display: flex; align-items: flex-end; gap: 16px; }
+    .cat-text > div { flex: 1; min-width: 0; }
     .cat-text h3 { font-size: 20px; font-weight: 800; margin: 0 0 4px; }
-    .cat-text p { font-size: 13px; line-height: 1.5; opacity: 0.85; margin: 0 0 10px; }
-    .cat-open { display: flex; align-items: center; gap: 4px; font-size: 13px; font-weight: 600; }
+    .cat-text p { font-size: 14px; line-height: 1.45; opacity: 0.85; margin: 0; }
 
     /* Mesh Toggles & Controls */
     .mesh-toggle-row {
@@ -1502,9 +1510,7 @@
 
         <!-- 2. CATEGORY SELECTION SCREEN (NEW ROOT POST-SPLASH) -->
         <div class="app-screen active-screen" id="screen-category-selection">
-          <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
-          <h2 class="screen-title">How would you like to use CloudReel?</h2>
-          <p class="screen-subtitle">Choose your live production or participation mode below.</p>
+          <h2 class="home-title">How would you like to use CloudReel?</h2>
 
           <!-- Each card shows a still of what that mode looks like, with the text over a dark fade. -->
           <div class="cat-card" role="button" onclick="navigateTo('live-sessions')" data-a11y-role="Live Sessions Category Card">
@@ -1516,9 +1522,8 @@
             </div>
             <div class="cat-scrim"></div>
             <div class="cat-text">
-              <h3>Live Sessions</h3>
-              <p>Host a session or join an existing one.</p>
-              <div class="cat-open">Open Live Sessions <span class="material-icons" style="font-size:16px;">chevron_right</span></div>
+              <div><h3>Live Sessions</h3><p>Host a session or join an existing one.</p></div>
+              <span class="cat-go material-icons" aria-hidden="true">arrow_forward</span>
             </div>
           </div>
 
@@ -1530,9 +1535,8 @@
             </div>
             <div class="cat-scrim"></div>
             <div class="cat-text">
-              <h3>Broadcast</h3>
-              <p>Stream live video or contribute your mobile connection to strengthen a live stream.</p>
-              <div class="cat-open">Open Broadcast <span class="material-icons" style="font-size:16px;">chevron_right</span></div>
+              <div><h3>Broadcast</h3><p>Stream live video or contribute your mobile connection to strengthen a live stream.</p></div>
+              <span class="cat-go material-icons" aria-hidden="true">arrow_forward</span>
             </div>
           </div>
         </div>
