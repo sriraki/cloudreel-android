@@ -457,6 +457,9 @@
       font-family: inherit;
     }
 
+    /* Like the app: the clear (×) button only appears once something is typed. */
+    .input-box input:placeholder-shown + .clear-btn { display: none; }
+
     .clear-btn, .toggle-pass-btn {
       background: none;
       border: none;
