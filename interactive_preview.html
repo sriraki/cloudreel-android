@@ -238,11 +238,11 @@
 
     /* App Header */
     .app-header {
-      padding: 10px 20px 12px;
+      padding: 4px 8px;
+      min-height: 56px;
       display: flex;
       align-items: center;
       justify-content: space-between;
-      border-bottom: 1px solid var(--border-device);
       flex-shrink: 0;
       background: var(--bg-device);
       z-index: 50;
@@ -280,18 +280,36 @@
       background: var(--border-device);
     }
 
+    /* Inner screens show a native app bar (back + title); the logo, theme and sign-out stay on home only. */
+    .header-title { font-size: 20px; font-weight: 600; color: var(--text-main); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+    .app-header.is-home { padding: 8px 16px; }
+    .app-header.is-home .header-title,
+    .app-header:not(.is-home) .header-logo-svg,
+    .app-header:not(.is-home) .header-actions { display: none; }
+    #backBtn { width: 48px; height: 48px; border: none; background: transparent; flex-shrink: 0; }
+    #backBtn:active { background: var(--border-device); }
+
+    /* Main button pinned in the thumb zone, like BottomActionBar.kt. */
+    .bottom-action {
+      position: sticky; bottom: 0; z-index: 5;
+      margin: auto -16px -24px; padding: 12px 16px 16px;
+      display: flex; flex-direction: column; gap: 10px;
+      background: var(--bg-device);
+    }
+
     /* Viewport Area */
     .screen-viewport {
       flex: 1;
       position: relative;
       overflow-y: auto;
+      overflow-x: hidden;
       display: flex;
       flex-direction: column;
     }
 
     .app-screen {
       display: none;
-      padding: 20px 24px 36px;
+      padding: 4px 16px 24px;
       flex-direction: column;
       flex: 1;
       animation: fadeIn 0.25s ease-out;
@@ -300,6 +318,12 @@
     .app-screen.active-screen {
       display: flex;
     }
+
+    /* Native push/pop, matching the NavHost transitions in AppNavigation.kt. */
+    .app-screen.slide-forward { animation: slideFromEnd 0.3s cubic-bezier(0.2, 0, 0, 1); }
+    .app-screen.slide-back { animation: slideFromStart 0.3s cubic-bezier(0.2, 0, 0, 1); }
+    @keyframes slideFromEnd { from { transform: translateX(100%); } to { transform: none; } }
+    @keyframes slideFromStart { from { transform: translateX(-100%); } to { transform: none; } }
 
     @keyframes fadeIn {
       from { opacity: 0; transform: translateY(6px); }
@@ -419,13 +443,8 @@
       transition: transform 0.15s, box-shadow 0.15s;
     }
 
-    .btn-gradient:hover {
-      transform: translateY(-1px);
-      box-shadow: 0 6px 20px rgba(211, 0, 234, 0.45);
-    }
-
     .btn-gradient:active {
-      transform: scale(0.98);
+      filter: brightness(0.9);
     }
 
     .btn-secondary {
@@ -1395,11 +1414,12 @@
       </div>
 
       <!-- App Header -->
-      <div class="app-header" id="screenHeader">
+      <div class="app-header is-home" id="screenHeader">
         <div style="display:flex; align-items:center; gap:8px;">
           <button id="backBtn" class="header-btn" style="display:none;" onclick="navigateBack()" data-a11y-role="Back Button (48dp)">
-            <span class="material-icons" style="font-size:20px;">arrow_back</span>
+            <span class="material-icons" style="font-size:24px;">arrow_back</span>
           </button>
+          <span class="header-title" id="headerTitle"></span>
           <svg viewBox="0 0 559.1 107.6" class="header-logo-svg" role="img" aria-label="CloudReel">
             <g fill="currentColor">
               <path d="M440.9,89.3l-11.2-17h-14v16.9h-10.6V30.3l30.4.2c10.8,0,18.1,10.3,17.6,20.7.5,8.5-3.6,15.6-11.5,19.5l12,18.4h-12.7c0,0,0,.2,0,.2ZM442.2,53c.8-5-1.9-12.1-7.3-12.2l-19.2-.3v22h15.9c5.5,0,10-3.7,10.6-9.5h0Z"/>
@@ -1474,8 +1494,6 @@
 
         <!-- 3. LIVE SESSIONS SCREEN -->
         <div class="app-screen" id="screen-live-sessions">
-          <div class="platform-badge">✦ LIVE SESSIONS WORKFLOW</div>
-          <h2 class="screen-title">Live Sessions</h2>
           <p class="screen-subtitle">Host or join an interactive live session.</p>
 
           <!-- OPTION A: START AS HOST -->
@@ -1515,8 +1533,6 @@
 
         <!-- 4. BROADCAST SCREEN -->
         <div class="app-screen" id="screen-broadcast">
-          <div class="platform-badge">✦ BROADCAST PLATFORM</div>
-          <h2 class="screen-title">Broadcast</h2>
           <p class="screen-subtitle">Live streaming & network contribution.</p>
 
           <!-- OPTION A: STREAMER -->
@@ -1601,7 +1617,6 @@
           <div style="display:inline-flex; align-items:center; gap:6px; padding:4px 10px; border-radius:10px; background:rgba(16, 185, 129, 0.12); border:1px solid rgba(16, 185, 129, 0.35); color:var(--cr-success); font-size:11px; font-weight:800; margin-bottom:12px;">
             ● CONTRIBUTING TO MESH
           </div>
-          <h2 class="screen-title">Network Contribution</h2>
           <p class="screen-subtitle">Share your mobile connection to strengthen a live stream.</p>
 
           <!-- Telemetry Stats Card -->
@@ -1644,10 +1659,11 @@
             </div>
           </div>
 
-          <!-- Action Button -->
-          <button class="btn-secondary" id="meshPauseBtn" onclick="toggleMeshContribution()">
-            Pause Mesh Contribution
-          </button>
+          <div class="bottom-action">
+            <button class="btn-secondary" id="meshPauseBtn" onclick="toggleMeshContribution()">
+              Pause Mesh Contribution
+            </button>
+          </div>
         </div>
 
         <!-- 6. HOME SCREEN (LEGACY 4 OPTIONS VIEW) -->
@@ -1752,18 +1768,9 @@
 
         <!-- 3. SHARED SESSION URL / CODE ENTRY SCREEN -->
         <div class="app-screen" id="screen-session-entry">
-          <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
-          <div style="display:flex; align-items:center; gap:12px; margin-bottom:12px;">
-            <div style="width:48px; height:48px; border-radius:50%; background:var(--cr-gradient); display:flex; align-items:center; justify-content:center; color:white;">
-              <span class="material-icons" id="sessionIcon" style="font-size:26px;">podcasts</span>
-            </div>
-            <div>
-              <h2 class="screen-title" id="sessionEntryTitle" style="margin-bottom:2px;">Start as Host</h2>
-              <p class="screen-subtitle" id="sessionEntrySubtitle" style="margin-bottom:0;">Enter the session URL or code to continue.</p>
-            </div>
-          </div>
+          <p class="screen-subtitle" id="sessionEntrySubtitle">Enter the session URL or code to continue.</p>
 
-          <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:20px; padding:18px; margin-top:14px; margin-bottom:20px;">
+          <div style="margin-bottom:16px;">
             <div class="input-group" style="margin-bottom:0;">
               <label class="input-label" id="sessionInputLabel">Session URL or Code</label>
               <div class="input-box" id="sessionInputBox" data-a11y-role="Session Code Input (50dp)">
@@ -1774,29 +1781,15 @@
             </div>
           </div>
 
-          <button class="btn-gradient" id="sessionSubmitBtn" onclick="submitSessionCode()" data-a11y-role="Continue Action (52dp)">
-            <span id="sessionSubmitBtnText">Continue as Host</span> <span class="material-icons" style="font-size:18px; margin-left:6px; vertical-align:middle;">arrow_forward</span>
-          </button>
-
-          <p style="margin-top:20px; font-size:12px; color:var(--text-muted); display:flex; align-items:center; gap:6px;">
-            <span class="material-icons" style="font-size:16px; margin-right:6px; vertical-align:middle;">shield</span>
-            Encrypted peer-to-peer session signaling via CloudReel Mesh
-          </p>
+          <div class="bottom-action">
+            <button class="btn-gradient" id="sessionSubmitBtn" onclick="submitSessionCode()" data-a11y-role="Continue Action (52dp)">
+              <span id="sessionSubmitBtnText">Continue as Host</span> <span class="material-icons" style="font-size:18px; margin-left:6px; vertical-align:middle;">arrow_forward</span>
+            </button>
+          </div>
         </div>
 
         <!-- 3A. DEVICE SETUP SCREEN (SCREENSHOT 1) -->
         <div class="app-screen" id="screen-device-setup">
-          <!-- Setup Header -->
-          <div class="setup-header-row">
-            <button class="circular-nav-btn" onclick="navigateTo('session-entry')" title="Back to Entry" data-a11y-role="Back to Entry">
-              <span class="material-icons" style="font-size:24px;">chevron_left</span>
-            </button>
-            <button class="circular-nav-btn" onclick="toggleTheme()" title="Toggle Theme" data-a11y-role="Toggle Theme">
-              <span class="material-icons" id="setupThemeIcon" style="font-size:20px;">dark_mode</span>
-            </button>
-          </div>
-
-          <h2 class="screen-title" style="margin-bottom:2px;">Device Setup</h2>
           <p class="screen-subtitle" style="margin-bottom:18px;">Check your camera and microphone</p>
 
           <!-- Camera Preview Viewport -->
@@ -1940,12 +1933,12 @@
             </div>
           </div>
 
-          <!-- Start Session CTA -->
-          <button class="btn-gradient" onclick="startActiveSession()" data-a11y-role="Start Session CTA (52dp)">
-            Start Session
-          </button>
-
-          <p class="setup-footnote">You may be placed in a waiting room</p>
+          <div class="bottom-action">
+            <button class="btn-gradient" onclick="startActiveSession()" data-a11y-role="Start Session CTA (52dp)">
+              Start Session
+            </button>
+            <p class="setup-footnote" style="margin:0;">You may be placed in a waiting room</p>
+          </div>
         </div>
 
         <!-- 3B. ACTIVE LIVE SESSION SCREEN (SCREENSHOT 2) -->
@@ -2156,8 +2149,6 @@
 
         <!-- 6. LOGIN SCREEN (FOR STREAMER AUTH) -->
         <div class="app-screen" id="screen-login">
-          <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
-          <h2 class="screen-title">Sign in to CloudReel</h2>
           <p class="screen-subtitle">Sign in to access your camera & cellular bonding streamer.</p>
 
           <div class="input-group">
@@ -2179,20 +2170,21 @@
             <a href="#" onclick="alert('Password reset link sent to your work email.'); return false;" style="font-size:12px; color:var(--cr-violet); font-weight:600; text-decoration:none;">Forgot password?</a>
           </div>
 
-          <button class="btn-gradient" onclick="simulateLogin()" data-a11y-role="Primary Action (52dp)">
-            <span>Sign In to Streamer</span> <span class="material-icons" style="font-size:18px; margin-left:6px; vertical-align:middle;">arrow_forward</span>
-          </button>
-
-          <p style="text-align:center; margin-top:24px; font-size:13px; color:var(--text-muted);">
+          <p style="text-align:center; font-size:13px; color:var(--text-muted);">
             Don't have an account? 
             <a href="#" onclick="navigateTo('signup'); return false;" style="color:var(--cr-magenta); font-weight:700; text-decoration:none;">Create Account</a>
           </p>
+
+          <div class="bottom-action">
+            <button class="btn-gradient" onclick="simulateLogin()" data-a11y-role="Primary Action (52dp)">
+              <span>Sign In</span> <span class="material-icons" style="font-size:18px; margin-left:6px; vertical-align:middle;">arrow_forward</span>
+            </button>
+            <button class="btn-secondary" onclick="simulateLogin()" data-a11y-role="Microsoft Sign In (50dp)">Sign in with Microsoft</button>
+          </div>
         </div>
 
         <!-- 7. SIGN UP SCREEN -->
         <div class="app-screen" id="screen-signup">
-          <div class="platform-badge">✦ ENTERPRISE BROADCAST PLATFORM</div>
-          <h2 class="screen-title">Create account</h2>
           <p class="screen-subtitle">Join CloudReel enterprise broadcast platform</p>
 
           <div class="input-group">
@@ -2216,14 +2208,16 @@
             </div>
           </div>
 
-          <button class="btn-gradient" style="margin-top:12px;" onclick="simulateLogin()" data-a11y-role="Primary Action (52dp)">
-            <span>Create Account & Continue</span> <span class="material-icons" style="font-size:18px; margin-left:6px; vertical-align:middle;">arrow_forward</span>
-          </button>
-
-          <p style="text-align:center; margin-top:24px; font-size:13px; color:var(--text-muted);">
+          <p style="text-align:center; font-size:13px; color:var(--text-muted);">
             Already have an account? 
             <a href="#" onclick="navigateTo('login'); return false;" style="color:var(--cr-magenta); font-weight:700; text-decoration:none;">Sign In</a>
           </p>
+
+          <div class="bottom-action">
+            <button class="btn-gradient" onclick="simulateLogin()" data-a11y-role="Primary Action (52dp)">
+              <span>Create Account</span> <span class="material-icons" style="font-size:18px; margin-left:6px; vertical-align:middle;">arrow_forward</span>
+            </button>
+          </div>
         </div>
 
         <!-- 8. STREAMER SCREEN (mirrors StreamerScreen.kt / StreamerControls.kt) -->
@@ -2310,8 +2304,6 @@
 
         <!-- 9. RELAY SCREEN -->
         <div class="app-screen" id="screen-relay">
-          <div class="platform-badge">✦ RELAY NODE ACTIVE</div>
-          <h2 class="screen-title">Donate Cellular</h2>
           <p class="screen-subtitle">Your device is contributing uplink bandwidth to CloudReel Mesh.</p>
 
           <div style="background:var(--bg-device-card); border:1px solid var(--border-device); border-radius:18px; padding:18px; margin-bottom:18px;">
@@ -2320,9 +2312,11 @@
             <p style="font-size:12px; color:var(--text-muted); margin-top:4px;">100% encrypted passthrough. Zero media stored on device.</p>
           </div>
 
-          <button class="btn-secondary" id="relayToggleBtn" onclick="toggleRelay()" data-a11y-role="Relay Pause (50dp)">
-            Pause Connection Donation
-          </button>
+          <div class="bottom-action">
+            <button class="btn-secondary" id="relayToggleBtn" onclick="toggleRelay()" data-a11y-role="Relay Pause (50dp)">
+              Pause Connection Donation
+            </button>
+          </div>
         </div>
 
       </div>
@@ -2409,15 +2403,22 @@
 
     // The camera screen opens from Broadcast or, for host and participant, from Device Setup; Back returns there.
     let streamerBackTo = 'broadcast';
+    const SCREEN_TITLES = { 'live-sessions': 'Live Sessions', broadcast: 'Broadcast', mesh: 'Network Contribution', relay: 'Relay', 'device-setup': 'Device Setup', login: 'Sign In', signup: 'Create Account' };
+    let isNavigatingBack = false;
     function navigateTo(screenId) {
+      const previousScreen = currentScreen;
+      const slideClass = isNavigatingBack ? 'slide-back' : 'slide-forward';
+      isNavigatingBack = false;
       if (screenId === 'streamer' && currentScreen !== 'streamer') streamerBackTo = currentScreen === 'device-setup' ? 'device-setup' : 'broadcast';
       if (currentScreen === 'streamer' && screenId !== 'streamer') camLeave();
       currentScreen = screenId;
-      document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active-screen'));
+      document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active-screen', 'slide-forward', 'slide-back'));
       document.querySelectorAll('.screen-pill-btn').forEach(el => el.classList.remove('active'));
 
       const target = document.getElementById('screen-' + screenId);
       if (target) target.classList.add('active-screen');
+      // The first screen after the splash fades in; every other move slides.
+      if (target && previousScreen !== 'splash' && previousScreen !== screenId) target.classList.add(slideClass);
 
       const pill = Array.from(document.querySelectorAll('.screen-pill-btn')).find(b => {
         const text = b.textContent.toLowerCase();
@@ -2439,7 +2440,13 @@
       const signOutBtn = document.getElementById('signOutBtn');
       const header = document.getElementById('screenHeader');
 
-      if (screenId === 'splash' || screenId === 'device-setup' || screenId === 'active-session' || screenId === 'streamer') {
+      const isHome = screenId === 'category-selection' || screenId === 'home';
+      header.classList.toggle('is-home', isHome);
+      document.getElementById('headerTitle').textContent = screenId === 'session-entry'
+        ? (currentSessionMode === 'host' ? 'Start as Host' : 'Join a Session')
+        : (SCREEN_TITLES[screenId] || '');
+
+      if (screenId === 'splash' || screenId === 'active-session' || screenId === 'streamer') {
         header.style.display = 'none';
         if (screenId === 'splash') {
           playSplashReveal();
@@ -2454,7 +2461,7 @@
         stopSessionTimer();
       }
 
-      if (['live-sessions', 'broadcast', 'mesh', 'session-entry', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
+      if (['live-sessions', 'broadcast', 'mesh', 'session-entry', 'device-setup', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
         backBtn.style.display = 'flex';
       } else {
         backBtn.style.display = 'none';
@@ -2486,6 +2493,7 @@
     }
 
     function navigateBack() {
+      isNavigatingBack = true;
       if (currentScreen === 'live-sessions' || currentScreen === 'broadcast') {
         navigateTo('category-selection');
       } else if (currentScreen === 'streamer') {
@@ -2512,7 +2520,6 @@
     function openSessionEntry(mode) {
       currentSessionMode = mode;
       const isHost = mode === 'host';
-      document.getElementById('sessionEntryTitle').textContent = isHost ? 'Start as Host' : 'Join a Session';
       document.getElementById('sessionEntrySubtitle').textContent = isHost ? 'Enter the session URL or code to continue.' : 'Enter the session URL or code to join.';
       document.getElementById('sessionSubmitBtnText').textContent = isHost ? 'Continue as Host' : 'Join Session';
       document.getElementById('sessionCodeInput').placeholder = isHost ? 'e.g. CR-HOST-01 or session URL' : 'e.g. CR-84920 or session URL';
