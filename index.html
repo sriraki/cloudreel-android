@@ -35,6 +35,9 @@
       --cr-magenta: #D300EA;
       --cr-purple: #3031CB;
       --cr-violet: #7928CA;
+      --cr-indigo: #4F46E5;
+      --accent-magenta: #D300EA;
+      --accent-success: #10B981;
       --cr-gradient: linear-gradient(135deg, #D300EA 0%, #3031CB 100%);
       --cr-success: #10B981;
       --cr-error: #EF4444;
@@ -55,6 +58,12 @@
     }
 
     body.dark {
+      /* Brand accents mixed 45% toward white so they read on dark (Color.liftedForDark in the app). */
+      --cr-purple: #8D8EE2;
+      --cr-violet: #B589E2;
+      --cr-indigo: #9E99F1;
+      --accent-magenta: #E773F3;
+      --accent-success: #7CD8BA;
       --bg-page: #0B0B0F;
       --bg-device: #121212;
       --bg-device-surface: #181822;
@@ -659,6 +668,8 @@
       background: #FFFFFF;
       transition: transform 0.2s;
     }
+
+    body.dark .toggle-switch.active::after { background: #2E1065; }
 
     .toggle-switch.active::after {
       transform: translateX(20px);
@@ -1544,13 +1555,13 @@
 <!-- Mirrors BroadcastScreen.kt: options as rows, mesh summary as one status row. -->
           <div class="list-group">
             <div class="list-row" style="--accent:var(--cr-purple);" onclick="onStreamerTapped()" role="button"><div class="list-icon"><span class="material-icons">videocam</span></div><div class="list-text"><div class="list-tag">Camera + Bonding</div><div class="list-title">Streamer</div><div class="list-sub">Go live and stream video.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
-            <div class="list-row" style="--accent:#4F46E5;" onclick="navigateTo('relay')" role="button"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-tag">Donate Cellular</div><div class="list-title">Relay</div><div class="list-sub">Contribute your connection to support a live stream.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
-            <div class="list-row" style="--accent:var(--cr-magenta);" onclick="navigateTo('mesh')" role="button"><div class="list-icon"><span class="material-icons">network_check</span></div><div class="list-text"><div class="list-tag">Cellular Bonding Mesh</div><div class="list-title">Network Contribution</div><div class="list-sub">Share your mobile connection to strengthen a live stream.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
+            <div class="list-row" style="--accent:var(--cr-indigo);" onclick="navigateTo('relay')" role="button"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-tag">Donate Cellular</div><div class="list-title">Relay</div><div class="list-sub">Contribute your connection to support a live stream.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
+            <div class="list-row" style="--accent:var(--accent-magenta);" onclick="navigateTo('mesh')" role="button"><div class="list-icon"><span class="material-icons">network_check</span></div><div class="list-text"><div class="list-tag">Cellular Bonding Mesh</div><div class="list-title">Network Contribution</div><div class="list-sub">Share your mobile connection to strengthen a live stream.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
           </div>
 
           <p class="list-section-title">Network status</p>
           <div class="list-group">
-            <div class="list-row" style="--accent:var(--cr-success);"><div class="list-icon"><span class="material-icons">network_check</span></div><div class="list-text"><div class="list-tag">Ready</div><div class="list-title">Cellular Bonding Mesh</div><div class="list-sub">Wi-Fi 18.4 Mbps · 5G 24.1 Mbps</div></div><span class="list-value">142.5 Mbps</span></div>
+            <div class="list-row" style="--accent:var(--accent-success);"><div class="list-icon"><span class="material-icons">network_check</span></div><div class="list-text"><div class="list-tag">Ready</div><div class="list-title">Cellular Bonding Mesh</div><div class="list-sub">Wi-Fi 18.4 Mbps · 5G 24.1 Mbps</div></div><span class="list-value">142.5 Mbps</span></div>
           </div>
         </div>
 
