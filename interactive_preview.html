@@ -1349,24 +1349,43 @@
     .cam-zoombar.open { display: flex; }
     .cam-zoombar input { width: 210px; accent-color: #3B82F6; }
     .cam-utils { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
-    /* Host session (mirrors HostSessionUi.kt): a 16:9 program frame with the host's camera and up to 5 guests. */
-    .cam:not(.host) .host-only { display: none !important; }
-    .cam:not(.host) .cam-program { display: none; }
-    .cam.host .cam-format { right: 84px; }
-    .cam-people { position: absolute; top: 12px; right: 12px; height: 44px; padding: 0 12px; gap: 6px; pointer-events: auto; }
-    .cam-people .material-icons { font-size: 20px; }
-    .cam-people b { font-size: 14px; }
-    .cam-people i { position: absolute; top: 1px; right: 1px; width: 10px; height: 10px; border-radius: 50%; background: #F59E0B; }
-    /* The frame spans the camera width, so everything below it starts at 68px + 9/16 of that width + a 12px gap. */
-    .cam.host { --below-frame: calc(80px + 56.25cqw); }
-    .cam.host .cam-program { position: absolute; left: 0; right: 0; top: 68px; aspect-ratio: 16 / 9; background: #0E0E12; overflow: hidden; }
-    .cam.host.landscape .cam-program { top: 50%; left: 50%; right: auto; height: 100%; max-width: 100%; transform: translate(-50%, -50%); }
+    /* Host session (mirrors HostSessionUi.kt): meeting-style view. Portrait fills the screen; landscape is the 16:9 program. */
+    .cam:not(.host) .cam-program, .cam:not(.host) .host-bars { display: none; }
+    .cam.host .cam-ui, .cam.host .cam-hint { display: none !important; }
+    .cam.host .cam-program { position: absolute; inset: 0; background: #0E0E12; overflow: hidden; }
+    .cam.host.landscape .cam-program { inset: auto; top: 50%; left: 50%; height: 100%; aspect-ratio: 16 / 9; max-width: 100%; transform: translate(-50%, -50%); }
     .cam.host .cam-feed { inset: auto; border: 1px solid #0E0E12; box-sizing: border-box; }
-    .cam.host:not(.landscape) .cam-left, .cam.host:not(.landscape) .cam-utils { top: var(--below-frame, 290px); transform: none; }
-    .cam.host .cam-utils { gap: 6px; }
-    /* Landscape: the host has three extra buttons, so the row drops below the status pill. */
-    .cam.host.landscape .cam-utils { top: 64px; }
-    .cam.landscape .cam-wait { grid-column: 1 / span 2; grid-row: 1; align-self: end; justify-self: center; max-width: 420px; }
+    .cam.host .cam-feed.speaking { box-shadow: inset 0 0 0 3px #10B981; }
+    .host-bars { position: absolute; inset: 0; pointer-events: none; }
+    .host-bars button { pointer-events: auto; }
+    .hb-top { display: flex; align-items: center; gap: 4px; padding: 8px 8px 24px 4px; background: linear-gradient(rgba(0,0,0,0.75), transparent); transition: opacity 0.2s; }
+    .hb-bottom { position: absolute; left: 0; right: 0; bottom: 0; display: flex; align-items: center; padding: 28px 8px 14px; background: linear-gradient(transparent, rgba(0,0,0,0.8)); transition: opacity 0.2s; }
+    .cam.bars-hidden .hb-top, .cam.bars-hidden .hb-bottom { opacity: 0; }
+    .cam.bars-hidden .hb-top button, .cam.bars-hidden .hb-bottom button { pointer-events: none; }
+    .hb-icon { width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .hb-title { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+    .hb-title b { font-size: 15px; }
+    .hb-title span { font-size: 12px; opacity: 0.75; }
+    .hb-title span.live { color: #EF4444; opacity: 1; }
+    .hb-leave { width: 44px; height: 44px; margin: 0 4px; border: 0; border-radius: 50%; background: #EF4444; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .hb-bottom > button { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: none; color: #fff; font: inherit; cursor: pointer; }
+    .hb-bottom > button > .material-icons { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(255,255,255,0.16); }
+    .hb-bottom > button.off > .material-icons { background: rgba(239,68,68,0.9); }
+    .hb-bottom small { font-size: 11px; }
+    .hb-bottom em { position: absolute; top: 0; left: calc(50% + 12px); width: 10px; height: 10px; border-radius: 50%; background: #F59E0B; }
+    .hb-bottom > button.hb-live { flex: 1.4; flex-direction: row; justify-content: center; gap: 8px; height: 48px; margin: 0 4px; border-radius: 24px; background: #EF4444; font-size: 14px; font-weight: 700; }
+    .hb-live i { width: 10px; height: 10px; border-radius: 50%; background: #fff; }
+    .hb-live.active { background: #fff !important; color: #EF4444; }
+    .hb-live.active i { border-radius: 2px; background: #EF4444; width: 12px; height: 12px; }
+    .hb-wait { display: flex; align-items: center; gap: 10px; margin: 0 12px; padding: 6px 6px 6px 12px; border-radius: 16px; background: rgba(0,0,0,0.75); pointer-events: auto; cursor: pointer; }
+    .hb-wait[hidden] { display: none; }
+    .hb-wait div { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; }
+    .hb-wait small { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; }
+    .hb-wait .deny { background: none; border: 0; color: rgba(255,255,255,0.8); font: inherit; font-size: 13px; padding: 8px; cursor: pointer; }
+    .hb-wait .admit { border: 0; border-radius: 18px; background: #fff; color: #000; font: inherit; font-size: 13px; font-weight: 600; padding: 8px 16px; cursor: pointer; }
+    .layout-diag { position: relative; width: 32px; height: 18px; flex-shrink: 0; }
+    .layout-diag i { position: absolute; background: var(--cr-violet); opacity: 0.5; border: 0.75px solid var(--bg-device-card); box-sizing: border-box; }
+    .host-action.on .layout-diag i { opacity: 1; }
     .cam-camoff { position: absolute; display: none; align-items: center; justify-content: center; background: #16161D; border: 1px solid #0E0E12; box-sizing: border-box; }
     .cam.host.cam-off .cam-camoff { display: flex; }
     .cam-camoff span { width: 48px; height: 48px; border-radius: 50%; background: #D300EA; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
@@ -1376,52 +1395,8 @@
     .cam-guests .tile b { position: absolute; left: 4px; bottom: 4px; display: flex; align-items: center; gap: 3px; padding: 1px 5px; border-radius: 6px; background: rgba(0,0,0,0.55); font-size: 10px; font-weight: 500; white-space: nowrap; }
     .cam-guests .tile b .material-icons { font-size: 10px; color: #EF4444; }
     .av { border-radius: 50%; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; font-size: 11px; font-weight: 700; }
-    .cam-room { position: absolute; left: 60px; right: 60px; top: var(--below-frame, 290px); max-height: 300px; overflow-y: auto; padding: 8px 0;
-      border-radius: 16px; background: rgba(0,0,0,0.55); pointer-events: auto; }
-    .cam.host.landscape .cam-room { display: none !important; }
-    .cam.host:not(.landscape) .cam-wait { display: none !important; }
-    .cam-room h5 { font-size: 13px; font-weight: 600; padding: 4px 12px; }
-    .cam-room h5.waiting { color: #F59E0B; }
-    .cam-room p { font-size: 11px; opacity: 0.7; padding: 4px 12px; }
-    .cam-room .row { display: flex; align-items: center; gap: 10px; padding: 2px 4px 2px 12px; font-size: 13px; }
-    .cam-room .row .name { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-    .cam-room button { background: none; border: 0; color: #fff; padding: 6px; cursor: pointer; display: flex; }
-    .cam-room button .material-icons { font-size: 22px; }
-    .cam-room button.admit { color: #10B981; }
-    .cam-deck { position: absolute; left: 12px; right: 12px; top: var(--below-frame); bottom: 120px; display: flex; flex-direction: column; gap: 10px; pointer-events: none; }
-    .cam-deck button, .cam-deck .cam-room { pointer-events: auto; }
-    .cam.host.landscape .cam-deck { display: none !important; }
     .cam.host:not(.landscape) .cam-left, .cam.host:not(.landscape) .cam-utils, .cam.host:not(.landscape) .cam-row { display: none !important; }
-    .cam-health { display: flex; align-items: center; gap: 8px; }
-    .cam-hvu { flex: 1; display: flex; align-items: center; gap: 6px; padding: 6px 8px; border-radius: 10px; background: rgba(0,0,0,0.55); font-size: 9px; font-weight: 700; line-height: 1.7; }
-    .cam-hvu > span { opacity: 0.7; }
     .cam-hvu-bars { flex: 1; display: flex; flex-direction: column; gap: 6px; }
-    .cam-hvu .cam-vu-bar { flex-direction: row; gap: 2px; }
-    .cam-hvu .cam-vu-bar i { flex: 1; width: auto; height: 7px; }
-    .cam-controls { display: grid; grid-template-columns: repeat(5, 1fr); row-gap: 8px; padding: 8px 0; border-radius: 16px; background: rgba(0,0,0,0.55); }
-    .cam-controls button { display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: none; color: #fff; font: inherit; cursor: pointer; }
-    .cam-controls button .material-icons { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(255,255,255,0.12); }
-    .cam-controls button.on .material-icons { background: rgba(59,130,246,0.85); }
-    .cam-controls button.warn .material-icons { background: rgba(239,68,68,0.85); }
-    .cam-controls button:disabled { opacity: 0.4; cursor: default; }
-    .cam-controls small { font-size: 11px; }
-    .cam-deck .cam-room { position: static; max-height: none; min-height: 0; flex: 0 1 auto; }
-    .cam.host:not(.landscape) .cam-layout-menu { top: calc(var(--below-frame) + 150px); right: auto; left: 12px; }
-    .cam-layout-menu .diag { position: relative; width: 32px; height: 18px; flex-shrink: 0; }
-    .cam-layout-menu .diag i { position: absolute; background: var(--cr-violet); opacity: 0.5; border: 0.75px solid var(--bg-device-card); box-sizing: border-box; }
-    .cam-layout-menu button.on .diag i { opacity: 1; }
-    .cam-layout-menu small { padding: 4px 16px; font-size: 12px; color: var(--text-muted); }
-    .cam-wait { display: flex; align-items: center; gap: 10px; width: 100%; padding: 6px 6px 6px 12px; border-radius: 16px; background: rgba(0,0,0,0.75); pointer-events: auto; cursor: pointer; }
-    .cam-wait img { width: 32px; height: 32px; border-radius: 50%; object-fit: cover; }
-    .cam-wait div { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; }
-    .cam-wait small { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; }
-    .cam-wait .deny { background: none; border: 0; color: rgba(255,255,255,0.8); font: inherit; font-size: 13px; padding: 8px; cursor: pointer; }
-    .cam-wait .admit { border: 0; border-radius: 18px; background: #fff; color: #000; font: inherit; font-size: 13px; font-weight: 600; padding: 8px 16px; cursor: pointer; }
-    .cam-layout-menu { position: absolute; right: 64px; top: var(--below-frame, 290px); z-index: 3; display: none; flex-direction: column; padding: 6px 0; border-radius: 12px;
-      background: var(--bg-device-card); color: var(--text-main); box-shadow: 0 8px 24px rgba(0,0,0,0.3); pointer-events: auto; }
-    .cam-layout-menu.open { display: flex; }
-    .cam-layout-menu button { display: flex; align-items: center; gap: 12px; min-width: 160px; padding: 10px 16px; border: 0; background: none; color: inherit; font: inherit; font-size: 14px; cursor: pointer; }
-    .cam-layout-menu .check { margin-left: auto; font-size: 18px; }
     .host-sheet { max-height: 80%; overflow-y: auto; padding: 8px 0 24px; }
     .host-sheet h3 { font-size: 20px; font-weight: 700; padding: 12px 16px 4px; }
     .host-tabs { display: flex; border-bottom: 1px solid var(--border-device); }
@@ -2212,9 +2187,26 @@
           <div class="cam" id="cam">
             <div class="cam-feed" id="camFeed" ondblclick="camToggleOverlays()" data-a11y-role="Camera Preview (double-tap hides controls)"></div>
             <!-- Host: the 16:9 program frame; the camera feed moves in here (ProgramFrame in HostSessionUi.kt) -->
-            <div class="cam-program" id="camProgram">
+            <div class="cam-program" id="camProgram" onclick="hostToggleBars()">
               <div class="cam-camoff" id="camCamOff" ondblclick="camToggleOverlays()"><span>You</span></div>
-              <div class="cam-guests" id="camGuests" ondblclick="camToggleOverlays()"></div>
+              <div class="cam-guests" id="camGuests"></div>
+            </div>
+            <!-- Host: meeting-style bars over the video (HostMeetingBars in HostSessionUi.kt) -->
+            <div class="host-bars" id="hostBars">
+              <div class="hb-top">
+                <button class="hb-icon" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
+                <div class="hb-title"><b id="hbCode">Live session</b><span id="hbStatus">Ready · not live</span></div>
+                <button class="hb-icon" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
+                <button class="hb-leave" onclick="openSessionModal('hostLeaveModal')" title="Leave"><span class="material-icons">call_end</span></button>
+              </div>
+              <div class="hb-wait" id="hbWait" hidden></div>
+              <div class="hb-bottom">
+                <button id="hbVideo" onclick="hostToggleCamera()"><span class="material-icons">videocam</span><small>Video</small></button>
+                <button id="hbMic" onclick="camToggleMic()"><span class="material-icons">mic</span><small>Mic</small></button>
+                <button class="hb-live" id="hbLive" onclick="camRecord()"><i></i><span id="hbLiveLabel">Go live</span></button>
+                <button id="hbPeople" onclick="hostOpenSheet('incall')"><span class="material-icons">group</span><small id="hbPeopleLabel">People</small><em id="hbPeopleDot"></em></button>
+                <button onclick="openSessionModal('hostMoreModal')"><span class="material-icons">more_horiz</span><small>More</small></button>
+              </div>
             </div>
             <div class="cam-hint" id="camHint">Double-tap to show controls</div>
             <div class="cam-ui">
@@ -2229,40 +2221,13 @@
 
               <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Video format"><span id="camFormatLabel">1080P</span><i id="camFormatRate">30</i></button>
               <div class="cam-formats" id="camFormats"></div>
-              <button class="cam-pill cam-people host-only" id="camPeople" onclick="hostOpenSheet('incall')" title="Participants"><span class="material-icons">group</span><b id="camPeopleCount">3</b><i id="camPeopleDot"></i></button>
-              <div class="cam-layout-menu" id="camLayoutMenu"></div>
-              <!-- Host, portrait: health strip, control deck and backstage, in zones under the program -->
-              <div class="cam-deck host-only" id="camDeck">
-                <div class="cam-health">
-                  <div class="cam-hvu" title="Audio level (L / R)"><span>L<br>R</span><div class="cam-hvu-bars"><div class="cam-vu-bar"></div><div class="cam-vu-bar"></div></div></div>
-                  <div class="cam-links" id="camDeckLinks"></div>
-                </div>
-                <div class="cam-controls">
-                  <button id="deckMic" onclick="camToggleMic()"><span class="material-icons">mic</span><small>Mute</small></button>
-                  <button id="deckCam" onclick="hostToggleCamera()"><span class="material-icons">videocam</span><small>Camera</small></button>
-                  <button id="deckZoom" onclick="camToggleZoomBar()"><span class="material-icons">zoom_in</span><small>Zoom</small></button>
-                  <button id="deckTools" onclick="camToggleTools()"><span class="material-icons">tune</span><small>Tools</small></button>
-                  <button id="deckMeta" onclick="camOpenMetadata()"><span class="material-icons">sell</span><small>Metadata</small></button>
-                  <button onclick="hostToggleLayoutMenu()"><span class="material-icons">dashboard</span><small>Layout</small></button>
-                  <button onclick="alert('Screen sharing: not active yet')"><span class="material-icons">screen_share</span><small>Share</small></button>
-                  <button onclick="alert('Session recording: not active yet')"><span class="material-icons">fiber_manual_record</span><small>Record</small></button>
-                  <button id="deckRotate" onclick="camToggleRotate()"><span class="material-icons">screen_rotation</span><small>Rotate</small></button>
-                  <button id="deckSettings" onclick="csOpen('list')"><span class="material-icons">settings</span><small>Settings</small></button>
-                </div>
-                <div class="cam-room" id="camRoom"></div>
-              </div>
-
               <div class="cam-left">
                 <button class="cam-btn" id="camMetaBtn" onclick="camOpenMetadata()" title="Metadata"><span class="material-icons">sell</span></button>
                 <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
-                <button class="cam-btn host-only" id="camCamBtn" onclick="hostToggleCamera()" title="Turn camera off"><span class="material-icons">videocam</span></button>
                 <button class="cam-btn" id="camZoomBtn" onclick="camToggleZoomBar()" title="Zoom"><span class="material-icons">zoom_in</span></button>
               </div>
 
               <div class="cam-utils">
-                <button class="cam-btn host-only" id="camLayoutBtn" onclick="hostToggleLayoutMenu()" title="Layout"><span class="material-icons">featured_video</span></button>
-                <button class="cam-btn host-only" onclick="alert('Screen sharing: not active yet')" title="Share screen"><span class="material-icons">screen_share</span></button>
-                <button class="cam-btn host-only" onclick="alert('Session recording: not active yet')" title="Record session"><span class="material-icons">fiber_manual_record</span></button>
                 <button class="cam-btn" id="camRotateBtn" onclick="camToggleRotate()" title="Rotate screen"><span class="material-icons">screen_rotation</span></button>
                 <button class="cam-btn" id="camToolsBtn" onclick="camToggleTools()" title="Show camera tools"><span class="material-icons">tune</span></button>
                 <button class="cam-btn" id="camSettingsBtn" onclick="csOpen('list')" title="Settings"><span class="material-icons">settings</span></button>
@@ -2281,7 +2246,6 @@
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Grid"><span class="material-icons">grid_off</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Exposure lock"><span class="material-icons">lock_open</span></button>
                 </div>
-                <div class="cam-wait host-only" id="camWait" hidden></div>
                 <div class="cam-row">
                   <div class="cam-vu" title="Audio level (L / R)">
                     <div class="cam-vu-bars"><div class="cam-vu-bar" id="camVuL"></div><div class="cam-vu-bar" id="camVuR"></div></div>
@@ -2359,6 +2323,17 @@
           <div class="host-tabs" id="hostTabs"></div>
           <div id="hostTabBody"></div>
         </div>
+      </div>
+      <div class="app-modal-layer bottom-sheet" id="hostMoreModal" onclick="if (event.target === this) closeSessionModal('hostMoreModal')">
+        <div class="app-modal-sheet host-sheet">
+          <button class="host-action" onclick="closeSessionModal('hostMoreModal'); hostOpenLayout()"><span class="material-icons">dashboard</span>Layout</button>
+          <button class="host-action" onclick="closeSessionModal('hostMoreModal'); hostOpenSheet('add')"><span class="material-icons">person_add</span>Invite people</button>
+          <button class="host-action" onclick="closeSessionModal('hostMoreModal'); alert('Screen sharing: not active yet')"><span class="material-icons">screen_share</span>Share screen</button>
+          <button class="host-action" onclick="closeSessionModal('hostMoreModal'); alert('Session recording: not active yet')"><span class="material-icons">fiber_manual_record</span>Record</button>
+        </div>
+      </div>
+      <div class="app-modal-layer bottom-sheet" id="hostLayoutModal" onclick="if (event.target === this) closeSessionModal('hostLayoutModal')">
+        <div class="app-modal-sheet host-sheet" id="hostLayoutBody"></div>
       </div>
       <div class="app-modal-layer bottom-sheet" id="hostGuestModal" onclick="if (event.target === this) closeSessionModal('hostGuestModal')">
         <div class="app-modal-sheet host-sheet" id="hostGuestBody"></div>
@@ -2993,7 +2968,6 @@
           const isOn = !key || settings[key];
           return `<span class="${isOn ? '' : 'off'}"><span class="material-icons">${icon}</span>${isOn ? reading : 'off'}</span>`;
         }).join('') + '<span style="opacity:0.6;">Mbps</span>';
-      document.getElementById('camDeckLinks').innerHTML = document.getElementById('camLinks').innerHTML;
       // Three fixed slots: recordings | record | flip while idle, empty | stop | pause-resume while running.
       document.getElementById('camThumb').hidden = isActive;
       document.getElementById('camThumbSlot').hidden = !isActive;
@@ -3011,15 +2985,6 @@
       document.getElementById('camToolsBtn').classList.toggle('on', cam.tools);
       document.getElementById('camMetaBtn').classList.toggle('on',
         settings.metaEnabled && CS_METADATA_FIELDS.some(([, key]) => settings[key].trim()));
-      // Host deck mirrors the rail buttons' state.
-      const deckMic = document.getElementById('deckMic');
-      deckMic.classList.toggle('warn', !cam.mic);
-      deckMic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
-      deckMic.querySelector('small').textContent = cam.mic ? 'Mute' : 'Unmute';
-      document.getElementById('deckZoom').classList.toggle('on', cam.zoomOpen);
-      document.getElementById('deckTools').classList.toggle('on', cam.tools);
-      document.getElementById('deckRotate').disabled = isActive;
-      document.getElementById('deckSettings').disabled = isActive;
       const mic = document.getElementById('camMicBtn');
       mic.classList.toggle('warn', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
@@ -3128,7 +3093,12 @@
     const CAM_VU_SEGMENTS = 12;
     document.querySelectorAll('.cam-vu-bar').forEach(bar => { bar.innerHTML = '<i></i>'.repeat(CAM_VU_SEGMENTS); });
     // The meter always shows the mic, idle or live (speech-like -30..-8 dBFS here); muted reads silence.
-    setInterval(() => camSetMeter(cam.mic ? -30 + Math.random() * 22 : -60), 150);
+    setInterval(() => {
+      const level = cam.mic ? -30 + Math.random() * 22 : -60;
+      camSetMeter(level);
+      // Host: speaking ring on their tile, like a meeting app.
+      document.getElementById('camFeed').classList.toggle('speaking', host.on && level > -20);
+    }, 150);
 
     // Device setup mic meter: simulated speech level (the app reads the real microphone).
     const setupMicMeter = document.getElementById('setupMicMeter');
@@ -3257,23 +3227,31 @@
       const el = document.getElementById('cam');
       el.classList.toggle('host', host.on);
       el.classList.toggle('cam-off', host.on && host.camOff);
-      if (!host.on) { document.getElementById('camGuests').innerHTML = ''; host.rendered = ''; return; }
-      document.getElementById('camPeopleCount').textContent = host.guests.length + 1;
-      document.getElementById('camPeopleDot').hidden = host.waiting.length === 0;
-      const camBtn = document.getElementById('camCamBtn');
-      camBtn.classList.toggle('warn', host.camOff);
-      camBtn.querySelector('.material-icons').textContent = host.camOff ? 'videocam_off' : 'videocam';
-      const deckCam = document.getElementById('deckCam');
-      deckCam.classList.toggle('warn', host.camOff);
-      deckCam.querySelector('.material-icons').textContent = host.camOff ? 'videocam_off' : 'videocam';
-      deckCam.querySelector('small').textContent = host.camOff ? 'Camera on' : 'Camera';
+      if (!host.on) { document.getElementById('camGuests').innerHTML = ''; host.rendered = ''; el.classList.remove('bars-hidden'); return; }
+      const isActive = cam.phase !== 'idle';
+      document.getElementById('hbCode').textContent = (document.getElementById('sessionCodeInput').value || '').trim() || 'Live session';
+      const status = document.getElementById('hbStatus');
+      status.textContent = cam.phase === 'idle' ? 'Ready · not live' : cam.phase === 'connecting' ? 'Connecting…' : '● LIVE ' + camFmt(cam.elapsed);
+      status.classList.toggle('live', isActive && cam.phase !== 'connecting');
+      const video = document.getElementById('hbVideo');
+      video.classList.toggle('off', host.camOff);
+      video.querySelector('.material-icons').textContent = host.camOff ? 'videocam_off' : 'videocam';
+      const mic = document.getElementById('hbMic');
+      mic.classList.toggle('off', !cam.mic);
+      mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
+      document.getElementById('hbLive').classList.toggle('active', isActive);
+      document.getElementById('hbLiveLabel').textContent = cam.phase === 'connecting' ? 'Connecting' : isActive ? 'Stop' : 'Go live';
+      document.getElementById('hbPeopleLabel').textContent = 'People ' + (host.guests.length + 1);
+      document.getElementById('hbPeopleDot').hidden = host.waiting.length === 0;
+      // While live the bars step out of the way after 5 seconds, as in a meeting app.
+      if (cam.phase !== host.lastPhase) { host.lastPhase = cam.phase; hostScheduleHide(); }
 
       const cells = hostLayout().cells;
       const hostSlot = host.stage.indexOf(HOST_ID);
       Object.assign(document.getElementById('camFeed').style, cellStyle(cells[hostSlot]), { zIndex: hostSlot });
       Object.assign(document.getElementById('camCamOff').style, cellStyle(cells[hostSlot]), { zIndex: hostSlot });
-      // Rebuild tiles and the room panel only when something changed, so photos don't flicker on every clock tick.
-      const key = JSON.stringify([host.layoutKey, host.stage, host.guests, host.waiting]);
+      // Rebuild tiles only when something changed, so photos don't flicker on every clock tick.
+      const key = JSON.stringify([host.layoutKey, host.stage, host.guests]);
       if (key !== host.rendered) {
         host.rendered = key;
         document.getElementById('camGuests').innerHTML = host.stage.map((id, slot) => {
@@ -3282,22 +3260,13 @@
           const [, , w, h] = cells[slot];
           const isCompact = w < 0.34 || h < 0.34;
           const style = Object.entries(cellStyle(cells[slot])).map(([k, v]) => `${k}:${v}`).join(';');
-          return `<div class="tile" style="${style};z-index:${slot};" onclick="hostOpenGuest(${id})">` +
+          return `<div class="tile" style="${style};z-index:${slot};" onclick="event.stopPropagation(); hostOpenGuest(${id})">` +
             (guest.photo ? `<img class="photo" src="${guest.photo}" alt="">` : hostAvatar(guest, isCompact ? 28 : 44)) +
             `<b>${guest.muted ? '<span class="material-icons">mic_off</span>' : ''}${isCompact ? guest.name.split(' ')[0] : guest.name}</b></div>`;
         }).join('');
-        const row = (guest, buttons) => `<div class="row">${hostAvatar(guest, 32)}<span class="name">${guest.name}</span>${buttons}</div>`;
-        document.getElementById('camRoom').innerHTML =
-          (host.waiting.length ? `<h5 class="waiting">Waiting to join · ${host.waiting.length}</h5>` + host.waiting.map(guest => row(guest,
-            `<button onclick="hostDeny(${guest.id})" title="Deny ${guest.name}"><span class="material-icons">close</span></button>` +
-            `<button class="admit" onclick="hostAdmit(${guest.id})" title="Admit ${guest.name}"><span class="material-icons">check_circle</span></button>`)).join('') : '') +
-          `<h5>In the room · ${hostRoom().length}</h5>` +
-          (hostRoom().length ? hostRoom().map(guest => row(guest,
-            `<button onclick="hostAddToScreen(${guest.id})" title="Add ${guest.name} to screen"><span class="material-icons">add_circle</span></button>`)).join('')
-            : '<p>Admitted guests wait here until you add them to the screen.</p>');
       }
 
-      const wait = document.getElementById('camWait');
+      const wait = document.getElementById('hbWait');
       const next = host.waiting[0];
       wait.hidden = !next;
       if (next) {
@@ -3308,17 +3277,29 @@
       }
     }
 
-    function hostToggleLayoutMenu() {
-      const menu = document.getElementById('camLayoutMenu');
-      const isOpen = !menu.classList.contains('open');
-      menu.innerHTML = `<small>${host.stage.length} on screen</small>` + layoutsFor(host.stage.length).map(layout =>
-        `<button class="${layout.key === host.layoutKey ? 'on' : ''}" onclick="hostSetLayout('${layout.key}')">` +
-        `<span class="diag">${layout.cells.map(cell => `<i style="${Object.entries(cellStyle(cell)).map(([k, v]) => k + ':' + v).join(';')}"></i>`).join('')}</span>` +
-        `${layout.label}${layout.key === host.layoutKey ? '<span class="material-icons check">check</span>' : ''}</button>`).join('');
-      menu.classList.toggle('open', isOpen);
+    function hostToggleBars() {
+      if (!host.on) return;
+      document.getElementById('cam').classList.toggle('bars-hidden');
+      hostScheduleHide();
+    }
+    function hostScheduleHide() {
+      clearTimeout(host.hideTimer);
+      const el = document.getElementById('cam');
+      if (cam.phase === 'live' && !el.classList.contains('bars-hidden')) {
+        host.hideTimer = setTimeout(() => { if (cam.phase === 'live') el.classList.add('bars-hidden'); }, 5000);
+      }
+    }
+
+    function hostOpenLayout() {
+      document.getElementById('hostLayoutBody').innerHTML =
+        `<h3>Layout</h3><p class="host-section" style="padding-top:0;">${host.stage.length} on screen</p>` + layoutsFor(host.stage.length).map(layout =>
+          `<button class="host-action ${layout.key === host.layoutKey ? 'on' : ''}" onclick="hostSetLayout('${layout.key}')">` +
+          `<span class="layout-diag">${layout.cells.map(cell => `<i style="${Object.entries(cellStyle(cell)).map(([k, v]) => k + ':' + v).join(';')}"></i>`).join('')}</span>` +
+          `${layout.label}${layout.key === host.layoutKey ? '<span class="material-icons" style="margin-left:auto; color:var(--cr-violet);">check</span>' : ''}</button>`).join('');
+      openSessionModal('hostLayoutModal');
     }
     function hostChanged() { hostRender(); if (document.getElementById('hostPeopleModal').classList.contains('open')) hostRenderSheet(); }
-    function hostSetLayout(key) { host.layoutKey = key; host.family = hostLayout().family || host.family; document.getElementById('camLayoutMenu').classList.remove('open'); hostRender(); }
+    function hostSetLayout(key) { host.layoutKey = key; host.family = hostLayout().family || host.family; closeSessionModal('hostLayoutModal'); hostRender(); }
     function hostToggleCamera() { host.camOff = !host.camOff; hostRender(); }
     // Admitted guests wait in the room; the host brings them on screen.
     function hostAdmit(id) { const guest = host.waiting.find(g => g.id === id); host.waiting = host.waiting.filter(g => g.id !== id); host.guests.push(guest); hostChanged(); }
@@ -3412,8 +3393,7 @@
     function camLeave() {
       host.on = false;
       hostResetFeed();
-      ['hostPeopleModal', 'hostLeaveModal', 'hostGuestModal', 'hostReplaceModal'].forEach(closeSessionModal);
-      document.getElementById('camLayoutMenu').classList.remove('open');
+      ['hostPeopleModal', 'hostLeaveModal', 'hostGuestModal', 'hostReplaceModal', 'hostMoreModal', 'hostLayoutModal'].forEach(closeSessionModal);
       camStop();
       document.getElementById('mobileDevice').classList.remove('landscape');
       const el = document.getElementById('cam');
