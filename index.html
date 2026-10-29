@@ -2306,7 +2306,7 @@
 
         <!-- Go live setup (mirrors GoLiveSetupScreen.kt): who is signed in, where broadcasts go, stream settings -->
         <div class="app-screen" id="screen-golive-setup">
-          <div class="setup-card"><small>Workspaces</small><b>Zynora's Workspace</b><span>Your broadcasts are shown in each of these.</span></div>
+          <div class="setup-card"><small>Workspaces</small><b>Zynora's Workspace, CloudReel News Desk</b><span>Your broadcasts are shown in each of these.</span></div>
           <div class="setup-card"><small>This phone</small><b><i class="setup-dot"></i>Online</b></div>
           <div class="input-group" style="margin-top:12px;">
             <label class="input-label">Broadcast name (optional)</label>
@@ -2514,7 +2514,7 @@
 
     // The camera screen opens from Broadcast or, for host and participant, from Device Setup; Back returns there.
     let streamerBackTo = 'category-selection';
-    const SCREEN_TITLES = { relay: 'Share mobile data', 'golive-setup': 'Hi, Rakesh kumar', 'device-setup': 'Device Setup', 'waiting-lobby': 'Waiting room', login: 'Sign In', signup: 'Create Account' };
+    const SCREEN_TITLES = { relay: 'Share mobile data', 'golive-setup': 'Hi, Demo Reporter', 'device-setup': 'Device Setup', 'waiting-lobby': 'Waiting room', login: 'Sign In', signup: 'Create Account' };
     let lobbyAdmitTimer = null;
     let isNavigatingBack = false;
     function navigateTo(screenId) {
@@ -2966,7 +2966,7 @@
       const name = cs.values.slugline || 'Live broadcast';
       const status = cam.phase === 'live' ? 'Live · ' + camFmt(cam.elapsed) : 'Getting ready…';
       document.getElementById('liveDetailsBody').innerHTML =
-        `<h3>${name}</h3><div class="sub">${status} in Zynora's Workspace</div>` +
+        `<h3>${name}</h3><div class="sub">${status} in Zynora's Workspace, CloudReel News Desk</div>` +
         `<div class="live-code-card"><div><small>Relay code</small><div class="live-code">${cam.relayCode}</div></div>` +
         `<button class="host-icon" title="Copy relay code" onclick="navigator.clipboard?.writeText(cam.relayCode)"><span class="material-icons">content_copy</span></button>` +
         `<button class="host-icon" title="Show QR code" onclick="liveOpenQr()"><span class="material-icons">qr_code_2</span></button>` +
