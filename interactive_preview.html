@@ -1363,23 +1363,51 @@
     .cam.bars-hidden .hb-top, .cam.bars-hidden .hb-bottom { opacity: 0; }
     .cam.bars-hidden .hb-top button, .cam.bars-hidden .hb-bottom button { pointer-events: none; }
     .hb-icon { width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
-    .hb-title { flex: 1; min-width: 0; display: flex; flex-direction: column; }
-    .hb-title b { font-size: 15px; }
-    .hb-leave { width: 44px; height: 44px; margin: 0 4px; border: 0; border-radius: 50%; background: #EF4444; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
+    .hb-pill { position: relative; display: flex; align-items: center; gap: 6px; padding: 8px 12px; border: 0; border-radius: 20px; background: rgba(0,0,0,0.45); color: #fff; font: inherit; font-size: 14px; }
+    button.hb-pill { cursor: pointer; }
+    .hb-pill .material-icons { font-size: 17px; }
+    .hb-pill em { position: absolute; top: 0; right: 0; width: 10px; height: 10px; border-radius: 50%; background: #F59E0B; }
+    .hb-pill em[hidden] { display: none; }
+    .cam.guest .host-only { display: none; }
+    .hb-share { display: flex; align-items: center; gap: 10px; margin: 0 12px 8px; padding: 2px 4px 2px 14px; border-radius: 16px; background: rgba(239,68,68,0.92); font-size: 13px; font-weight: 600; pointer-events: auto; }
+    .hb-share[hidden] { display: none; }
+    .hb-share span:nth-child(2) { flex: 1; }
+    .hb-share .material-icons { font-size: 18px; }
+    .hb-share button { border: 0; background: none; color: #fff; font: inherit; font-weight: 700; padding: 10px; cursor: pointer; }
+    .cam-self { position: absolute; pointer-events: none; display: flex; align-items: center; justify-content: center; }
+    .cam:not(.host) .cam-self { display: none; }
+    .cam-self b { position: absolute; left: 4px; bottom: 4px; padding: 1px 5px; border-radius: 6px; background: rgba(0,0,0,0.55); font-size: 10px; font-weight: 500; }
+    .cam-self i { display: none; font-style: normal; font-size: 12px; text-align: center; flex-direction: column; align-items: center; gap: 6px; }
+    .cam-self.sharing { background: #16161D; }
+    .cam-self.sharing i { display: flex; }
+    .host-page { position: absolute; inset: 0; z-index: 20; display: none; flex-direction: column; background: var(--bg-device); color: var(--text-main); }
+    .host-page.open { display: flex; }
+    .host-page-head { display: flex; align-items: center; gap: 8px; padding: 10px 8px; font-size: 20px; font-weight: 600; }
+    .host-page-head button { width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; color: var(--text-main); cursor: pointer; display: flex; align-items: center; justify-content: center; }
+    .host-page-body { flex: 1; overflow-y: auto; padding-bottom: 24px; }
+    .host-latest { margin-top: 4px; padding: 16px; border-radius: 16px; background: var(--bg-device-surface); display: flex; flex-direction: column; gap: 8px; }
+    .host-latest b { font-size: 14px; color: var(--cr-violet); }
+    .host-latest span { font-size: 14px; word-break: break-all; }
+    .host-latest div { display: flex; gap: 12px; }
+    .host-latest .host-btn { margin: 0; }
+    .center-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 16px; }
+    .center-state h3 { font-size: 20px; font-weight: 700; margin: 24px 0 8px; color: var(--text-main); }
+    .center-state p { font-size: 14px; color: var(--text-muted); line-height: 1.45; }
+    .center-state-meta { margin-top: 16px; font-weight: 600; }
+    .center-state-icon { width: 96px; height: 96px; border-radius: 50%; display: flex; align-items: center; justify-content: center; background: color-mix(in srgb, var(--cr-violet) 15%, transparent); color: var(--cr-violet); }
+    .center-state-icon .material-icons { font-size: 40px; }
+    .center-state-icon.pulse { animation: lobbyPulse 1.1s ease-in-out infinite alternate; }
+    @keyframes lobbyPulse { from { transform: scale(0.9); } to { transform: scale(1.1); } }
     .hb-bottom > button { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: none; color: #fff; font: inherit; cursor: pointer; }
     .hb-bottom > button > .material-icons { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(255,255,255,0.16); }
     .hb-bottom > button.off > .material-icons { background: rgba(239,68,68,0.9); }
     .hb-bottom small { font-size: 11px; }
-    .hb-bottom em { position: absolute; top: 0; left: calc(50% + 12px); width: 10px; height: 10px; border-radius: 50%; background: #F59E0B; }
     .hb-wait { display: flex; align-items: center; gap: 10px; margin: 0 12px; padding: 6px 6px 6px 12px; border-radius: 16px; background: rgba(0,0,0,0.75); pointer-events: auto; cursor: pointer; }
     .hb-wait[hidden] { display: none; }
     .hb-wait div { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; }
     .hb-wait small { display: block; font-size: 11px; font-weight: 400; opacity: 0.7; }
     .hb-wait .deny { background: none; border: 0; color: rgba(255,255,255,0.8); font: inherit; font-size: 13px; padding: 8px; cursor: pointer; }
     .hb-wait .admit { border: 0; border-radius: 18px; background: #fff; color: #000; font: inherit; font-size: 13px; font-weight: 600; padding: 8px 16px; cursor: pointer; }
-    .layout-diag { position: relative; width: 32px; height: 18px; flex-shrink: 0; }
-    .layout-diag i { position: absolute; background: var(--cr-violet); opacity: 0.5; border: 0.75px solid var(--bg-device-card); box-sizing: border-box; }
-    .host-action.on .layout-diag i { opacity: 1; }
     .cam-camoff { position: absolute; display: none; align-items: center; justify-content: center; background: #16161D; border: 1px solid #0E0E12; box-sizing: border-box; }
     .cam.host.cam-off .cam-camoff { display: flex; }
     .cam-camoff span { width: 48px; height: 48px; border-radius: 50%; background: #D300EA; display: flex; align-items: center; justify-content: center; font-weight: 700; font-size: 13px; }
@@ -1413,7 +1441,7 @@
     .host-add { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
     .host-add label { font-size: 14px; font-weight: 600; color: var(--text-main); }
     .host-add input[type=text] { height: 48px; padding: 0 14px; border: 1px solid var(--border-device); border-radius: 10px; background: var(--bg-device-surface); color: var(--text-main); font: inherit; font-size: 15px; }
-    .host-chips { display: flex; gap: 8px; }
+    .host-chips { display: flex; flex-wrap: wrap; gap: 8px; }
     .host-chips button { padding: 6px 14px; border: 1px solid var(--border-device); border-radius: 8px; background: none; color: var(--text-main); font: inherit; font-size: 14px; cursor: pointer; }
     .host-chips button.on { background: color-mix(in srgb, var(--cr-violet) 18%, transparent); border-color: transparent; }
     .host-direct { display: flex; align-items: center; justify-content: space-between; gap: 12px; font-size: 15px; color: var(--text-main); }
@@ -1885,15 +1913,15 @@
           <!-- Mirrors DeviceSetupScreen.kt: device rows open a bottom sheet. -->
           <div class="list-group" style="margin-top:16px;">
             <div class="list-row"><div class="list-icon"><span class="material-icons">mic</span></div><div class="list-text"><div class="list-title">Microphone</div><div class="list-sub">Built-in Microphone</div></div><div class="mic-meter" id="setupMicMeter" aria-label="Microphone level"></div></div>
-            <div class="list-row" onclick="openDevicePicker('speaker')" role="button"><div class="list-icon"><span class="material-icons">volume_up</span></div><div class="list-text"><div class="list-title">Speaker</div><div class="list-sub"><span id="setupSpeakerValue">Speaker</span></div></div><button class="list-text-btn" id="speakerTestBtn" onclick="event.stopPropagation(); testSpeakerSound()" data-a11y-role="Test Speaker Audio">Test</button></div>
+            <div class="list-row" onclick="openDevicePicker('speaker')" role="button"><div class="list-icon"><span class="material-icons">volume_up</span></div><div class="list-text"><div class="list-title">Speaker</div><div class="list-sub"><span id="setupSpeakerValue">Speaker</span><span id="setupSpeakerNote"></span></div></div><button class="list-text-btn" id="speakerTestBtn" onclick="event.stopPropagation(); testSpeakerSound()" data-a11y-role="Test Speaker Audio">Test</button></div>
             <div class="list-row" onclick="openDevicePicker('camera')" role="button"><div class="list-icon"><span class="material-icons">videocam</span></div><div class="list-text"><div class="list-title">Camera</div><div class="list-sub"><span id="setupCameraValue">Front Camera</span></div></div><span class="material-icons list-chevron">chevron_right</span></div>
           </div>
 
           <div class="bottom-action">
-            <button class="btn-gradient" onclick="startActiveSession()" data-a11y-role="Start Session CTA (52dp)">
+            <button class="btn-gradient" id="setupStartBtn" onclick="startActiveSession()" data-a11y-role="Start Session CTA (52dp)">
               Start Session
             </button>
-            <p class="setup-footnote" style="margin:0;">You may be placed in a waiting room</p>
+            <p class="setup-footnote" id="setupWaitingNote" style="margin:0;">You may be placed in a waiting room</p>
           </div>
         </div>
 
@@ -2180,28 +2208,35 @@
         <div class="app-screen" id="screen-streamer">
           <div class="cam" id="cam">
             <div class="cam-feed" id="camFeed" ondblclick="camToggleOverlays()" data-a11y-role="Camera Preview (double-tap hides controls)"></div>
-            <!-- Host: the 16:9 program frame; the camera feed moves in here (ProgramFrame in HostSessionUi.kt) -->
+            <!-- Meeting gallery (MeetingGallery in HostSessionUi.kt): the camera feed moves in here as the "You" tile -->
             <div class="cam-program" id="camProgram" onclick="hostToggleBars()">
               <div class="cam-camoff" id="camCamOff" ondblclick="camToggleOverlays()"><span>You</span></div>
+              <div class="cam-self" id="camSelf"><i><span class="material-icons">screen_share</span>You're sharing your screen</i><b>You</b></div>
               <div class="cam-guests" id="camGuests"></div>
             </div>
-            <!-- Host: meeting-style bars over the video (HostMeetingBars in HostSessionUi.kt) -->
+            <!-- Meeting bars (MeetingBars in HostSessionUi.kt): call time, switch camera, people on top; end at the bottom -->
             <div class="host-bars" id="hostBars">
               <div class="hb-top">
-                <button class="hb-icon" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
-                <div class="hb-title"><b id="hbCode">Session</b></div>
-                <button class="hb-icon" onclick="hostOpenLayout()" title="Layout"><span class="material-icons">dashboard</span></button>
+                <span class="hb-pill"><span class="material-icons">schedule</span><b id="hbTime">00:00</b></span>
+                <span style="flex:1;"></span>
                 <button class="hb-icon" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
-                <button class="hb-leave" onclick="openSessionModal('hostLeaveModal')" title="Leave"><span class="material-icons">call_end</span></button>
+                <button class="hb-pill" id="hbPeople" onclick="hostOpenSheet('incall')" title="People"><span class="material-icons">group</span><b id="hbPeopleCount">1</b><em id="hbPeopleDot"></em></button>
               </div>
+              <div class="hb-share" id="hbShare" hidden><span class="material-icons">screen_share</span><span>You're sharing your screen</span><button onclick="hostToggleShare()">Stop</button></div>
               <div class="hb-wait" id="hbWait" hidden></div>
               <div class="hb-bottom">
                 <button id="hbVideo" onclick="hostToggleCamera()"><span class="material-icons">videocam</span><small>Video</small></button>
                 <button id="hbMic" onclick="camToggleMic()"><span class="material-icons">mic</span><small>Mic</small></button>
-                <button onclick="alert('Screen sharing: not active yet')"><span class="material-icons">screen_share</span><small>Share</small></button>
-                <button onclick="alert('Session recording: not active yet')"><span class="material-icons">fiber_manual_record</span><small>Record</small></button>
-                <button id="hbPeople" onclick="hostOpenSheet('incall')"><span class="material-icons">group</span><small id="hbPeopleLabel">People</small><em id="hbPeopleDot"></em></button>
+                <button class="host-only" id="hbShareBtn" onclick="hostToggleShare()"><span class="material-icons">screen_share</span><small>Share</small></button>
+                <button class="host-only" onclick="alert('Session recording: not active yet')"><span class="material-icons">fiber_manual_record</span><small>Record</small></button>
+                <button class="off" onclick="hostOpenLeave()"><span class="material-icons">call_end</span><small>Leave</small></button>
               </div>
+            </div>
+            <!-- Participants as a full page over the call (ParticipantsPage in HostSessionUi.kt) -->
+            <div class="host-page" id="hostPeoplePage">
+              <div class="host-page-head"><button onclick="hostCloseSheet()" title="Back"><span class="material-icons">arrow_back</span></button><span>Participants</span></div>
+              <div class="host-tabs" id="hostTabs"></div>
+              <div class="host-page-body" id="hostTabBody"></div>
             </div>
             <div class="cam-hint" id="camHint">Double-tap to show controls</div>
             <div class="cam-ui">
@@ -2280,6 +2315,32 @@
           </div>
         </div>
 
+        <!-- Guest waiting lobby (mirrors WaitingLobbyScreen.kt) -->
+        <div class="app-screen" id="screen-waiting-lobby">
+          <div class="center-state">
+            <div class="center-state-icon pulse"><span class="material-icons">hourglass_top</span></div>
+            <h3>Waiting for the host to let you in</h3>
+            <p>You'll join automatically once the host admits you.</p>
+            <p class="center-state-meta" id="lobbyCode"></p>
+          </div>
+          <div class="bottom-action">
+            <button class="btn-secondary" onclick="navigateBack()">Leave</button>
+          </div>
+        </div>
+
+        <!-- After leaving a session (mirrors LeftSessionScreen.kt) -->
+        <div class="app-screen" id="screen-left-session">
+          <div class="center-state">
+            <div class="center-state-icon"><span class="material-icons">exit_to_app</span></div>
+            <h3>You left the session</h3>
+            <p>The session is still active. Rejoin to reconnect and continue.</p>
+          </div>
+          <div class="bottom-action">
+            <button class="btn-gradient" onclick="navigateTo('streamer')">Rejoin</button>
+            <button class="btn-secondary" onclick="navigateTo('category-selection')">Go to Home</button>
+          </div>
+        </div>
+
         <!-- 9. RELAY SCREEN -->
         <div class="app-screen" id="screen-relay">
 
@@ -2311,35 +2372,26 @@
       </div>
 
       <!-- MODAL SHEETS -->
-      <!-- Host session sheets (ParticipantsSheet / HostLeaveSheet in HostSessionUi.kt) -->
-      <div class="app-modal-layer bottom-sheet" id="hostPeopleModal" onclick="if (event.target === this) closeSessionModal('hostPeopleModal')">
-        <div class="app-modal-sheet host-sheet">
-          <h3>Participants</h3>
-          <div class="host-tabs" id="hostTabs"></div>
-          <div id="hostTabBody"></div>
-        </div>
-      </div>
-      <div class="app-modal-layer bottom-sheet" id="hostLayoutModal" onclick="if (event.target === this) closeSessionModal('hostLayoutModal')">
-        <div class="app-modal-sheet host-sheet" id="hostLayoutBody"></div>
-      </div>
+      <!-- Meeting sheets (GuestActionsSheet / LeaveSessionSheet in HostSessionUi.kt) -->
       <div class="app-modal-layer bottom-sheet" id="hostGuestModal" onclick="if (event.target === this) closeSessionModal('hostGuestModal')">
         <div class="app-modal-sheet host-sheet" id="hostGuestBody"></div>
-      </div>
-      <div class="app-modal-layer" id="hostReplaceModal" onclick="if (event.target === this) closeSessionModal('hostReplaceModal')">
-        <div class="app-modal-sheet host-sheet" style="padding:20px 0 8px;">
-          <h3 style="padding:0 20px 6px;">Screen is full</h3>
-          <p id="hostReplaceText" style="padding:0 20px 8px; font-size:14px; color:var(--text-muted); line-height:1.45;"></p>
-          <div id="hostReplaceList"></div>
-          <div style="text-align:right; padding:4px 12px 0;"><button class="host-btn small-text" onclick="closeSessionModal('hostReplaceModal')">Cancel</button></div>
-        </div>
       </div>
       <div class="app-modal-layer bottom-sheet" id="hostLeaveModal" onclick="if (event.target === this) closeSessionModal('hostLeaveModal')">
         <div class="app-modal-sheet host-sheet" style="padding:8px 24px 28px;">
           <h3 style="padding:12px 0 6px;">Leave the session?</h3>
-          <p style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:18px;">Leave on your own and the guests stay connected, or end it for everyone and close the session. Ending can't be undone.</p>
-          <button class="host-btn danger" onclick="hostEnd()">End for everyone</button>
-          <button class="host-btn outline" onclick="hostLeave()">Leave session</button>
+          <p id="hostLeaveText" style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:18px;"></p>
+          <button class="host-btn danger" id="hostEndBtn" onclick="hostEnd()">End for everyone</button>
+          <button class="host-btn outline" id="hostLeaveBtn" onclick="hostLeave()">Leave session</button>
           <button class="host-btn text" onclick="closeSessionModal('hostLeaveModal')">Stay</button>
+        </div>
+      </div>
+      <!-- Android's own screen-capture prompt (shown by createScreenCaptureIntent in the app) -->
+      <div class="app-modal-layer" id="hostCastModal" onclick="if (event.target === this) closeSessionModal('hostCastModal')">
+        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 16px; text-align:center;">
+          <span class="material-icons" style="color:var(--cr-violet);">cast</span>
+          <h3 style="padding:8px 0;">Cast your screen?</h3>
+          <p style="font-size:13px; color:var(--text-muted); line-height:1.45; margin-bottom:16px;">"CloudReel" will have access to any content displayed on your screen or played on your device.</p>
+          <div style="display:flex; gap:10px;"><button class="host-btn outline" onclick="closeSessionModal('hostCastModal')">Cancel</button><button class="host-btn danger" style="background:var(--cr-violet);" onclick="closeSessionModal('hostCastModal'); host.sharing = true; hostRender();">Start</button></div>
         </div>
       </div>
 
@@ -2432,7 +2484,8 @@
 
     // The camera screen opens from Broadcast or, for host and participant, from Device Setup; Back returns there.
     let streamerBackTo = 'category-selection';
-    const SCREEN_TITLES = { mesh: 'Network Contribution', relay: 'Relay', 'device-setup': 'Device Setup', login: 'Sign In', signup: 'Create Account' };
+    const SCREEN_TITLES = { mesh: 'Network Contribution', relay: 'Relay', 'device-setup': 'Device Setup', 'waiting-lobby': 'Waiting room', login: 'Sign In', signup: 'Create Account' };
+    let lobbyAdmitTimer = null;
     let isNavigatingBack = false;
     function navigateTo(screenId) {
       const previousScreen = currentScreen;
@@ -2440,11 +2493,26 @@
       isNavigatingBack = false;
       if (screenId === 'streamer' && currentScreen !== 'streamer') {
         streamerBackTo = currentScreen === 'device-setup' ? 'device-setup' : 'category-selection';
-        // Opening the camera from Start as Host turns on the host session, like the app's role argument.
-        if (currentScreen === 'device-setup' && currentSessionMode === 'host') hostStart(); else { host.on = false; hostResetFeed(); }
+        // The camera opens as a meeting for the host (from Device Setup), a guest (from the lobby) or a rejoin, like the app's role argument.
+        const meetingRole = currentScreen === 'device-setup' && currentSessionMode === 'host' ? 'host'
+          : currentScreen === 'waiting-lobby' ? 'guest' : currentScreen === 'left-session' ? host.role : null;
+        if (meetingRole) hostStart(meetingRole); else { host.on = false; hostResetFeed(); }
         hostRender();
       }
       if (currentScreen === 'streamer' && screenId !== 'streamer') camLeave();
+      if (screenId === 'device-setup') {
+        // Only guests wait to be let in; the host opens the room.
+        const isHost = currentSessionMode === 'host';
+        document.getElementById('setupStartBtn').textContent = isHost ? 'Start Session' : 'Join Session';
+        document.getElementById('setupWaitingNote').style.display = isHost ? 'none' : '';
+      }
+      if (screenId === 'waiting-lobby') {
+        const code = (document.getElementById('sessionCodeInput').value || '').trim();
+        document.getElementById('lobbyCode').textContent = code ? 'Session ' + code : '';
+        // Stand-in for the host's admit, as in WaitingLobbyScreen.kt.
+        clearTimeout(lobbyAdmitTimer);
+        lobbyAdmitTimer = setTimeout(() => { if (currentScreen === 'waiting-lobby') navigateTo('streamer'); }, 5000);
+      }
       currentScreen = screenId;
       document.querySelectorAll('.app-screen').forEach(el => el.classList.remove('active-screen', 'slide-forward', 'slide-back'));
       document.querySelectorAll('.screen-pill-btn').forEach(el => el.classList.remove('active'));
@@ -2478,7 +2546,7 @@
         ? (currentSessionMode === 'host' ? 'Start as Host' : 'Join a Session')
         : (SCREEN_TITLES[screenId] || '');
 
-      if (screenId === 'splash' || screenId === 'active-session' || screenId === 'streamer') {
+      if (screenId === 'splash' || screenId === 'active-session' || screenId === 'streamer' || screenId === 'left-session') {
         header.style.display = 'none';
         if (screenId === 'splash') {
           playSplashReveal();
@@ -2493,7 +2561,7 @@
         stopSessionTimer();
       }
 
-      if (['mesh', 'session-entry', 'device-setup', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
+      if (['mesh', 'session-entry', 'device-setup', 'waiting-lobby', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
         backBtn.style.display = 'flex';
       } else {
         backBtn.style.display = 'none';
@@ -2528,9 +2596,11 @@
       isNavigatingBack = true;
       if (currentScreen === 'streamer' && host.on) {
         isNavigatingBack = false;
-        openSessionModal('hostLeaveModal');
+        hostOpenLeave();
       } else if (currentScreen === 'streamer') {
         navigateTo(streamerBackTo);
+      } else if (currentScreen === 'waiting-lobby') {
+        navigateTo('device-setup');
       } else if (currentScreen === 'device-setup') {
         navigateTo('session-entry');
       } else if (currentScreen === 'active-session') {
@@ -2637,10 +2707,16 @@
     }
     function pickDevice(kind, option) {
       document.getElementById(DEVICE_PICKERS[kind].valueId).textContent = option;
+      if (kind === 'speaker') document.getElementById('setupSpeakerNote').textContent = '';
       closeSessionModal('devicePickerModal');
     }
 
+    // The app plays the beep through the chosen output; a headset that isn't connected is reported instead.
     function testSpeakerSound() {
+      if (document.getElementById('setupSpeakerValue').textContent === 'Bluetooth Headset') {
+        document.getElementById('setupSpeakerNote').textContent = ' · not connected';
+        return;
+      }
       const btn = document.getElementById('speakerTestBtn');
       const originalText = btn.innerHTML;
       btn.textContent = 'Playing…';
@@ -2680,8 +2756,9 @@
       }, 700);
     }
 
+    // The host opens the meeting; a participant waits in the lobby until the host lets them in.
     function startActiveSession() {
-      navigateTo('streamer');
+      navigateTo(currentSessionMode === 'host' ? 'streamer' : 'waiting-lobby');
     }
 
     // ── Active Live Session (Screenshot 2) Controls ──
@@ -3143,58 +3220,46 @@
       if (isHidden) setTimeout(() => hint.classList.remove('show'), 1600);
     }
 
-    // ── Host session (mirrors HostSessionUi.kt / StreamerModels.kt) ──
-    // Sample guests stand in for the session server's participant list, as in the app.
-    const HOST_ID = 0;
-    const MAX_ON_SCREEN = 6;
+    // ── Meeting (mirrors HostSessionUi.kt / StreamerModels.kt) ──
+    // Sample people stand in for the session server's participant list, as in the app.
     const HOST_SAMPLE_GUESTS = [
       { id: 1, name: 'Priya Sharma', photo: 'images/category/category_guest_1.webp' },
-      { id: 2, name: 'Arjun Rao', photo: 'images/category/category_guest_2.webp', muted: true },
-      { id: 4, name: 'Meera Iyer' }, { id: 5, name: 'Sameer Khan' }, { id: 6, name: 'Lakshmi Nair' }, { id: 7, name: 'Vikram Singh' }
+      { id: 2, name: 'Arjun Rao', photo: 'images/category/category_guest_2.webp', muted: true }
     ];
-    const HOST_SAMPLE_WAITING = [{ id: 3, name: 'Ravi Kumar', photo: 'images/category/category_host.webp' }];
+    const HOST_SAMPLE_WAITING = [
+      { id: 3, name: 'Ravi Kumar', photo: 'images/category/category_host.webp' }, { id: 4, name: 'Meera Iyer' }, { id: 5, name: 'Sameer Khan' },
+      { id: 6, name: 'Lakshmi Nair' }, { id: 7, name: 'Vikram Singh' }, { id: 8, name: 'Anjali Desai' }, { id: 9, name: 'Rahul Menon' }, { id: 10, name: 'Deepa Pillai' }
+    ];
+    // What a guest sees once admitted: the host and the other guests.
+    const GUEST_SAMPLE_VIEW = [{ id: 11, name: 'Ravi Kumar (Host)', photo: 'images/category/category_host.webp' }, ...HOST_SAMPLE_GUESTS];
+    const INVITE_QUALITIES = ['1080p', '720p', '480p', '360p', '240p', '180p', '120p'];
     const AVATAR_COLORS = ['#7928CA', '#3031CB', '#0E7490', '#B45309', '#15803D', '#BE185D'];
-    const gridCells = (columns, rows) => Array.from({ length: columns * rows }, (_, i) => [(i % columns) / columns, Math.floor(i / columns) / rows, 1 / columns, 1 / rows]);
-    const largeWithColumn = (count, width) => [[0, 0, width, 1], ...Array.from({ length: count }, (_, i) => [width, i / count, 1 - width, 1 / count])];
-    // Cells are [x, y, width, height] as fractions of the 16:9 frame; slot 0 is the main person.
-    // The family is the style the host picks; when the number changes, the same style's layout is used.
-    const STAGE_LAYOUTS = [
-      ['full', 'Full screen', null, gridCells(1, 1)],
-      ['side', '1×2 side by side', 'grid', gridCells(2, 1)],
-      ['stacked', '2×1 stacked', 'stacked', gridCells(1, 2)],
-      ['pip', 'Picture in picture', 'large', [[0, 0, 1, 1], [0.70, 0.66, 0.27, 0.30]]],
-      ['large2', '1 large + 2', 'large', largeWithColumn(2, 2 / 3)],
-      ['row3', '1×3 row', 'grid', gridCells(3, 1)],
-      ['stack3', '3×1 stacked', 'stacked', gridCells(1, 3)],
-      ['grid22', '2×2 grid', 'grid', gridCells(2, 2)],
-      ['large3', '1 large + 3', 'large', largeWithColumn(3, 0.75)],
-      ['two3', '2 + 3', 'grid', [...[0, 1].map(i => [i / 2, 0, 0.5, 0.5]), ...[0, 1, 2].map(i => [i / 3, 0.5, 1 / 3, 0.5])]],
-      ['large4', '1 large + 4', 'large', largeWithColumn(4, 0.75)],
-      ['grid32', '3×2 grid', 'grid', gridCells(3, 2)],
-      ['grid23', '2×3 grid', 'stacked', gridCells(2, 3)],
-      ['large5', '1 large + 5', 'large', [[0, 0, 2 / 3, 2 / 3], ...[[2, 0], [2, 1], [0, 2], [1, 2], [2, 2]].map(([c, r]) => [c / 3, r / 3, 1 / 3, 1 / 3])]]
-    ].map(([key, label, family, cells]) => ({ key, label, family, cells }));
-    const layoutsFor = count => STAGE_LAYOUTS.filter(layout => layout.cells.length === count);
-    const host = { on: false, layoutKey: 'full', family: 'large', stage: [HOST_ID], camOff: false, guests: [], waiting: [], invites: [], tab: 'incall',
-      quality: '720p', direct: false, rendered: '', replaceFor: null };
-    const hostLayout = () => STAGE_LAYOUTS.find(layout => layout.key === host.layoutKey);
+    const host = { on: false, role: 'host', camOff: false, sharing: false, guests: [], waiting: [], invites: [], tab: 'incall',
+      quality: '720p', direct: false, rendered: '', startedAt: 0 };
     const hostGuest = id => host.guests.find(guest => guest.id === id);
-    const hostRoom = () => host.guests.filter(guest => !host.stage.includes(guest.id));
     const cellStyle = ([x, y, w, h]) => ({ left: x * 100 + '%', top: y * 100 + '%', width: w * 100 + '%', height: h * 100 + '%' });
 
-    // Keeps the chosen layout when it still fits the number on screen, otherwise picks that count's first layout.
-    function hostSetStage(stage) {
-      host.stage = stage;
-      if (hostLayout().cells.length === stage.length) return;
-      const options = layoutsFor(stage.length);
-      host.layoutKey = (options.find(layout => layout.family === host.family) || options[0]).key;
+    // Gallery tiles for `count` people, as in Teams or Zoom (galleryCells in StreamerModels.kt):
+    // an even grid that grows with the count and centres the last row; cells are [x, y, width, height] fractions.
+    function galleryCells(count, isLandscape) {
+      const columns = isLandscape ? (count <= 1 ? 1 : count <= 4 ? 2 : count <= 9 ? 3 : 4) : (count <= 2 ? 1 : count <= 6 ? 2 : 3);
+      const rows = Math.ceil(count / columns);
+      const lastRowCount = count - columns * (rows - 1);
+      return Array.from({ length: count }, (_, index) => {
+        const row = Math.floor(index / columns);
+        const rowOffset = row === rows - 1 ? (columns - lastRowCount) / (2 * columns) : 0;
+        return [rowOffset + (index % columns) / columns, row / rows, 1 / columns, 1 / rows];
+      });
     }
 
-    function hostStart() {
-      Object.assign(host, { on: true, camOff: false, tab: 'incall', invites: [], rendered: '', replaceFor: null, layoutKey: 'full', family: 'large',
-        guests: HOST_SAMPLE_GUESTS.map(guest => ({ muted: false, ...guest })), waiting: HOST_SAMPLE_WAITING.map(guest => ({ muted: false, ...guest })) });
-      hostSetStage([HOST_ID, 1, 2]);
+    // role: 'host' opens the room; 'guest' arrives from the waiting lobby.
+    function hostStart(role) {
+      Object.assign(host, { on: true, role, camOff: false, sharing: false, tab: 'incall', invites: [], rendered: '', startedAt: Date.now(),
+        guests: (role === 'host' ? HOST_SAMPLE_GUESTS : GUEST_SAMPLE_VIEW).map(guest => ({ muted: false, ...guest })),
+        waiting: role === 'host' ? HOST_SAMPLE_WAITING.map(guest => ({ muted: false, ...guest })) : [] });
+      cam.front = true;
       document.getElementById('camProgram').prepend(document.getElementById('camFeed'));
+      document.getElementById('cam').classList.remove('bars-hidden');
       hostScheduleHide();
     }
 
@@ -3211,36 +3276,43 @@
         : `<span class="av" style="width:${size}px;height:${size}px;background:${AVATAR_COLORS[guest.id % AVATAR_COLORS.length]};">${initials}</span>`;
     }
 
+    const formatCallTime = seconds => {
+      const hours = Math.floor(seconds / 3600), minutes = String(Math.floor(seconds % 3600 / 60)).padStart(2, '0'), secs = String(seconds % 60).padStart(2, '0');
+      return hours > 0 ? `${hours}:${minutes}:${secs}` : `${minutes}:${secs}`;
+    };
+
     function hostRender() {
       const el = document.getElementById('cam');
       el.classList.toggle('host', host.on);
+      el.classList.toggle('guest', host.on && host.role === 'guest');
       el.classList.toggle('cam-off', host.on && host.camOff);
       if (!host.on) { document.getElementById('camGuests').innerHTML = ''; host.rendered = ''; el.classList.remove('bars-hidden'); return; }
-      document.getElementById('hbCode').textContent = (document.getElementById('sessionCodeInput').value || '').trim() || 'Session';
+      document.getElementById('hbTime').textContent = formatCallTime(Math.floor((Date.now() - host.startedAt) / 1000));
       const video = document.getElementById('hbVideo');
       video.classList.toggle('off', host.camOff);
       video.querySelector('.material-icons').textContent = host.camOff ? 'videocam_off' : 'videocam';
       const mic = document.getElementById('hbMic');
       mic.classList.toggle('off', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
-      document.getElementById('hbPeopleLabel').textContent = 'People ' + (host.guests.length + 1);
+      const share = document.getElementById('hbShareBtn');
+      share.classList.toggle('off', host.sharing);
+      share.querySelector('small').textContent = host.sharing ? 'Stop share' : 'Share';
+      document.getElementById('hbShare').hidden = !host.sharing;
+      document.getElementById('hbPeopleCount').textContent = host.guests.length + 1;
       document.getElementById('hbPeopleDot').hidden = host.waiting.length === 0;
 
-      const cells = hostLayout().cells;
-      const hostSlot = host.stage.indexOf(HOST_ID);
-      Object.assign(document.getElementById('camFeed').style, cellStyle(cells[hostSlot]), { zIndex: hostSlot });
-      Object.assign(document.getElementById('camCamOff').style, cellStyle(cells[hostSlot]), { zIndex: hostSlot });
+      const cells = galleryCells(host.guests.length + 1, el.classList.contains('landscape'));
+      ['camFeed', 'camCamOff', 'camSelf'].forEach(id => Object.assign(document.getElementById(id).style, cellStyle(cells[0])));
+      document.getElementById('camSelf').classList.toggle('sharing', host.sharing);
       // Rebuild tiles only when something changed, so photos don't flicker on every clock tick.
-      const key = JSON.stringify([host.layoutKey, host.stage, host.guests]);
+      const key = JSON.stringify([cells, host.guests]);
       if (key !== host.rendered) {
         host.rendered = key;
-        document.getElementById('camGuests').innerHTML = host.stage.map((id, slot) => {
-          const guest = hostGuest(id);
-          if (!guest) return '';
-          const [, , w, h] = cells[slot];
+        document.getElementById('camGuests').innerHTML = host.guests.map((guest, index) => {
+          const [, , w, h] = cells[index + 1];
           const isCompact = w < 0.34 || h < 0.34;
-          const style = Object.entries(cellStyle(cells[slot])).map(([k, v]) => `${k}:${v}`).join(';');
-          return `<div class="tile" style="${style};z-index:${slot};" onclick="event.stopPropagation(); hostOpenGuest(${id})">` +
+          const style = Object.entries(cellStyle(cells[index + 1])).map(([k, v]) => `${k}:${v}`).join(';');
+          return `<div class="tile" style="${style};" onclick="event.stopPropagation(); hostTileTap(${guest.id})">` +
             (guest.photo ? `<img class="photo" src="${guest.photo}" alt="">` : hostAvatar(guest, isCompact ? 28 : 44)) +
             `<b>${guest.muted ? '<span class="material-icons">mic_off</span>' : ''}${isCompact ? guest.name.split(' ')[0] : guest.name}</b></div>`;
         }).join('');
@@ -3270,86 +3342,62 @@
         host.hideTimer = setTimeout(() => { if (host.on) el.classList.add('bars-hidden'); }, 5000);
       }
     }
-
-    function hostOpenLayout() {
-      document.getElementById('hostLayoutBody').innerHTML =
-        `<h3>Layout</h3><p class="host-section" style="padding-top:0;">${host.stage.length} on screen</p>` + layoutsFor(host.stage.length).map(layout =>
-          `<button class="host-action ${layout.key === host.layoutKey ? 'on' : ''}" onclick="hostSetLayout('${layout.key}')">` +
-          `<span class="layout-diag">${layout.cells.map(cell => `<i style="${Object.entries(cellStyle(cell)).map(([k, v]) => k + ':' + v).join(';')}"></i>`).join('')}</span>` +
-          `${layout.label}${layout.key === host.layoutKey ? '<span class="material-icons" style="margin-left:auto; color:var(--cr-violet);">check</span>' : ''}</button>`).join('');
-      openSessionModal('hostLayoutModal');
+    // While the bars are hidden the first tap anywhere only brings them back; guests' tiles do nothing else.
+    function hostTileTap(id) {
+      if (document.getElementById('cam').classList.contains('bars-hidden') || host.role !== 'host') hostToggleBars(); else hostOpenGuest(id);
     }
-    function hostChanged() { hostRender(); if (document.getElementById('hostPeopleModal').classList.contains('open')) hostRenderSheet(); }
-    function hostSetLayout(key) { host.layoutKey = key; host.family = hostLayout().family || host.family; closeSessionModal('hostLayoutModal'); hostRender(); }
+
+    function hostChanged() { hostRender(); if (document.getElementById('hostPeoplePage').classList.contains('open')) hostRenderSheet(); }
     function hostToggleCamera() { host.camOff = !host.camOff; hostRender(); }
-    // Admitted guests wait in the room; the host brings them on screen.
+    // The app asks Android first; the simulator shows the same system prompt.
+    function hostToggleShare() { if (host.sharing) { host.sharing = false; hostRender(); } else openSessionModal('hostCastModal'); }
+    // Admitted guests join the gallery straight away.
     function hostAdmit(id) { const guest = host.waiting.find(g => g.id === id); host.waiting = host.waiting.filter(g => g.id !== id); host.guests.push(guest); hostChanged(); }
     function hostDeny(id) { host.waiting = host.waiting.filter(g => g.id !== id); hostChanged(); }
     function hostAdmitAll() { host.guests.push(...host.waiting); host.waiting = []; hostChanged(); }
     function hostToggleMute(id) { const guest = hostGuest(id); guest.muted = !guest.muted; hostChanged(); }
-    function hostRemove(id) { host.guests = host.guests.filter(g => g.id !== id); hostSetStage(host.stage.filter(s => s !== id)); hostChanged(); }
-    function hostRemoveFromScreen(id) { hostSetStage(host.stage.filter(s => s !== id)); hostChanged(); }
-    function hostMakeMain(id) { hostSetStage([id, ...host.stage.filter(s => s !== id)]); hostChanged(); }
-    function hostAddToScreen(id) {
-      if (host.stage.length < MAX_ON_SCREEN) { hostSetStage([...host.stage, id]); hostChanged(); return; }
-      host.replaceFor = id;
-      document.getElementById('hostReplaceText').textContent = `Choose who leaves the screen for ${hostGuest(id).name}. They stay in the room.`;
-      document.getElementById('hostReplaceList').innerHTML = host.stage.filter(s => s !== HOST_ID).map(s => hostGuest(s)).map(guest =>
-        `<button class="host-action" onclick="hostReplace(${guest.id})">${hostAvatar(guest, 32)}${guest.name}</button>`).join('');
-      openSessionModal('hostReplaceModal');
-    }
-    function hostReplace(leavingId) {
-      hostSetStage(host.stage.map(s => s === leavingId ? host.replaceFor : s));
-      closeSessionModal('hostReplaceModal');
-      hostChanged();
-    }
-    // Tap on a guest's tile (or ⋮ in the sheet): what the host can do with them.
+    function hostRemove(id) { host.guests = host.guests.filter(g => g.id !== id); hostChanged(); }
+    // Tap on a guest's tile (or ⋮ in the people page): what the host can do with them.
     function hostOpenGuest(id) {
       const guest = hostGuest(id);
-      const isOnScreen = host.stage.includes(id);
       const action = (icon, label, onclick, extra = '') =>
         `<button class="host-action ${extra}" onclick="closeSessionModal('hostGuestModal'); ${onclick}"><span class="material-icons">${icon}</span>${label}</button>`;
       document.getElementById('hostGuestBody').innerHTML =
         `<div class="host-row">${hostAvatar(guest, 40)}<div style="font-weight:700;">${guest.name}</div></div>` +
-        (isOnScreen && host.stage[0] !== id ? action('star', 'Make main', `hostMakeMain(${id})`) : '') +
-        (!isOnScreen ? action('add_circle', 'Add to screen', `hostAddToScreen(${id})`) : '') +
         action(guest.muted ? 'mic' : 'mic_off', guest.muted ? 'Unmute' : 'Mute', `hostToggleMute(${id})`) +
-        (isOnScreen ? action('remove_from_queue', 'Remove from screen', `hostRemoveFromScreen(${id})`) : '') +
         action('person_remove', 'Remove from session', `hostRemove(${id})`, 'danger');
       openSessionModal('hostGuestModal');
     }
 
-    function hostOpenSheet(tab) { host.tab = tab; hostRenderSheet(); openSessionModal('hostPeopleModal'); }
+    function hostOpenSheet(tab) { host.tab = host.role === 'host' ? tab : 'incall'; hostRenderSheet(); document.getElementById('hostPeoplePage').classList.add('open'); }
+    function hostCloseSheet() { document.getElementById('hostPeoplePage').classList.remove('open'); }
     function hostRenderSheet() {
+      const isHost = host.role === 'host';
       const tabs = [['incall', `In call (${host.guests.length + 1})`], ['waiting', `Waiting (${host.waiting.length})`], ['add', 'Add']];
-      document.getElementById('hostTabs').innerHTML = tabs.map(([key, label]) =>
-        `<button class="${key === host.tab ? 'on' : ''}" onclick="host.tab='${key}'; hostRenderSheet()">${label}</button>`).join('');
+      document.getElementById('hostTabs').innerHTML = isHost ? tabs.map(([key, label]) =>
+        `<button class="${key === host.tab ? 'on' : ''}" onclick="host.tab='${key}'; hostRenderSheet()">${label}</button>`).join('') : '';
       const icon = (name, onclick, extra = '') => `<button class="host-icon ${extra}" onclick="${onclick}"><span class="material-icons">${name}</span></button>`;
       let html = '';
       if (host.tab === 'incall') {
-        const isHostMain = host.stage[0] === HOST_ID;
-        html = `<p class="host-section">On screen · ${host.stage.length} of ${MAX_ON_SCREEN}</p>` + host.stage.map(id => id === HOST_ID
-          ? `<div class="host-row"><span class="me">You</span><div>You<small>${isHostMain ? 'Host · main' : 'Host'}</small></div>` +
-            (isHostMain ? '' : `<button class="host-btn small-text" onclick="hostMakeMain(${HOST_ID})">Make main</button>`) + '</div>'
-          : (guest => `<div class="host-row">${hostAvatar(guest, 40)}<div>${guest.name}<small>${[host.stage[0] === id ? 'Main' : '', guest.muted ? 'Muted' : ''].filter(Boolean).join(' · ') || 'Guest'}</small></div>` +
-            icon('more_vert', `hostOpenGuest(${id})`) + '</div>')(hostGuest(id))).join('') +
-          `<p class="host-section">In the room · ${hostRoom().length}</p>` +
-          (hostRoom().length ? hostRoom().map(guest => `<div class="host-row">${hostAvatar(guest, 40)}<div>${guest.name}</div>` +
-            `<button class="host-btn tonal" onclick="hostAddToScreen(${guest.id})">Add to screen</button>` + icon('more_vert', `hostOpenGuest(${guest.id})`) + '</div>').join('')
-            : '<p class="host-empty" style="padding-top:8px;">Admitted guests wait here until you add them to the screen.</p>');
+        html = `<div class="host-row"><span class="me">You</span><div>You<small>${[isHost ? 'Host' : 'Guest', cam.mic ? '' : 'Muted'].filter(Boolean).join(' · ')}</small></div></div>` +
+          host.guests.map(guest => `<div class="host-row">${hostAvatar(guest, 40)}<div>${guest.name}${guest.muted ? '<small>Muted</small>' : ''}</div>` +
+            (isHost ? icon('more_vert', `hostOpenGuest(${guest.id})`) : '') + '</div>').join('');
       } else if (host.tab === 'waiting') {
         html = host.waiting.length === 0 ? '<p class="host-empty">No one is waiting.</p>'
-          : (host.waiting.length > 1 ? '<div style="padding:8px 8px 0;"><button class="host-btn small-text" onclick="hostAdmitAll()">Admit all</button></div>' : '') +
+          : (host.waiting.length > 1 ? `<div style="padding:8px 8px 0;"><button class="host-btn small-text" onclick="hostAdmitAll()">Admit all (${host.waiting.length})</button></div>` : '') +
             host.waiting.map(guest => `<div class="host-row">${hostAvatar(guest, 40)}<div>${guest.name}</div>` +
               `<button class="host-btn small-text" onclick="hostDeny(${guest.id})">Deny</button><button class="host-btn tonal" onclick="hostAdmit(${guest.id})">Admit</button></div>`).join('');
       } else {
+        const latest = host.invites[0];
         html = `<div class="host-add">
             <input type="text" id="hostGuestName" placeholder="Guest name" oninput="document.getElementById('hostCreateBtn').disabled = !this.value.trim()">
             <label>Video quality</label>
-            <div class="host-chips">${['1080p', '720p', '480p'].map(q => `<button class="${q === host.quality ? 'on' : ''}" onclick="host.quality='${q}'; hostRenderSheet()">${q}</button>`).join('')}</div>
+            <div class="host-chips">${INVITE_QUALITIES.map(q => `<button class="${q === host.quality ? 'on' : ''}" onclick="host.quality='${q}'; hostRenderSheet()">${q}</button>`).join('')}</div>
             <div class="host-direct"><span>Join directly<small>Skips the waiting room</small></span><div class="toggle-switch ${host.direct ? 'active' : ''}" onclick="host.direct=!host.direct; this.classList.toggle('active')"></div></div>
-            <button class="btn-gradient" id="hostCreateBtn" disabled onclick="hostCreateInvite()">Create invite link</button>
-          </div>` + (host.invites.length ? '<p class="list-section-title" style="margin-top:0;">Invites</p>' : '') +
+            <button class="btn-gradient" id="hostCreateBtn" disabled onclick="hostCreateInvite()">Generate link</button>` +
+          (latest ? `<div class="host-latest"><b>Invite link for ${latest.name}</b><span>${latest.url}</span>` +
+            `<div><button class="host-btn outline" onclick="hostCopyInvite(0)">Copy</button><button class="host-btn danger" style="background:var(--cr-violet);" onclick="hostShareInvite(0)">Share</button></div></div>` : '') +
+          '</div>' + (host.invites.length ? `<p class="list-section-title" style="margin-top:0;">All links (${host.invites.length})</p>` : '') +
           host.invites.map((invite, index) => `<div class="host-row"><div>${invite.name} · ${invite.quality}${invite.direct ? ' · joins directly' : ''}<small>${invite.url}</small></div>` +
             icon('content_copy', `hostCopyInvite(${index})`) + icon('share', `hostShareInvite(${index})`) + '</div>').join('');
       }
@@ -3367,14 +3415,26 @@
       const text = `Join my live debate on CloudReel: ${host.invites[index].url}`;
       if (navigator.share) navigator.share({ text }).catch(() => {}); else { navigator.clipboard?.writeText(text); alert('Link copied to share'); }
     }
-    function hostLeave() { closeSessionModal('hostLeaveModal'); isNavigatingBack = true; navigateTo(streamerBackTo); }
-    function hostEnd() { camStop(); hostLeave(); }
+    function hostOpenLeave() {
+      const isHost = host.role === 'host';
+      document.getElementById('hostLeaveText').textContent = isHost
+        ? "Leave on your own and the guests stay connected, or end it for everyone and close the session. Ending can't be undone."
+        : 'You can rejoin with the same link while the session is active.';
+      document.getElementById('hostEndBtn').hidden = !isHost;
+      document.getElementById('hostLeaveBtn').className = 'host-btn ' + (isHost ? 'outline' : 'danger');
+      openSessionModal('hostLeaveModal');
+    }
+    // Leaving keeps the session running, so offer to rejoin; ending closes it.
+    function hostLeave() { closeSessionModal('hostLeaveModal'); navigateTo('left-session'); }
+    function hostEnd() { closeSessionModal('hostLeaveModal'); navigateTo('category-selection'); }
 
     // Leaving the camera ends the session and restores portrait, like the app does.
     function camLeave() {
       host.on = false;
+      host.sharing = false;
       hostResetFeed();
-      ['hostPeopleModal', 'hostLeaveModal', 'hostGuestModal', 'hostReplaceModal', 'hostLayoutModal'].forEach(closeSessionModal);
+      hostCloseSheet();
+      ['hostLeaveModal', 'hostGuestModal', 'hostCastModal'].forEach(closeSessionModal);
       camStop();
       document.getElementById('mobileDevice').classList.remove('landscape');
       const el = document.getElementById('cam');
