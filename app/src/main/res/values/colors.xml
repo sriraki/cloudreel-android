@@ -7,6 +7,8 @@
     
     <!-- Light Mode -->
     <color name="cr_background_light">#FFFFFF</color>
+    <!-- Background of res/raw/splash_reveal.mp4 -->
+    <color name="cr_splash_background">#0D0C1B</color>
     <color name="cr_surface_light">#F8F9FA</color>
     <color name="cr_border_light">#E5E7EB</color>
     <color name="cr_text_primary_light">#111111</color>

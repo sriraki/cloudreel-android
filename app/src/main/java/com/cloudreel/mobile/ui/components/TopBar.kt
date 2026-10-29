@@ -1,31 +1,52 @@
 package com.cloudreel.mobile.ui.components
 
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ExitToApp
 import androidx.compose.material.icons.filled.DarkMode
 import androidx.compose.material.icons.filled.LightMode
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.cloudreel.mobile.R
 import com.cloudreel.mobile.theme.LocalThemeController
+
+/** Standard app bar for every inner screen: back arrow and page title. The logo header stays on the home screen only. */
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun CloudReelTopBar(
+    title: String,
+    onBackClick: () -> Unit,
+    actions: @Composable RowScope.() -> Unit = {}
+) {
+    TopAppBar(
+        title = { Text(title, maxLines = 1, overflow = TextOverflow.Ellipsis) },
+        navigationIcon = {
+            IconButton(onClick = onBackClick) {
+                Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = stringResource(R.string.back_desc))
+            }
+        },
+        actions = actions,
+        colors = TopAppBarDefaults.topAppBarColors(containerColor = MaterialTheme.colorScheme.background)
+    )
+}
 
 @Composable
 fun CloudReelHeader(
@@ -42,7 +63,7 @@ fun CloudReelHeader(
         modifier = modifier
             .fillMaxWidth()
             .statusBarsPadding()
-            .padding(horizontal = 20.dp, vertical = 12.dp),
+            .padding(start = 16.dp, end = 4.dp, top = 4.dp, bottom = 4.dp),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
@@ -70,53 +91,23 @@ fun CloudReelHeader(
             )
         }
 
-        // Top-right Actions: Theme Toggle + optional Sign Out
-        Row(
-            verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
-        ) {
-            // Theme toggle matching Screenshot 2 (circular moon/sun icon)
-            Box(
-                modifier = Modifier
-                    .size(38.dp)
-                    .clip(CircleShape)
-                    .background(MaterialTheme.colorScheme.surface)
-                    .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
-                contentAlignment = Alignment.Center
-            ) {
-                IconButton(
-                    onClick = { themeController.toggleTheme() },
-                    modifier = Modifier.size(38.dp)
-                ) {
-                    Icon(
-                        imageVector = if (isDark) Icons.Default.LightMode else Icons.Default.DarkMode,
-                        contentDescription = stringResource(R.string.theme_toggle_desc),
-                        tint = MaterialTheme.colorScheme.onBackground,
-                        modifier = Modifier.size(18.dp)
-                    )
-                }
+        // Top-right actions: theme toggle + optional sign out
+        Row(verticalAlignment = Alignment.CenterVertically) {
+            IconButton(onClick = { themeController.toggleTheme() }) {
+                Icon(
+                    imageVector = if (isDark) Icons.Default.LightMode else Icons.Default.DarkMode,
+                    contentDescription = stringResource(R.string.theme_toggle_desc),
+                    tint = MaterialTheme.colorScheme.onBackground
+                )
             }
 
             if (showSignOut) {
-                Box(
-                    modifier = Modifier
-                        .size(38.dp)
-                        .clip(CircleShape)
-                        .background(MaterialTheme.colorScheme.surface)
-                        .border(1.dp, MaterialTheme.colorScheme.outline, CircleShape),
-                    contentAlignment = Alignment.Center
-                ) {
-                    IconButton(
-                        onClick = onSignOutClick,
-                        modifier = Modifier.size(38.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.AutoMirrored.Filled.ExitToApp,
-                            contentDescription = stringResource(R.string.sign_out_desc),
-                            tint = MaterialTheme.colorScheme.onBackground,
-                            modifier = Modifier.size(18.dp)
-                        )
-                    }
+                IconButton(onClick = onSignOutClick) {
+                    Icon(
+                        imageVector = Icons.AutoMirrored.Filled.ExitToApp,
+                        contentDescription = stringResource(R.string.sign_out_desc),
+                        tint = MaterialTheme.colorScheme.onBackground
+                    )
                 }
             }
         }

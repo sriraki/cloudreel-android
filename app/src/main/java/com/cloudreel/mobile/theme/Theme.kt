@@ -9,6 +9,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.compositionLocalOf
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
@@ -32,8 +33,8 @@ private val LightColorScheme = lightColorScheme(
 )
 
 private val DarkColorScheme = darkColorScheme(
-    primary = CRViolet,
-    onPrimary = BackgroundLight,
+    primary = CRViolet.liftedForDark(),
+    onPrimary = BadgeBackgroundDark,
     primaryContainer = BadgeBackgroundDark,
     onPrimaryContainer = BadgeTextDark,
     secondary = CRMagenta,
@@ -48,6 +49,10 @@ private val DarkColorScheme = darkColorScheme(
     error = ErrorRed,
     onError = BackgroundLight
 )
+
+/** This accent as drawn in the current theme: unchanged in light mode, lifted in dark mode. */
+@Composable
+fun Color.forTheme(): Color = if (LocalThemeController.current.isDark) liftedForDark() else this
 
 /** Theme controller to allow manual in-app toggle as seen in header moon icon */
 val LocalThemeController = compositionLocalOf {

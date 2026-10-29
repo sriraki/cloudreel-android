@@ -29,33 +29,22 @@
     <string name="sign_in_link">Sign In</string>
 
     <!-- Category Selection Screen -->
-    <string name="category_selection_heading">How would you like to use CloudReel?</string>
-    <string name="category_selection_subtitle">Choose a category to get started.</string>
-    <string name="category_live_sessions_title">Live Sessions</string>
-    <string name="category_live_sessions_desc">Host a session or join an existing one.</string>
-    <string name="category_broadcast_title">Broadcast</string>
-    <string name="category_broadcast_desc">Stream live video or contribute your mobile connection to strengthen a live stream.</string>
 
     <!-- Live Sessions Screen -->
-    <string name="live_sessions_heading">Live Sessions</string>
-    <string name="live_sessions_subtitle">Host or join an interactive live session.</string>
 
     <!-- Broadcast Screen -->
-    <string name="broadcast_heading">Broadcast</string>
-    <string name="broadcast_subtitle">Live streaming &amp; network contribution.</string>
 
     <!-- Broadcast Options -->
     <string name="streamer_title">Streamer</string>
     <string name="streamer_description">Go live and stream video.</string>
     <string name="relay_title">Relay</string>
-    <string name="relay_description">Contribute your connection to support a live stream.</string>
+    <string name="relay_description">Lend your mobile data to a live stream.</string>
     <string name="mesh_title">Network Contribution</string>
-    <string name="mesh_tech_badge">Cellular Bonding Mesh</string>
-    <string name="mesh_description">Share your mobile connection to strengthen a live stream.</string>
+    <string name="mesh_description">Boost a stream with your network.</string>
 
     <!-- Live Sessions Options -->
     <string name="start_as_host_title">Start as Host</string>
-    <string name="start_as_host_subtitle">Create and host a live session.</string>
+    <string name="start_as_host_subtitle">Create a session and invite guests.</string>
     <string name="join_as_participant_title">Join as Participant</string>
     <string name="join_as_participant_subtitle">Join an existing live session.</string>
 
@@ -67,10 +56,8 @@
 
     <!-- Session URL/Code Entry -->
     <string name="host_mode_title">Start as Host</string>
-    <string name="host_mode_subtitle">Enter the session URL or code to continue.</string>
     <string name="host_mode_button">Continue as Host</string>
     <string name="participant_mode_title">Join a Session</string>
-    <string name="participant_mode_subtitle">Enter the session URL or code to join.</string>
     <string name="participant_mode_button">Join Session</string>
     <string name="session_code_label">Session URL or Code</string>
     <string name="session_code_placeholder">e.g. CR-84920 or https://live.cloudreel.com/room</string>
@@ -80,13 +67,13 @@
 
     <!-- Device Setup Screen -->
     <string name="device_setup_title">Device Setup</string>
-    <string name="device_setup_subtitle">Check your camera and microphone</string>
     <string name="device_setup_mic_label">Microphone</string>
     <string name="device_setup_mic_value">Built-in Microphone</string>
     <string name="device_setup_speaker_label">Speaker</string>
     <string name="device_setup_camera_label">Camera</string>
     <string name="device_setup_test_button">Test</string>
     <string name="device_setup_start_session">Start Session</string>
+    <string name="device_setup_join_session">Join Session</string>
     <string name="device_setup_waiting_room_notice">You may be placed in a waiting room</string>
 
     <!-- Active Live Session Screen -->

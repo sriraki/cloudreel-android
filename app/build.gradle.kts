@@ -15,6 +15,9 @@ android {
         versionCode = 1
         versionName = "1.0.0"
 
+        // Redirect scheme for Microsoft sign-in: com.cloudreel.mobile://oauth2redirect
+        manifestPlaceholders["appAuthRedirectScheme"] = "com.cloudreel.mobile"
+
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }
 
@@ -55,6 +58,16 @@ dependencies {
     implementation(libs.androidx.security.crypto)
     implementation(libs.androidx.datastore.preferences)
     implementation(libs.kotlinx.coroutines.android)
+
+    // Camera (live preview + local recording)
+    implementation(libs.androidx.camera.core)
+    implementation(libs.androidx.camera.camera2)
+    implementation(libs.androidx.camera.lifecycle)
+    implementation(libs.androidx.camera.view)
+    implementation(libs.androidx.camera.video)
+
+    // Microsoft sign-in (OIDC authorization code + PKCE)
+    implementation(libs.appauth)
 
     // Networking & APIs
     implementation(libs.retrofit)

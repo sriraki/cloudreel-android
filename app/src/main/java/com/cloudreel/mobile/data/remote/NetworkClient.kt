@@ -21,7 +21,8 @@ object NetworkClient {
     private const val BASE_URL = "https://fastapi1.janya.video/"
 
     private val loggingInterceptor = HttpLoggingInterceptor().apply {
-        level = HttpLoggingInterceptor.Level.BODY
+        // BASIC keeps passwords and tokens out of logcat
+        level = HttpLoggingInterceptor.Level.BASIC
     }
 
     val okHttpClient = OkHttpClient.Builder()
@@ -78,6 +79,36 @@ class AuthRepository(
                         e.localizedMessage ?: "Network connection error. Please verify credentials."
                     )
                 }
+            }
+        }
+
+    /** Same steps as the web app: validate the Microsoft id token, then log in with authType MSAL. */
+    suspend fun loginWithMicrosoft(idToken: String, email: String): AuthResult<UserData> =
+        withContext(Dispatchers.IO) {
+            try {
+                val validation = apiService.validateToken("Bearer $idToken")
+                if (!validation.isSuccessful) {
+                    return@withContext AuthResult.Error(
+                        "Your Microsoft account was not accepted (${validation.code()})"
+                    )
+                }
+                val textPlain = "text/plain".toMediaTypeOrNull()
+                val response = apiService.login(
+                    email.toRequestBody(textPlain),
+                    null,
+                    "MSAL".toRequestBody(textPlain)
+                )
+                val body = response.body()
+                if (response.isSuccessful && body != null) {
+                    sessionManager.saveSession(body.data)
+                    AuthResult.Success(body.data)
+                } else {
+                    AuthResult.Error(
+                        response.errorBody()?.string() ?: "Authentication failed (${response.code()})"
+                    )
+                }
+            } catch (e: Exception) {
+                AuthResult.Error(e.localizedMessage ?: "Network connection error. Please try again.")
             }
         }
 

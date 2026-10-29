@@ -1,23 +1,17 @@
 package com.cloudreel.mobile.ui.session
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
@@ -25,13 +19,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
 import androidx.compose.material.icons.filled.Clear
-import androidx.compose.material.icons.filled.Group
 import androidx.compose.material.icons.filled.Info
 import androidx.compose.material.icons.filled.Link
-import androidx.compose.material.icons.filled.Podcasts
-import androidx.compose.material.icons.filled.Shield
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -47,23 +36,21 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.cloudreel.mobile.R
-import com.cloudreel.mobile.theme.CRBrandGradient
 import com.cloudreel.mobile.theme.CRPurple
 import com.cloudreel.mobile.theme.CRViolet
 import com.cloudreel.mobile.theme.ErrorRed
-import com.cloudreel.mobile.ui.components.CloudReelHeader
-import com.cloudreel.mobile.ui.components.EnterprisePlatformBadge
+import com.cloudreel.mobile.theme.forTheme
+import com.cloudreel.mobile.ui.components.BottomActionBar
+import com.cloudreel.mobile.ui.components.CloudReelTopBar
 import com.cloudreel.mobile.ui.components.GradientButton
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
@@ -138,173 +125,109 @@ fun SessionEntryScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Header with Back button and CloudReel Logo
-            CloudReelHeader(
-                showBackButton = true,
+            CloudReelTopBar(
+                title = if (isHost) {
+                    stringResource(R.string.host_mode_title)
+                } else {
+                    stringResource(R.string.participant_mode_title)
+                },
                 onBackClick = onNavigateBack
             )
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp)
-                    .imePadding()
-                    .navigationBarsPadding(),
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(8.dp))
 
-                // Mode Badge
-                EnterprisePlatformBadge()
+                Column(modifier = Modifier.fillMaxWidth()) {
+                    Text(
+                        text = stringResource(R.string.session_code_label),
+                        style = MaterialTheme.typography.bodyMedium,
+                        fontWeight = FontWeight.SemiBold,
+                        color = if (errorMessage != null) ErrorRed else MaterialTheme.colorScheme.onSurface,
+                        modifier = Modifier.padding(bottom = 8.dp)
+                    )
 
-                Spacer(modifier = Modifier.height(20.dp))
-
-                // Role Icon + Header
-                Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(14.dp)
-                ) {
-                    Box(
-                        modifier = Modifier
-                            .size(52.dp)
-                            .clip(CircleShape)
-                            .background(CRBrandGradient),
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = if (isHost) Icons.Default.Podcasts else Icons.Default.Group,
-                            contentDescription = null,
-                            tint = Color.White,
-                            modifier = Modifier.size(26.dp)
-                        )
-                    }
-
-                    Column {
-                        Text(
-                            text = if (isHost) {
-                                stringResource(R.string.host_mode_title)
-                            } else {
-                                stringResource(R.string.participant_mode_title)
-                            },
-                            style = MaterialTheme.typography.headlineLarge,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Spacer(modifier = Modifier.height(2.dp))
-                        Text(
-                            text = if (isHost) {
-                                stringResource(R.string.host_mode_subtitle)
-                            } else {
-                                stringResource(R.string.participant_mode_subtitle)
-                            },
-                            style = MaterialTheme.typography.bodyMedium,
-                            color = MaterialTheme.colorScheme.onSurfaceVariant
-                        )
-                    }
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                // Input Card Container
-                Card(
-                    shape = RoundedCornerShape(20.dp),
-                    colors = CardDefaults.cardColors(
-                        containerColor = MaterialTheme.colorScheme.surface
-                    ),
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .border(
-                            width = 1.dp,
-                            color = MaterialTheme.colorScheme.outline,
-                            shape = RoundedCornerShape(20.dp)
-                        )
-                ) {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(20.dp)
-                    ) {
-                        Text(
-                            text = stringResource(R.string.session_code_label),
-                            fontSize = 13.sp,
-                            fontWeight = FontWeight.SemiBold,
-                            color = if (errorMessage != null) ErrorRed else MaterialTheme.colorScheme.onSurface,
-                            modifier = Modifier.padding(bottom = 8.dp)
-                        )
-
-                        OutlinedTextField(
-                            value = inputCode,
-                            onValueChange = {
-                                inputCode = it
-                                if (errorMessage != null) errorMessage = null
-                            },
-                            modifier = Modifier.fillMaxWidth(),
-                            placeholder = {
-                                Text(
-                                    text = if (isHost) "e.g. CR-90124 or https://cloudreel.com/live" else "e.g. CR-84920 or session URL",
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
-                                    fontSize = 14.sp
-                                )
-                            },
-                            leadingIcon = {
-                                Icon(
-                                    imageVector = Icons.Default.Link,
-                                    contentDescription = null,
-                                    tint = if (errorMessage != null) ErrorRed else CRPurple,
-                                    modifier = Modifier.size(20.dp)
-                                )
-                            },
-                            trailingIcon = {
-                                if (inputCode.isNotEmpty() && !isValidating) {
-                                    IconButton(onClick = {
-                                        inputCode = ""
-                                        errorMessage = null
-                                    }) {
-                                        Icon(
-                                            imageVector = Icons.Default.Clear,
-                                            contentDescription = "Clear input",
-                                            tint = MaterialTheme.colorScheme.onSurfaceVariant,
-                                            modifier = Modifier.size(18.dp)
-                                        )
-                                    }
-                                }
-                            },
-                            singleLine = true,
-                            enabled = !isValidating,
-                            isError = errorMessage != null,
-                            shape = RoundedCornerShape(14.dp),
-                            colors = OutlinedTextFieldDefaults.colors(
-                                focusedBorderColor = CRViolet,
-                                unfocusedBorderColor = MaterialTheme.colorScheme.outline,
-                                errorBorderColor = ErrorRed,
-                                focusedContainerColor = MaterialTheme.colorScheme.surface,
-                                unfocusedContainerColor = MaterialTheme.colorScheme.surface,
-                                focusedTextColor = MaterialTheme.colorScheme.onSurface,
-                                unfocusedTextColor = MaterialTheme.colorScheme.onSurface
-                            ),
-                            keyboardOptions = KeyboardOptions(
-                                keyboardType = KeyboardType.Uri,
-                                imeAction = ImeAction.Go
-                            ),
-                            keyboardActions = KeyboardActions(
-                                onGo = { validateAndProceed() }
-                            )
-                        )
-
-                        if (errorMessage != null) {
+                    OutlinedTextField(
+                        value = inputCode,
+                        onValueChange = {
+                            inputCode = it
+                            if (errorMessage != null) errorMessage = null
+                        },
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = {
                             Text(
-                                text = errorMessage.orEmpty(),
-                                color = ErrorRed,
-                                fontSize = 12.sp,
-                                modifier = Modifier.padding(start = 4.dp, top = 6.dp)
+                                text = if (isHost) "e.g. CR-90124 or session URL" else "e.g. CR-84920 or session URL",
+                                maxLines = 1,
+                                overflow = TextOverflow.Ellipsis,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.6f),
+                                style = MaterialTheme.typography.bodyMedium
                             )
-                        }
+                        },
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Link,
+                                contentDescription = null,
+                                tint = if (errorMessage != null) ErrorRed else CRPurple.forTheme(),
+                                modifier = Modifier.size(20.dp)
+                            )
+                        },
+                        trailingIcon = {
+                            if (inputCode.isNotEmpty() && !isValidating) {
+                                IconButton(onClick = {
+                                    inputCode = ""
+                                    errorMessage = null
+                                }) {
+                                    Icon(
+                                        imageVector = Icons.Default.Clear,
+                                        contentDescription = "Clear input",
+                                        tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
+                            }
+                        },
+                        singleLine = true,
+                        enabled = !isValidating,
+                        isError = errorMessage != null,
+                        shape = RoundedCornerShape(14.dp),
+                        colors = OutlinedTextFieldDefaults.colors(
+                            focusedBorderColor = CRViolet.forTheme(),
+                            unfocusedBorderColor = MaterialTheme.colorScheme.outline,
+                            errorBorderColor = ErrorRed,
+                            focusedContainerColor = MaterialTheme.colorScheme.surface,
+                            unfocusedContainerColor = MaterialTheme.colorScheme.surface,
+                            focusedTextColor = MaterialTheme.colorScheme.onSurface,
+                            unfocusedTextColor = MaterialTheme.colorScheme.onSurface
+                        ),
+                        keyboardOptions = KeyboardOptions(
+                            keyboardType = KeyboardType.Uri,
+                            imeAction = ImeAction.Go
+                        ),
+                        keyboardActions = KeyboardActions(
+                            onGo = { validateAndProceed() }
+                        )
+                    )
+
+                    if (errorMessage != null) {
+                        Text(
+                            text = errorMessage.orEmpty(),
+                            color = ErrorRed,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 4.dp, top = 6.dp)
+                        )
                     }
                 }
 
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+            }
 
-                // Action Button (Continue as Host / Join Session)
+            BottomActionBar {
                 GradientButton(
                     text = if (isHost) {
                         stringResource(R.string.host_mode_button)
@@ -316,35 +239,6 @@ fun SessionEntryScreen(
                     enabled = !isValidating,
                     showTrailingArrow = true
                 )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Security & Protocol Note
-                Row(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = 4.dp),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    Icon(
-                        imageVector = Icons.Default.Shield,
-                        contentDescription = null,
-                        tint = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f),
-                        modifier = Modifier.size(16.dp)
-                    )
-                    Text(
-                        text = if (isHost) {
-                            "Encrypted peer-to-peer session signaling via CloudReel Mesh"
-                        } else {
-                            "End-to-end encrypted session stream reception with low latency"
-                        },
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(24.dp))
             }
         }
     }

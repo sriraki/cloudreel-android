@@ -8,8 +8,8 @@
     </style>
 
     <style name="Theme.CloudReel.Splash" parent="Theme.SplashScreen">
-        <item name="windowSplashScreenBackground">@color/cr_background_light</item>
-        <item name="windowSplashScreenAnimatedIcon">@drawable/cloudreel_icon</item>
+        <item name="windowSplashScreenBackground">@color/cr_splash_background</item>
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
         <item name="postSplashScreenTheme">@style/Theme.CloudReel</item>
     </style>
 </resources>

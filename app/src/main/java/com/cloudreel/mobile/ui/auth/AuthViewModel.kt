@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.cloudreel.mobile.data.model.AuthResult
 import com.cloudreel.mobile.data.remote.AuthRepository
+import com.cloudreel.mobile.data.remote.MicrosoftIdentity
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharedFlow
@@ -38,6 +39,7 @@ data class SignUpUiState(
 
 sealed class AuthNavigationEvent {
     object NavigateToHome : AuthNavigationEvent()
+    object StartMicrosoftSignIn : AuthNavigationEvent()
     data class ShowToast(val message: String) : AuthNavigationEvent()
 }
 
@@ -78,8 +80,37 @@ class AuthViewModel(
         )
     }
 
+    /** Opens the Microsoft sign-in page. */
+    fun onMicrosoftSignInClicked() {
+        _loginState.value = _loginState.value.copy(isLoading = true, generalError = null)
+        viewModelScope.launch { _navEvents.emit(AuthNavigationEvent.StartMicrosoftSignIn) }
+    }
+
+    fun onMicrosoftSignInFailed(message: String?) {
+        _loginState.value = _loginState.value.copy(isLoading = false, generalError = message)
+    }
+
+    fun completeMicrosoftSignIn(identity: MicrosoftIdentity) {
+        viewModelScope.launch {
+            when (val result = authRepository.loginWithMicrosoft(identity.idToken, identity.email)) {
+                is AuthResult.Success -> {
+                    _loginState.value = _loginState.value.copy(isLoading = false)
+                    _navEvents.emit(AuthNavigationEvent.NavigateToHome)
+                }
+                is AuthResult.Error -> onMicrosoftSignInFailed(result.message)
+                AuthResult.Loading -> Unit
+            }
+        }
+    }
+
     fun signIn() {
         val email = _loginState.value.email.trim()
+
+        // Company accounts sign in through Microsoft, same rule as the web app.
+        if (email.contains("@yupptv", ignoreCase = true)) {
+            onMicrosoftSignInClicked()
+            return
+        }
         val password = _loginState.value.password
 
         var hasError = false

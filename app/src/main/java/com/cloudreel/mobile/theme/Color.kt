@@ -2,12 +2,16 @@ package com.cloudreel.mobile.theme
 
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.lerp
 
 // ── CloudReel Official Brand Palette ──────────────────────────────────────────
 val CRMagenta = Color(0xFFD300EA)       // Vibrant brand magenta
 val CRPurple = Color(0xFF3031CB)        // Deep royal purple/indigo
 val CRViolet = Color(0xFF7928CA)        // Mid gradient tone
 val CRIndigo = Color(0xFF4F46E5)        // Modern accent indigo
+
+/** The brand accents are too dark to read on the dark background; dark mode mixes them 45% toward white. */
+fun Color.liftedForDark(): Color = lerp(this, Color.White, 0.45f)
 
 // Signature CloudReel Linear Gradient
 val CRBrandGradient = Brush.horizontalGradient(

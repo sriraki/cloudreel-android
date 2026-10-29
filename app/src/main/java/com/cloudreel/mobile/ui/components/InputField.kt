@@ -18,6 +18,7 @@ import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.PasswordVisualTransformation
@@ -26,6 +27,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.cloudreel.mobile.theme.CRViolet
 import com.cloudreel.mobile.theme.ErrorRed
+import com.cloudreel.mobile.theme.forTheme
 
 @Composable
 fun CloudReelInputField(
@@ -40,6 +42,8 @@ fun CloudReelInputField(
     onTogglePasswordVisibility: (() -> Unit)? = null,
     errorMessage: String? = null,
     enabled: Boolean = true,
+    minLines: Int = 1,
+    focusColor: Color = CRViolet.forTheme(),
     keyboardOptions: KeyboardOptions = KeyboardOptions.Default,
     keyboardActions: KeyboardActions = KeyboardActions.Default
 ) {
@@ -92,12 +96,14 @@ fun CloudReelInputField(
             } else {
                 VisualTransformation.None
             },
-            singleLine = true,
+            singleLine = minLines == 1,
+            minLines = minLines,
             enabled = enabled,
             isError = isError,
             shape = RoundedCornerShape(14.dp),
             colors = OutlinedTextFieldDefaults.colors(
-                focusedBorderColor = CRViolet,
+                focusedBorderColor = focusColor,
+                cursorColor = focusColor,
                 unfocusedBorderColor = MaterialTheme.colorScheme.outline,
                 errorBorderColor = ErrorRed,
                 focusedContainerColor = MaterialTheme.colorScheme.surface,

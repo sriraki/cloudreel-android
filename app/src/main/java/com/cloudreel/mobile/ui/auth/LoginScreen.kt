@@ -1,6 +1,14 @@
 package com.cloudreel.mobile.ui.auth
 
 import android.widget.Toast
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.rememberCoroutineScope
+import com.cloudreel.mobile.data.remote.MicrosoftSignIn
+import com.cloudreel.mobile.data.remote.MicrosoftSignInException
+import com.cloudreel.mobile.ui.components.SecondaryButton
+import kotlinx.coroutines.launch
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -11,7 +19,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -41,19 +48,20 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.cloudreel.mobile.R
 import com.cloudreel.mobile.theme.CRMagenta
 import com.cloudreel.mobile.theme.CRViolet
 import com.cloudreel.mobile.theme.ErrorRed
-import com.cloudreel.mobile.ui.components.CloudReelHeader
+import com.cloudreel.mobile.theme.forTheme
+import com.cloudreel.mobile.ui.components.BottomActionBar
+import com.cloudreel.mobile.ui.components.CloudReelTopBar
 import com.cloudreel.mobile.ui.components.CloudReelInputField
-import com.cloudreel.mobile.ui.components.EnterprisePlatformBadge
 import com.cloudreel.mobile.ui.components.GradientButton
 
 @Composable
 fun LoginScreen(
     viewModel: AuthViewModel,
+    onNavigateBack: () -> Unit,
     onNavigateToHome: () -> Unit,
     onNavigateToSignUp: () -> Unit
 ) {
@@ -62,9 +70,26 @@ fun LoginScreen(
     val focusManager = LocalFocusManager.current
     var showForgotDialog by remember { mutableStateOf(false) }
 
+    val coroutineScope = rememberCoroutineScope()
+    val microsoftSignIn = remember { MicrosoftSignIn(context) }
+    DisposableEffect(Unit) { onDispose { microsoftSignIn.dispose() } }
+    val microsoftLauncher = rememberLauncherForActivityResult(
+        ActivityResultContracts.StartActivityForResult()
+    ) { result ->
+        coroutineScope.launch {
+            try {
+                viewModel.completeMicrosoftSignIn(microsoftSignIn.completeSignIn(result.data))
+            } catch (error: MicrosoftSignInException) {
+                viewModel.onMicrosoftSignInFailed(error.message)
+            }
+        }
+    }
+
     LaunchedEffect(Unit) {
         viewModel.navEvents.collect { event ->
             when (event) {
+                is AuthNavigationEvent.StartMicrosoftSignIn ->
+                    microsoftLauncher.launch(microsoftSignIn.createSignInIntent())
                 is AuthNavigationEvent.NavigateToHome -> onNavigateToHome()
                 is AuthNavigationEvent.ShowToast -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_LONG).show()
@@ -81,33 +106,19 @@ fun LoginScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Header with CloudReel logo and theme toggle
-            CloudReelHeader()
+            CloudReelTopBar(
+                title = stringResource(R.string.sign_in_button),
+                onBackClick = onNavigateBack
+            )
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp)
-                    .imePadding(),
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Enterprise Platform Badge matching Screenshot 2
-                EnterprisePlatformBadge()
-
-                Spacer(modifier = Modifier.height(18.dp))
-
-                // Heading
-                Text(
-                    text = stringResource(R.string.login_title),
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
                 // Subtitle
                 Text(
                     text = stringResource(R.string.login_subtitle),
@@ -115,14 +126,14 @@ fun LoginScreen(
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // General Error Banner if authentication fails
                 if (!state.generalError.isNullOrBlank()) {
                     Text(
                         text = state.generalError.orEmpty(),
                         color = ErrorRed,
-                        fontSize = 13.sp,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
@@ -179,8 +190,8 @@ fun LoginScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.forgot_password),
-                        color = CRViolet,
-                        fontSize = 13.sp,
+                        color = CRViolet.forTheme(),
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.SemiBold,
                         modifier = Modifier
                             .clickable { showForgotDialog = true }
@@ -188,20 +199,7 @@ fun LoginScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(28.dp))
-
-                // Primary Sign In Button with Purple/Magenta Gradient
-                GradientButton(
-                    text = stringResource(R.string.sign_in_button),
-                    onClick = {
-                        focusManager.clearFocus()
-                        viewModel.signIn()
-                    },
-                    isLoading = state.isLoading,
-                    showTrailingArrow = true
-                )
-
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 // Create Account Navigation
                 Row(
@@ -211,13 +209,13 @@ fun LoginScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.dont_have_account),
-                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                     Text(
                         text = stringResource(R.string.create_account),
-                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         color = CRMagenta,
                         modifier = Modifier
@@ -226,7 +224,27 @@ fun LoginScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            BottomActionBar {
+                GradientButton(
+                    text = stringResource(R.string.sign_in_button),
+                    onClick = {
+                        focusManager.clearFocus()
+                        viewModel.signIn()
+                    },
+                    isLoading = state.isLoading,
+                    showTrailingArrow = true
+                )
+                SecondaryButton(
+                    text = "Sign in with Microsoft",
+                    onClick = {
+                        focusManager.clearFocus()
+                        viewModel.onMicrosoftSignInClicked()
+                    },
+                    enabled = !state.isLoading
+                )
             }
         }
     }
@@ -255,7 +273,7 @@ fun LoginScreen(
                         viewModel.requestPasswordReset(state.email.ifBlank { "your work email" })
                     }
                 ) {
-                    Text("Send Instructions", color = CRViolet, fontWeight = FontWeight.Bold)
+                    Text("Send Instructions", color = CRViolet.forTheme(), fontWeight = FontWeight.Bold)
                 }
             },
             dismissButton = {

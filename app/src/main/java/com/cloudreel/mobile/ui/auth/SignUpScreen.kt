@@ -10,7 +10,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardActions
@@ -35,13 +34,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.cloudreel.mobile.R
 import com.cloudreel.mobile.theme.CRMagenta
 import com.cloudreel.mobile.theme.ErrorRed
-import com.cloudreel.mobile.ui.components.CloudReelHeader
+import com.cloudreel.mobile.ui.components.BottomActionBar
+import com.cloudreel.mobile.ui.components.CloudReelTopBar
 import com.cloudreel.mobile.ui.components.CloudReelInputField
-import com.cloudreel.mobile.ui.components.EnterprisePlatformBadge
 import com.cloudreel.mobile.ui.components.GradientButton
 
 @Composable
@@ -69,47 +67,32 @@ fun SignUpScreen(
         Column(
             modifier = Modifier.fillMaxSize()
         ) {
-            // Header with back button and theme toggle
-            CloudReelHeader(
-                showBackButton = true,
+            CloudReelTopBar(
+                title = stringResource(R.string.create_account),
                 onBackClick = onNavigateToLogin
             )
 
             Column(
                 modifier = Modifier
-                    .fillMaxSize()
+                    .weight(1f)
+                    .fillMaxWidth()
                     .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp)
-                    .imePadding(),
+                    .padding(horizontal = 16.dp),
                 horizontalAlignment = Alignment.Start
             ) {
-                Spacer(modifier = Modifier.height(12.dp))
-
-                EnterprisePlatformBadge()
-
-                Spacer(modifier = Modifier.height(18.dp))
-
-                Text(
-                    text = stringResource(R.string.signup_title),
-                    style = MaterialTheme.typography.headlineLarge,
-                    color = MaterialTheme.colorScheme.onBackground
-                )
-
-                Spacer(modifier = Modifier.height(8.dp))
-
                 Text(
                     text = stringResource(R.string.signup_subtitle),
                     style = MaterialTheme.typography.bodyMedium,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
-                Spacer(modifier = Modifier.height(28.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
                 if (!state.generalError.isNullOrBlank()) {
                     Text(
                         text = state.generalError.orEmpty(),
                         color = ErrorRed,
-                        fontSize = 13.sp,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Medium,
                         modifier = Modifier.padding(bottom = 16.dp)
                     )
@@ -198,18 +181,6 @@ fun SignUpScreen(
                     )
                 )
 
-                Spacer(modifier = Modifier.height(30.dp))
-
-                GradientButton(
-                    text = stringResource(R.string.create_account),
-                    onClick = {
-                        focusManager.clearFocus()
-                        viewModel.signUp()
-                    },
-                    isLoading = state.isLoading,
-                    showTrailingArrow = true
-                )
-
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Row(
@@ -219,13 +190,13 @@ fun SignUpScreen(
                 ) {
                     Text(
                         text = stringResource(R.string.already_have_account),
-                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.bodyMedium,
                         color = MaterialTheme.colorScheme.onSurfaceVariant
                     )
                     Spacer(modifier = Modifier.padding(horizontal = 4.dp))
                     Text(
                         text = stringResource(R.string.sign_in_link),
-                        fontSize = 14.sp,
+                        style = MaterialTheme.typography.bodyMedium,
                         fontWeight = FontWeight.Bold,
                         color = CRMagenta,
                         modifier = Modifier
@@ -234,7 +205,19 @@ fun SignUpScreen(
                     )
                 }
 
-                Spacer(modifier = Modifier.height(32.dp))
+                Spacer(modifier = Modifier.height(16.dp))
+            }
+
+            BottomActionBar {
+                GradientButton(
+                    text = stringResource(R.string.create_account),
+                    onClick = {
+                        focusManager.clearFocus()
+                        viewModel.signUp()
+                    },
+                    isLoading = state.isLoading,
+                    showTrailingArrow = true
+                )
             }
         }
     }
