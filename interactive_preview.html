@@ -1390,6 +1390,30 @@
     .host-latest span { font-size: 14px; word-break: break-all; }
     .host-latest div { display: flex; gap: 12px; }
     .host-latest .host-btn { margin: 0; }
+    .setup-card { margin-top: 12px; padding: 16px; border-radius: 16px; background: var(--bg-device-surface); display: flex; flex-direction: column; gap: 4px; }
+    .setup-card small { font-size: 12px; color: var(--text-muted); }
+    .setup-card b { font-size: 17px; color: var(--text-main); display: flex; align-items: center; gap: 8px; }
+    .setup-card span { font-size: 13px; color: var(--text-muted); }
+    .setup-dot { width: 10px; height: 10px; border-radius: 50%; background: #10B981; display: inline-block; flex-shrink: 0; }
+    .setup-dot.off { background: #EF4444; }
+    .gl-group { margin-bottom: 12px; }
+    .gl-group label { display: block; font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
+    .relay-line { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; font-size: 15px; color: var(--text-main); }
+    .relay-line.muted { color: var(--text-muted); }
+    .relay-line span { color: var(--text-main); }
+    .cam-details { align-self: center; display: flex; align-items: center; gap: 4px; padding: 10px 18px; border: 0; border-radius: 24px; background: rgba(0,0,0,0.55); color: #fff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
+    .cam-details[hidden] { display: none; }
+    .cam-details .material-icons { font-size: 18px; }
+    .live-details { padding: 8px 20px 24px; }
+    .live-details h3 { padding: 8px 0 0; }
+    .live-details .sub { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
+    .live-code-card { display: flex; align-items: center; gap: 4px; padding: 12px 4px 12px 16px; border-radius: 16px; background: var(--bg-device-surface); margin-bottom: 12px; }
+    .live-code-card div { flex: 1; }
+    .live-code-card small { font-size: 12px; color: var(--text-muted); }
+    .live-code { font-family: ui-monospace, Menlo, monospace; font-size: 22px; font-weight: 700; color: var(--text-main); }
+    .live-line { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; color: var(--text-main); }
+    .live-line b { font-weight: 600; }
+    .live-details p { font-size: 14px; color: var(--text-muted); line-height: 1.45; }
     .center-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 16px; }
     .center-state h3 { font-size: 20px; font-weight: 700; margin: 24px 0 8px; color: var(--text-main); }
     .center-state p { font-size: 14px; color: var(--text-muted); line-height: 1.45; }
@@ -1534,6 +1558,7 @@
     .meta-buttons button.outline { border: 1px solid var(--border-device); }
     .cam-hint.show { opacity: 1; }
   </style>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
 <body>
 
@@ -2239,6 +2264,7 @@
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Grid"><span class="material-icons">grid_off</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Exposure lock"><span class="material-icons">lock_open</span></button>
                 </div>
+                <button class="cam-details" id="camDetailsBtn" onclick="liveOpenDetails()" hidden>Details <span class="material-icons">keyboard_arrow_up</span></button>
                 <div class="cam-row">
                   <div class="cam-vu" title="Audio level (L / R)">
                     <div class="cam-vu-bars"><div class="cam-vu-bar" id="camVuL"></div><div class="cam-vu-bar" id="camVuR"></div></div>
@@ -2278,6 +2304,23 @@
           </div>
         </div>
 
+        <!-- Go live setup (mirrors GoLiveSetupScreen.kt): who is signed in, where broadcasts go, stream settings -->
+        <div class="app-screen" id="screen-golive-setup">
+          <div class="setup-card"><small>Workspaces</small><b>Zynora's Workspace</b><span>Your broadcasts are shown in each of these.</span></div>
+          <div class="setup-card"><small>This phone</small><b><i class="setup-dot"></i>Online</b></div>
+          <div class="input-group" style="margin-top:12px;">
+            <label class="input-label">Broadcast name (optional)</label>
+            <div class="input-box"><input type="text" id="glName" placeholder="e.g. Hyderabad rally live" oninput="cs.values.slugline = this.value"></div>
+          </div>
+          <p class="list-section-title">Stream settings</p>
+          <div id="glChips"></div>
+          <p class="setup-footnote" style="text-align:left;">The server address and stream key are set up automatically when you go live.</p>
+          <button class="host-btn text" style="width:auto; color:var(--cr-error); text-align:left; padding:0;" onclick="logout()">Sign out</button>
+          <div class="bottom-action">
+            <button class="btn-gradient" onclick="setupGoLive()">Go live</button>
+          </div>
+        </div>
+
         <!-- Guest waiting lobby (mirrors WaitingLobbyScreen.kt) -->
         <div class="app-screen" id="screen-waiting-lobby">
           <div class="center-state">
@@ -2307,45 +2350,33 @@
         <!-- 9. RELAY SCREEN -->
         <div class="app-screen" id="screen-relay">
 
-          <!-- Mirrors RelayScreen.kt: first the reporter's code, then the sharing status. -->
+          <!-- Mirrors RelayScreen.kt: the reporter's relay code, a confirm, then the connection until Disconnect. -->
           <div id="relayConnect" style="display:flex; flex-direction:column; flex:1;">
             <p style="font-size:16px; line-height:1.5; color:var(--text-main);">Your phone will send part of a reporter's live video over your mobile data, so their stream doesn't drop. Your camera isn't used.</p>
-            <p style="font-size:14px; line-height:1.45; color:var(--text-muted); margin:8px 0 20px;">Enter the code shown on the reporter's phone, or scan its QR code. Keep both phones on the same Wi-Fi.</p>
+            <p style="font-size:14px; line-height:1.45; color:var(--text-muted); margin:8px 0 20px;">Enter the relay code shown on the reporter's phone, or scan its QR code. Keep both phones on the same Wi-Fi.</p>
             <div class="input-group">
-              <label class="input-label">Reporter's code</label>
-              <div class="input-box"><input type="text" id="relayCodeInput" placeholder="e.g. RL-4821" oninput="document.getElementById('relayStartBtn').disabled = !this.value.trim()"></div>
+              <label class="input-label">Relay code</label>
+              <div class="input-box"><input type="text" id="relayCodeInput" placeholder="e.g. 3LVQ-BWU6" oninput="relaySetCode(this.value)"></div>
             </div>
-            <button class="btn-secondary" onclick="document.getElementById('relayCodeInput').value = 'RL-4821'; document.getElementById('relayStartBtn').disabled = false;"><span class="material-icons" style="font-size:18px; margin-right:6px; vertical-align:middle;">qr_code_scanner</span>Scan QR code</button>
+            <button class="btn-secondary" onclick="relaySetCode('3LVQBWU6')"><span class="material-icons" style="font-size:18px; margin-right:6px; vertical-align:middle;">qr_code_scanner</span>Scan QR code</button>
             <div class="input-group" style="margin-top:20px;">
               <label class="input-label">Name the reporter will see</label>
               <div class="input-box"><input type="text" value="OnePlus Nord CE 3 Lite 5G"></div>
             </div>
             <div class="bottom-action">
-              <button class="btn-gradient" id="relayStartBtn" disabled onclick="relayStart()">Start sharing</button>
+              <button class="btn-gradient" id="relayStartBtn" disabled onclick="openSessionModal('relayConfirmModal')">Continue</button>
               <p class="setup-footnote" style="margin:0;">Uses your mobile data. You can stop any time.</p>
             </div>
           </div>
           <div id="relaySharing" style="display:none; flex-direction:column; flex:1;">
-            <div class="status-header" id="relayStatus">
-              <div class="status-state" id="relayState">Sharing your data</div>
-              <div class="status-value" id="relayBandwidthVal">48.2 Mbps</div>
-              <div class="status-caption" id="relayCaption"></div>
-            </div>
-
-            <p class="list-section-title">Your connection</p>
-            <div class="list-group">
-              <div class="list-row"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-title">Mobile network</div><div class="list-sub">SIM 1 · 5G · Excellent signal</div></div></div>
-              <div class="list-row"><div class="list-icon"><span class="material-icons">data_usage</span></div><div class="list-text"><div class="list-title">Data used</div><div class="list-sub">This session</div></div><span class="list-value">1.84 GB</span></div>
-            </div>
-
-            <p class="list-section-title">Settings</p>
-            <div class="list-group">
-              <div class="list-row" onclick="toggleSwitch('relayThrottleToggle')" role="button"><div class="list-icon"><span class="material-icons">battery_charging_full</span></div><div class="list-text"><div class="list-title">Pause when battery is low or the phone is hot</div></div><div class="toggle-switch active" id="relayThrottleToggle"></div></div>
-            </div>
-
+            <div class="setup-card"><small>Connected to</small><b id="relayConnectedTo">Reporter's phone</b><span>Waiting for the reporter to go live</span></div>
+            <div class="relay-line">Visible to the reporter on Wi-Fi<i class="setup-dot"></i></div>
+            <div class="relay-line">Mobile data<i class="setup-dot"></i></div>
+            <div class="relay-line">Reporter connected<i class="setup-dot off"></i></div>
+            <div class="relay-line muted">Sent to the server<span>0.0 MB</span></div>
+            <div class="relay-line muted">Received from the server<span>0.0 MB</span></div>
             <div class="bottom-action">
-              <button class="btn-secondary" id="relayToggleBtn" onclick="toggleRelay()">Pause sharing</button>
-              <button class="btn-secondary" onclick="navigateBack()">Stop sharing</button>
+              <button class="host-btn danger" style="height:50px; margin:0;" onclick="relayDisconnect()">Disconnect</button>
             </div>
           </div>
         </div>
@@ -2353,6 +2384,26 @@
       </div>
 
       <!-- MODAL SHEETS -->
+      <!-- Live details (LiveDetailsSheet.kt) -->
+      <div class="app-modal-layer bottom-sheet" id="liveDetailsModal" onclick="if (event.target === this) closeSessionModal('liveDetailsModal')">
+        <div class="app-modal-sheet host-sheet live-details" id="liveDetailsBody"></div>
+      </div>
+      <div class="app-modal-layer bottom-sheet" id="liveQrModal" onclick="if (event.target === this) closeSessionModal('liveQrModal')">
+        <div class="app-modal-sheet host-sheet" style="text-align:center; padding:16px 24px 28px;">
+          <h3>Scan on the relay phone</h3>
+          <div id="liveQrCode" style="display:flex; justify-content:center; margin:12px 0;"></div>
+          <div class="live-code" id="liveQrText"></div>
+          <p style="font-size:14px; color:var(--text-muted); line-height:1.45;">On the other phone choose Share mobile data, then scan this code or type it in.</p>
+        </div>
+      </div>
+      <div class="app-modal-layer" id="relayConfirmModal" onclick="if (event.target === this) closeSessionModal('relayConfirmModal')">
+        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 16px;">
+          <h3 style="padding:0 0 8px;">Connect to the reporter's phone?</h3>
+          <p id="relayConfirmText" style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:16px;"></p>
+          <div style="display:flex; gap:10px;"><button class="host-btn outline" onclick="closeSessionModal('relayConfirmModal')">Cancel</button><button class="host-btn danger" style="background:var(--cr-violet);" onclick="relayConnect()">Connect</button></div>
+        </div>
+      </div>
+
       <!-- Meeting sheets (GuestActionsSheet / LeaveSessionSheet in HostSessionUi.kt) -->
       <div class="app-modal-layer bottom-sheet" id="hostGuestModal" onclick="if (event.target === this) closeSessionModal('hostGuestModal')">
         <div class="app-modal-sheet host-sheet" id="hostGuestBody"></div>
@@ -2449,7 +2500,6 @@
     let isDark = false;
     let isAuthenticated = false; // By default unauthenticated as per spec requirement
     let isMuted = false;
-    let isRelaying = true;
 
     let isSetupMicOn = true;
     let isSetupCamOn = true;
@@ -2464,7 +2514,7 @@
 
     // The camera screen opens from Broadcast or, for host and participant, from Device Setup; Back returns there.
     let streamerBackTo = 'category-selection';
-    const SCREEN_TITLES = { relay: 'Share mobile data', 'device-setup': 'Device Setup', 'waiting-lobby': 'Waiting room', login: 'Sign In', signup: 'Create Account' };
+    const SCREEN_TITLES = { relay: 'Share mobile data', 'golive-setup': 'Hi, Rakesh kumar', 'device-setup': 'Device Setup', 'waiting-lobby': 'Waiting room', login: 'Sign In', signup: 'Create Account' };
     let lobbyAdmitTimer = null;
     let isNavigatingBack = false;
     function navigateTo(screenId) {
@@ -2472,7 +2522,7 @@
       const slideClass = isNavigatingBack ? 'slide-back' : 'slide-forward';
       isNavigatingBack = false;
       if (screenId === 'streamer' && currentScreen !== 'streamer') {
-        streamerBackTo = currentScreen === 'device-setup' ? 'device-setup' : 'category-selection';
+        streamerBackTo = ['device-setup', 'golive-setup'].includes(currentScreen) ? currentScreen : 'category-selection';
         // The camera opens as a meeting for the host (from Device Setup), a guest (from the lobby) or a rejoin, like the app's role argument.
         const meetingRole = currentScreen === 'device-setup' && currentSessionMode === 'host' ? 'host'
           : currentScreen === 'waiting-lobby' ? 'guest' : currentScreen === 'left-session' ? host.role : null;
@@ -2486,6 +2536,7 @@
         document.getElementById('setupStartBtn').textContent = isHost ? 'Start Session' : 'Join Session';
         document.getElementById('setupWaitingNote').style.display = isHost ? 'none' : '';
       }
+      if (screenId === 'golive-setup') glRender();
       if (screenId === 'waiting-lobby') {
         const code = (document.getElementById('sessionCodeInput').value || '').trim();
         document.getElementById('lobbyCode').textContent = code ? 'Session ' + code : '';
@@ -2540,7 +2591,7 @@
         stopSessionTimer();
       }
 
-      if (['session-entry', 'device-setup', 'waiting-lobby', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
+      if (['session-entry', 'device-setup', 'golive-setup', 'waiting-lobby', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
         backBtn.style.display = 'flex';
       } else {
         backBtn.style.display = 'none';
@@ -2882,12 +2933,79 @@
       }
     }
 
+    // Reporting needs a signed-in account: sign in first, then the Go live setup page (as in AppNavigation.kt).
     function onStreamerTapped() {
-      if (isAuthenticated) {
-        navigateTo('streamer');
-      } else {
-        navigateTo('login');
-      }
+      navigateTo(isAuthenticated ? 'golive-setup' : 'login');
+    }
+
+    // ── Go live setup + live details (mirror GoLiveSetupScreen.kt / LiveDetailsSheet.kt) ──
+    const GL_GROUPS = [
+      ['Delay (SRT latency)', 'delay', [['2 sec', '2s'], ['3 sec', '3s'], ['4 sec', '4s']]],
+      ['Quality', 'format', [['720p 30', '720p30'], ['1080p 30', '1080p30'], ['1080p 60', '1080p60']]],
+      ['Codec', 'codec', [['H.265', 'H.265'], ['H.264', 'H.264']]],
+      ['Aspect ratio', 'orientation', [['Auto', 'Auto'], ['Landscape', '16:9'], ['Portrait', '9:16']]]
+    ];
+    function glRender() {
+      document.getElementById('glName').value = cs.values.slugline;
+      document.getElementById('glChips').innerHTML = GL_GROUPS.map(([title, key, options]) =>
+        `<div class="gl-group"><label>${title}</label><div class="host-chips">` +
+        options.map(([value, label]) => `<button class="${cs.values[key] === value ? 'on' : ''}" onclick="cs.values['${key}'] = '${value}'; glRender()">${label}</button>`).join('') +
+        '</div></div>').join('');
+    }
+    function setupGoLive() {
+      navigateTo('streamer');
+      cam.mode = 'live';
+      camRecord();
+    }
+    // A new code every time the broadcast starts, in the XXXX-XXXX form (generateRelayCode in RelayCode.kt).
+    const RELAY_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+    const newRelayCode = () => formatRelayCode(Array.from({ length: 8 }, () => RELAY_ALPHABET[Math.floor(Math.random() * RELAY_ALPHABET.length)]).join(''));
+    const formatRelayCode = text => { const chars = text.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return chars.length > 4 ? chars.slice(0, 4) + '-' + chars.slice(4) : chars; };
+    function liveOpenDetails() { liveRenderDetails(); openSessionModal('liveDetailsModal'); }
+    function liveRenderDetails() {
+      const name = cs.values.slugline || 'Live broadcast';
+      const status = cam.phase === 'live' ? 'Live · ' + camFmt(cam.elapsed) : 'Getting ready…';
+      document.getElementById('liveDetailsBody').innerHTML =
+        `<h3>${name}</h3><div class="sub">${status} in Zynora's Workspace</div>` +
+        `<div class="live-code-card"><div><small>Relay code</small><div class="live-code">${cam.relayCode}</div></div>` +
+        `<button class="host-icon" title="Copy relay code" onclick="navigator.clipboard?.writeText(cam.relayCode)"><span class="material-icons">content_copy</span></button>` +
+        `<button class="host-icon" title="Show QR code" onclick="liveOpenQr()"><span class="material-icons">qr_code_2</span></button>` +
+        `<button class="host-btn small-text" onclick="cam.relayCode = newRelayCode(); liveRenderDetails()">New code</button></div>` +
+        `<div style="display:flex; gap:12px;"><button class="host-btn outline" onclick="cam.left += 3600; camRender()">Add 1 hour</button><button class="host-btn outline" onclick="liveShareLink()">Share link</button></div>` +
+        `<div class="live-line">Camera<span class="host-chips"><button class="${cam.front ? '' : 'on'}" onclick="cam.front = false; camRender(); liveRenderDetails()">Back</button><button class="${cam.front ? 'on' : ''}" onclick="cam.front = true; camRender(); liveRenderDetails()">Front</button></span></div>` +
+        `<div class="live-line">Relay server<b>in-mum</b></div><div class="live-line">Max bitrate<b>${cs.values.totalBandwidth} kbps</b></div>` +
+        `<div class="live-line">Latency<b>${parseFloat(cs.values.delay) * 1000} ms</b></div><div class="live-line">Codec<b>${cs.values.codec}</b></div>` +
+        `<h3 style="font-size:16px;">Relay phones</h3><p>No relay phones yet. On the other phone choose Share mobile data and enter this code. Keep both phones on the same Wi-Fi; some guest or office Wi-Fi blocks phone-to-phone traffic.</p>` +
+        `<button class="host-btn danger" style="margin-top:12px;" onclick="closeSessionModal('liveDetailsModal'); camRecord()">Stop broadcast</button>`;
+    }
+    function liveOpenQr() {
+      const box = document.getElementById('liveQrCode');
+      box.innerHTML = '';
+      if (window.QRCode) new QRCode(box, { text: cam.relayCode, width: 200, height: 200 });
+      document.getElementById('liveQrText').textContent = cam.relayCode;
+      openSessionModal('liveQrModal');
+    }
+    function liveShareLink() {
+      const text = `Watch ${cs.values.slugline || 'my live broadcast'}\nhttps://hub.cloudreel.com/watch/${cam.relayCode.toLowerCase().replace('-', '')}`;
+      if (navigator.share) navigator.share({ text }).catch(() => {}); else { navigator.clipboard?.writeText(text); alert('Watch link copied'); }
+    }
+
+    // ── Share mobile data (mirrors RelayScreen.kt) ──
+    function relaySetCode(text) {
+      const input = document.getElementById('relayCodeInput');
+      input.value = formatRelayCode(text);
+      document.getElementById('relayStartBtn').disabled = input.value.length !== 9;
+      document.getElementById('relayConfirmText').textContent = `This phone's mobile data will carry part of the live stream for code ${input.value}. Keep both phones on the same Wi-Fi.`;
+    }
+    function relayConnect() {
+      closeSessionModal('relayConfirmModal');
+      document.getElementById('relayConnectedTo').textContent = "Reporter's phone · " + document.getElementById('relayCodeInput').value;
+      document.getElementById('relayConnect').style.display = 'none';
+      document.getElementById('relaySharing').style.display = 'flex';
+    }
+    function relayDisconnect() {
+      document.getElementById('relaySharing').style.display = 'none';
+      document.getElementById('relayConnect').style.display = 'flex';
     }
 
     function simulateLogin() {
@@ -2897,8 +3015,7 @@
       setTimeout(() => {
         btn.innerHTML = originalText;
         isAuthenticated = true;
-        // Directly open the streamer workflow as requested!
-        navigateTo('streamer');
+        navigateTo('golive-setup');
       }, 500);
     }
 
@@ -2936,23 +3053,6 @@
       isMuted = !isMuted;
       document.getElementById('muteToggleBtn').textContent = isMuted ? 'Unmute' : 'Mute';
       document.getElementById('audioStatusText').textContent = isMuted ? 'Muted' : 'Stereo 48kHz (Active)';
-    }
-
-    function toggleRelay() {
-      isRelaying = !isRelaying;
-      const btn = document.getElementById('relayToggleBtn');
-      document.getElementById('relayBandwidthVal').textContent = isRelaying ? '48.2 Mbps' : '0.0 Mbps';
-      document.getElementById('relayState').textContent = isRelaying ? 'Sharing your data' : 'Paused';
-      document.getElementById('relayStatus').classList.toggle('paused', !isRelaying);
-      btn.textContent = isRelaying ? 'Pause sharing' : 'Resume sharing';
-      btn.className = isRelaying ? 'btn-secondary' : 'btn-gradient';
-    }
-
-    // Start sharing: switch from the code form to the sharing status, like RelayScreen.kt.
-    function relayStart() {
-      document.getElementById('relayCaption').textContent = `Helping ${document.getElementById('relayCodeInput').value.trim()}'s live stream`;
-      document.getElementById('relayConnect').style.display = 'none';
-      document.getElementById('relaySharing').style.display = 'flex';
     }
 
     function toggleSwitch(id) {
@@ -3002,6 +3102,7 @@
           return `<span class="${isOn ? '' : 'off'}"><span class="material-icons">${icon}</span>${isOn ? reading : 'off'}</span>`;
         }).join('') + '<span style="opacity:0.6;">Mbps</span>';
       // Three fixed slots: recordings | record | flip while idle, empty | stop | pause-resume while running.
+      document.getElementById('camDetailsBtn').hidden = !(isActive && cam.mode === 'live');
       document.getElementById('camThumb').hidden = isActive;
       document.getElementById('camThumbSlot').hidden = !isActive;
       document.getElementById('camFlipBtn').hidden = isActive;
@@ -3047,9 +3148,16 @@
 
     function camRecord() {
       if (cam.phase === 'connecting') return;
-      if (cam.phase !== 'idle') return camStop();
+      if (cam.phase !== 'idle') {
+        const wasLive = cam.mode === 'live';
+        camStop();
+        // A broadcast started from the setup page goes back there when it stops.
+        if (wasLive && streamerBackTo === 'golive-setup') { isNavigatingBack = true; navigateTo('golive-setup'); }
+        return;
+      }
       cam.elapsed = 0;
       if (cam.mode === 'live') {
+        cam.relayCode = newRelayCode();
         cam.phase = 'connecting';
         setTimeout(() => { if (cam.phase === 'connecting') { cam.phase = 'live'; camRender(); } }, 1500);
       } else {
@@ -3421,7 +3529,7 @@
         promptOnStart: false, metaEnabled: true, slugline: '', crewName: '', storyId: '', usageTerms: '', provider: '', reporter: '', keywords: '', comments: '',
         wifi: true, cellular: true, wired: false, bonding: true, totalBandwidth: 8000, cellularBandwidth: 12000, wifiBandwidth: 12000,
         location: 'While app is running', server: '',
-        orientation: 'Auto', mirroring: 'Off', doubleTap: true, prefix: 'CR', filenameTime: 'Local time', passThrough: false, tally: false, severity: 'Info'
+        codec: 'H.265', orientation: 'Auto', mirroring: 'Off', doubleTap: true, prefix: 'CR', filenameTime: 'Local time', passThrough: false, tally: false, severity: 'Info'
       }
     };
     const CS_NOT_ACTIVE = { note: 'Not active yet' };
@@ -3442,7 +3550,7 @@
         csSection('Video'),
         csChoice('Video format', 'format', CAM_FORMATS.map(option => option.name),
           { lock: true, note: CAM_FORMATS.find(option => option.name === cs.values.format).isNative ? null : 'Not active yet' }),
-        csChoice('Video delay', 'delay', ['0.5 sec', '1 sec', '2 sec', '5 sec'], { lock: true }),
+        csChoice('Video delay', 'delay', ['2 sec', '3 sec', '4 sec'], { lock: true }),
         csSwitch('CBR encoding', 'cbr', { lock: true, ...CS_NOT_ACTIVE }),
         csSection('Audio'),
         csChoice('Channels', 'channels', ['Mono', 'Stereo'], { lock: true, ...CS_NOT_ACTIVE }),
