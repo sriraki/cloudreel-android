@@ -1365,18 +1365,12 @@
     .hb-icon { width: 44px; height: 44px; border: 0; border-radius: 50%; background: none; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .hb-title { flex: 1; min-width: 0; display: flex; flex-direction: column; }
     .hb-title b { font-size: 15px; }
-    .hb-title span { font-size: 12px; opacity: 0.75; }
-    .hb-title span.live { color: #EF4444; opacity: 1; }
     .hb-leave { width: 44px; height: 44px; margin: 0 4px; border: 0; border-radius: 50%; background: #EF4444; color: #fff; display: flex; align-items: center; justify-content: center; cursor: pointer; }
     .hb-bottom > button { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: none; color: #fff; font: inherit; cursor: pointer; }
     .hb-bottom > button > .material-icons { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(255,255,255,0.16); }
     .hb-bottom > button.off > .material-icons { background: rgba(239,68,68,0.9); }
     .hb-bottom small { font-size: 11px; }
     .hb-bottom em { position: absolute; top: 0; left: calc(50% + 12px); width: 10px; height: 10px; border-radius: 50%; background: #F59E0B; }
-    .hb-bottom > button.hb-live { flex: 1.4; flex-direction: row; justify-content: center; gap: 8px; height: 48px; margin: 0 4px; border-radius: 24px; background: #EF4444; font-size: 14px; font-weight: 700; }
-    .hb-live i { width: 10px; height: 10px; border-radius: 50%; background: #fff; }
-    .hb-live.active { background: #fff !important; color: #EF4444; }
-    .hb-live.active i { border-radius: 2px; background: #EF4444; width: 12px; height: 12px; }
     .hb-wait { display: flex; align-items: center; gap: 10px; margin: 0 12px; padding: 6px 6px 6px 12px; border-radius: 16px; background: rgba(0,0,0,0.75); pointer-events: auto; cursor: pointer; }
     .hb-wait[hidden] { display: none; }
     .hb-wait div { flex: 1; min-width: 0; font-size: 13px; font-weight: 600; }
@@ -2195,7 +2189,8 @@
             <div class="host-bars" id="hostBars">
               <div class="hb-top">
                 <button class="hb-icon" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
-                <div class="hb-title"><b id="hbCode">Live session</b><span id="hbStatus">Ready · not live</span></div>
+                <div class="hb-title"><b id="hbCode">Session</b></div>
+                <button class="hb-icon" onclick="hostOpenLayout()" title="Layout"><span class="material-icons">dashboard</span></button>
                 <button class="hb-icon" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
                 <button class="hb-leave" onclick="openSessionModal('hostLeaveModal')" title="Leave"><span class="material-icons">call_end</span></button>
               </div>
@@ -2203,9 +2198,9 @@
               <div class="hb-bottom">
                 <button id="hbVideo" onclick="hostToggleCamera()"><span class="material-icons">videocam</span><small>Video</small></button>
                 <button id="hbMic" onclick="camToggleMic()"><span class="material-icons">mic</span><small>Mic</small></button>
-                <button class="hb-live" id="hbLive" onclick="camRecord()"><i></i><span id="hbLiveLabel">Go live</span></button>
+                <button onclick="alert('Screen sharing: not active yet')"><span class="material-icons">screen_share</span><small>Share</small></button>
+                <button onclick="alert('Session recording: not active yet')"><span class="material-icons">fiber_manual_record</span><small>Record</small></button>
                 <button id="hbPeople" onclick="hostOpenSheet('incall')"><span class="material-icons">group</span><small id="hbPeopleLabel">People</small><em id="hbPeopleDot"></em></button>
-                <button onclick="openSessionModal('hostMoreModal')"><span class="material-icons">more_horiz</span><small>More</small></button>
               </div>
             </div>
             <div class="cam-hint" id="camHint">Double-tap to show controls</div>
@@ -2322,14 +2317,6 @@
           <h3>Participants</h3>
           <div class="host-tabs" id="hostTabs"></div>
           <div id="hostTabBody"></div>
-        </div>
-      </div>
-      <div class="app-modal-layer bottom-sheet" id="hostMoreModal" onclick="if (event.target === this) closeSessionModal('hostMoreModal')">
-        <div class="app-modal-sheet host-sheet">
-          <button class="host-action" onclick="closeSessionModal('hostMoreModal'); hostOpenLayout()"><span class="material-icons">dashboard</span>Layout</button>
-          <button class="host-action" onclick="closeSessionModal('hostMoreModal'); hostOpenSheet('add')"><span class="material-icons">person_add</span>Invite people</button>
-          <button class="host-action" onclick="closeSessionModal('hostMoreModal'); alert('Screen sharing: not active yet')"><span class="material-icons">screen_share</span>Share screen</button>
-          <button class="host-action" onclick="closeSessionModal('hostMoreModal'); alert('Session recording: not active yet')"><span class="material-icons">fiber_manual_record</span>Record</button>
         </div>
       </div>
       <div class="app-modal-layer bottom-sheet" id="hostLayoutModal" onclick="if (event.target === this) closeSessionModal('hostLayoutModal')">
@@ -3208,6 +3195,7 @@
         guests: HOST_SAMPLE_GUESTS.map(guest => ({ muted: false, ...guest })), waiting: HOST_SAMPLE_WAITING.map(guest => ({ muted: false, ...guest })) });
       hostSetStage([HOST_ID, 1, 2]);
       document.getElementById('camProgram').prepend(document.getElementById('camFeed'));
+      hostScheduleHide();
     }
 
     // Puts the camera feed back full screen for the reporter camera.
@@ -3228,23 +3216,15 @@
       el.classList.toggle('host', host.on);
       el.classList.toggle('cam-off', host.on && host.camOff);
       if (!host.on) { document.getElementById('camGuests').innerHTML = ''; host.rendered = ''; el.classList.remove('bars-hidden'); return; }
-      const isActive = cam.phase !== 'idle';
-      document.getElementById('hbCode').textContent = (document.getElementById('sessionCodeInput').value || '').trim() || 'Live session';
-      const status = document.getElementById('hbStatus');
-      status.textContent = cam.phase === 'idle' ? 'Ready · not live' : cam.phase === 'connecting' ? 'Connecting…' : '● LIVE ' + camFmt(cam.elapsed);
-      status.classList.toggle('live', isActive && cam.phase !== 'connecting');
+      document.getElementById('hbCode').textContent = (document.getElementById('sessionCodeInput').value || '').trim() || 'Session';
       const video = document.getElementById('hbVideo');
       video.classList.toggle('off', host.camOff);
       video.querySelector('.material-icons').textContent = host.camOff ? 'videocam_off' : 'videocam';
       const mic = document.getElementById('hbMic');
       mic.classList.toggle('off', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
-      document.getElementById('hbLive').classList.toggle('active', isActive);
-      document.getElementById('hbLiveLabel').textContent = cam.phase === 'connecting' ? 'Connecting' : isActive ? 'Stop' : 'Go live';
       document.getElementById('hbPeopleLabel').textContent = 'People ' + (host.guests.length + 1);
       document.getElementById('hbPeopleDot').hidden = host.waiting.length === 0;
-      // While live the bars step out of the way after 5 seconds, as in a meeting app.
-      if (cam.phase !== host.lastPhase) { host.lastPhase = cam.phase; hostScheduleHide(); }
 
       const cells = hostLayout().cells;
       const hostSlot = host.stage.indexOf(HOST_ID);
@@ -3282,11 +3262,12 @@
       document.getElementById('cam').classList.toggle('bars-hidden');
       hostScheduleHide();
     }
+    // The bars step out of the way after 5 seconds, as in a meeting app; a tap brings them back.
     function hostScheduleHide() {
       clearTimeout(host.hideTimer);
       const el = document.getElementById('cam');
-      if (cam.phase === 'live' && !el.classList.contains('bars-hidden')) {
-        host.hideTimer = setTimeout(() => { if (cam.phase === 'live') el.classList.add('bars-hidden'); }, 5000);
+      if (host.on && !el.classList.contains('bars-hidden')) {
+        host.hideTimer = setTimeout(() => { if (host.on) el.classList.add('bars-hidden'); }, 5000);
       }
     }
 
@@ -3393,7 +3374,7 @@
     function camLeave() {
       host.on = false;
       hostResetFeed();
-      ['hostPeopleModal', 'hostLeaveModal', 'hostGuestModal', 'hostReplaceModal', 'hostMoreModal', 'hostLayoutModal'].forEach(closeSessionModal);
+      ['hostPeopleModal', 'hostLeaveModal', 'hostGuestModal', 'hostReplaceModal', 'hostLayoutModal'].forEach(closeSessionModal);
       camStop();
       document.getElementById('mobileDevice').classList.remove('landscape');
       const el = document.getElementById('cam');
