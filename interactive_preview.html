@@ -1562,9 +1562,8 @@
         <button class="screen-pill-btn" onclick="openSessionEntry('participant')">Participant Entry</button>
         <button class="screen-pill-btn" onclick="navigateTo('device-setup')">Device Setup</button>
         <button class="screen-pill-btn" onclick="navigateTo('active-session')">Active Session</button>
-        <button class="screen-pill-btn" onclick="navigateTo('mesh')">Mesh Contribution</button>
         <button class="screen-pill-btn" onclick="navigateTo('streamer')">Streamer</button>
-        <button class="screen-pill-btn" onclick="navigateTo('relay')">Relay</button>
+        <button class="screen-pill-btn" onclick="navigateTo('relay')">Share Data</button>
         <button class="screen-pill-btn" onclick="navigateTo('login')">Login</button>
       </div>
 
@@ -1663,44 +1662,10 @@
           <p class="list-section-title">More ways to take part</p>
           <div class="list-group">
             <div class="list-row" style="--accent:var(--cr-purple);" onclick="openSessionEntry('host')" role="button"><div class="list-icon"><span class="material-icons">podcasts</span></div><div class="list-text"><div class="list-title">Start as Host</div><div class="list-sub">Create a session and invite guests.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
-            <div class="list-row" style="--accent:var(--cr-indigo);" onclick="navigateTo('relay')" role="button"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-title">Relay</div><div class="list-sub">Lend your mobile data to a live stream.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
-            <div class="list-row" style="--accent:var(--accent-magenta);" onclick="navigateTo('mesh')" role="button"><div class="list-icon"><span class="material-icons">network_check</span></div><div class="list-text"><div class="list-title">Network Contribution</div><div class="list-sub">Boost a stream with your network.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
+            <div class="list-row" style="--accent:var(--cr-indigo);" onclick="navigateTo('relay')" role="button"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-title">Share mobile data</div><div class="list-sub">Give a reporter's live stream an extra connection.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
           </div>
         </div>
 
-        <!-- 5. CELLULAR BONDING MESH SCREEN (FULL WORKFLOW) -->
-        <div class="app-screen" id="screen-mesh">
-
-          <!-- Mirrors CellularBondingMeshScreen.kt -->
-          <div class="status-header" id="meshStatus">
-            <div class="status-state" id="meshState">Contributing</div>
-            <div class="status-value" id="meshValue">52.4 Mbps</div>
-            <div class="status-caption">Contributed bandwidth · Bonded 5G + Wi-Fi</div>
-          </div>
-
-          <p class="list-section-title">Supported sessions</p>
-          <div class="list-group">
-            <div class="list-row"><div class="list-icon"><span class="material-icons">hub</span></div><div class="list-text"><div class="list-title"><span id="meshSessions">2 active</span></div><div class="list-sub">CR-8492-HOST, Stage-1</div></div></div>
-          </div>
-
-          <p class="list-section-title">Bonded interfaces · 18 ms latency</p>
-          <div class="list-group">
-            <div class="list-row"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-title">Cellular 5G SA</div><div class="list-sub">Primary SIM · Bonded</div></div><span class="list-value" id="meshCellularSpeed">24.1 Mbps</span></div>
-            <div class="list-row"><div class="list-icon"><span class="material-icons">wifi</span></div><div class="list-text"><div class="list-title">Wi-Fi 6 uplink</div><div class="list-sub">5 GHz · Bonded</div></div><span class="list-value" id="meshWifiSpeed">18.4 Mbps</span></div>
-            <div class="list-row"><div class="list-icon"><span class="material-icons">network_check</span></div><div class="list-text"><div class="list-title">Aggregated mesh channel</div><div class="list-sub">Optimized</div></div><span class="list-value" id="meshTotalSpeed">142.5 Mbps</span></div>
-          </div>
-
-          <p class="list-section-title">Settings</p>
-          <div class="list-group">
-            <div class="list-row" onclick="toggleSwitch('batterySaverToggle')" role="button"><div class="list-icon"><span class="material-icons">battery_charging_full</span></div><div class="list-text"><div class="list-title">Thermal &amp; battery throttling</div></div><div class="toggle-switch active" id="batterySaverToggle"></div></div>
-            <div class="list-row" onclick="toggleSwitch('bgContribToggle')" role="button"><div class="list-icon"><span class="material-icons">data_usage</span></div><div class="list-text"><div class="list-title">Background contribution</div></div><div class="toggle-switch active" id="bgContribToggle"></div></div>
-          </div>
-
-          <div class="bottom-action">
-            <button class="btn-secondary" id="meshPauseBtn" onclick="toggleMeshContribution()">
-              Pause Network Contribution
-            </button>
-          </div>
         </div>
 
         <!-- 6. HOME SCREEN (LEGACY 4 OPTIONS VIEW) -->
@@ -2344,29 +2309,48 @@
         <!-- 9. RELAY SCREEN -->
         <div class="app-screen" id="screen-relay">
 
-          <!-- Mirrors RelayScreen.kt -->
-          <div class="status-header" id="relayStatus">
-            <div class="status-state" id="relayState">Relaying</div>
-            <div class="status-value" id="relayBandwidthVal">48.2 Mbps</div>
-            <div class="status-caption">Bandwidth contributed · Bonded 5G Sub-6</div>
+          <!-- Mirrors RelayScreen.kt: first the reporter's code, then the sharing status. -->
+          <div id="relayConnect" style="display:flex; flex-direction:column; flex:1;">
+            <p style="font-size:16px; line-height:1.5; color:var(--text-main);">Your phone will send part of a reporter's live video over your mobile data, so their stream doesn't drop. Your camera isn't used.</p>
+            <p style="font-size:14px; line-height:1.45; color:var(--text-muted); margin:8px 0 20px;">Enter the code shown on the reporter's phone, or scan its QR code. Keep both phones on the same Wi-Fi.</p>
+            <div class="input-group">
+              <label class="input-label">Reporter's code</label>
+              <div class="input-box"><input type="text" id="relayCodeInput" placeholder="e.g. RL-4821" oninput="document.getElementById('relayStartBtn').disabled = !this.value.trim()"></div>
+            </div>
+            <button class="btn-secondary" onclick="document.getElementById('relayCodeInput').value = 'RL-4821'; document.getElementById('relayStartBtn').disabled = false;"><span class="material-icons" style="font-size:18px; margin-right:6px; vertical-align:middle;">qr_code_scanner</span>Scan QR code</button>
+            <div class="input-group" style="margin-top:20px;">
+              <label class="input-label">Name the reporter will see</label>
+              <div class="input-box"><input type="text" value="OnePlus Nord CE 3 Lite 5G"></div>
+            </div>
+            <div class="bottom-action">
+              <button class="btn-gradient" id="relayStartBtn" disabled onclick="relayStart()">Start sharing</button>
+              <p class="setup-footnote" style="margin:0;">Uses your mobile data. You can stop any time.</p>
+            </div>
           </div>
+          <div id="relaySharing" style="display:none; flex-direction:column; flex:1;">
+            <div class="status-header" id="relayStatus">
+              <div class="status-state" id="relayState">Sharing your data</div>
+              <div class="status-value" id="relayBandwidthVal">48.2 Mbps</div>
+              <div class="status-caption" id="relayCaption"></div>
+            </div>
 
-          <p class="list-section-title">Connection</p>
-          <div class="list-group">
-            <div class="list-row"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-title">Primary SIM 1 (5G SA)</div><div class="list-sub">Signal -82 dBm · Excellent</div></div></div>
-            <div class="list-row"><div class="list-icon"><span class="material-icons">data_usage</span></div><div class="list-text"><div class="list-title">Data donated</div><div class="list-sub">This session</div></div><span class="list-value">1.84 GB</span></div>
-          </div>
+            <p class="list-section-title">Your connection</p>
+            <div class="list-group">
+              <div class="list-row"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-title">Mobile network</div><div class="list-sub">SIM 1 · 5G · Excellent signal</div></div></div>
+              <div class="list-row"><div class="list-icon"><span class="material-icons">data_usage</span></div><div class="list-text"><div class="list-title">Data used</div><div class="list-sub">This session</div></div><span class="list-value">1.84 GB</span></div>
+            </div>
 
-          <p class="list-section-title">Settings</p>
-          <div class="list-group">
-            <div class="list-row" onclick="toggleSwitch('relayThrottleToggle')" role="button"><div class="list-icon"><span class="material-icons">battery_charging_full</span></div><div class="list-text"><div class="list-title">Thermal &amp; battery throttling</div></div><div class="toggle-switch active" id="relayThrottleToggle"></div></div>
-          </div>
+            <p class="list-section-title">Settings</p>
+            <div class="list-group">
+              <div class="list-row" onclick="toggleSwitch('relayThrottleToggle')" role="button"><div class="list-icon"><span class="material-icons">battery_charging_full</span></div><div class="list-text"><div class="list-title">Pause when battery is low or the phone is hot</div></div><div class="toggle-switch active" id="relayThrottleToggle"></div></div>
+            </div>
 
-          <div class="bottom-action">
-            <button class="btn-secondary" id="relayToggleBtn" onclick="toggleRelay()" data-a11y-role="Relay Pause (50dp)">
-              Pause Connection Donation
-            </button>
+            <div class="bottom-action">
+              <button class="btn-secondary" id="relayToggleBtn" onclick="toggleRelay()">Pause sharing</button>
+              <button class="btn-secondary" onclick="navigateBack()">Stop sharing</button>
+            </div>
           </div>
+        </div>
         </div>
 
       </div>
@@ -2469,7 +2453,6 @@
     let isAuthenticated = false; // By default unauthenticated as per spec requirement
     let isMuted = false;
     let isRelaying = true;
-    let isContributingMesh = true;
 
     let isSetupMicOn = true;
     let isSetupCamOn = true;
@@ -2484,7 +2467,7 @@
 
     // The camera screen opens from Broadcast or, for host and participant, from Device Setup; Back returns there.
     let streamerBackTo = 'category-selection';
-    const SCREEN_TITLES = { mesh: 'Network Contribution', relay: 'Relay', 'device-setup': 'Device Setup', 'waiting-lobby': 'Waiting room', login: 'Sign In', signup: 'Create Account' };
+    const SCREEN_TITLES = { relay: 'Share mobile data', 'device-setup': 'Device Setup', 'waiting-lobby': 'Waiting room', login: 'Sign In', signup: 'Create Account' };
     let lobbyAdmitTimer = null;
     let isNavigatingBack = false;
     function navigateTo(screenId) {
@@ -2525,7 +2508,6 @@
       const pill = Array.from(document.querySelectorAll('.screen-pill-btn')).find(b => {
         const text = b.textContent.toLowerCase();
         if (screenId === 'category-selection') return text.includes('category selection');
-        if (screenId === 'mesh') return text.includes('mesh');
         if (screenId === 'home') return text.includes('home');
         if (screenId === 'session-entry') return (currentSessionMode === 'host' ? text.includes('host entry') : text.includes('participant entry'));
         if (screenId === 'device-setup') return text.includes('device setup');
@@ -2561,7 +2543,7 @@
         stopSessionTimer();
       }
 
-      if (['mesh', 'session-entry', 'device-setup', 'waiting-lobby', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
+      if (['session-entry', 'device-setup', 'waiting-lobby', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
         backBtn.style.display = 'flex';
       } else {
         backBtn.style.display = 'none';
@@ -2963,32 +2945,22 @@
       isRelaying = !isRelaying;
       const btn = document.getElementById('relayToggleBtn');
       document.getElementById('relayBandwidthVal').textContent = isRelaying ? '48.2 Mbps' : '0.0 Mbps';
-      document.getElementById('relayState').textContent = isRelaying ? 'Relaying' : 'Paused';
+      document.getElementById('relayState').textContent = isRelaying ? 'Sharing your data' : 'Paused';
       document.getElementById('relayStatus').classList.toggle('paused', !isRelaying);
-      btn.textContent = isRelaying ? 'Pause Connection Donation' : 'Resume Cellular Donation';
+      btn.textContent = isRelaying ? 'Pause sharing' : 'Resume sharing';
       btn.className = isRelaying ? 'btn-secondary' : 'btn-gradient';
+    }
+
+    // Start sharing: switch from the code form to the sharing status, like RelayScreen.kt.
+    function relayStart() {
+      document.getElementById('relayCaption').textContent = `Helping ${document.getElementById('relayCodeInput').value.trim()}'s live stream`;
+      document.getElementById('relayConnect').style.display = 'none';
+      document.getElementById('relaySharing').style.display = 'flex';
     }
 
     function toggleSwitch(id) {
       const el = document.getElementById(id);
       if (el) el.classList.toggle('active');
-    }
-
-    function toggleMeshContribution() {
-      isContributingMesh = !isContributingMesh;
-      const btn = document.getElementById('meshPauseBtn');
-      const cell = document.getElementById('meshCellularSpeed');
-      const wifi = document.getElementById('meshWifiSpeed');
-      const total = document.getElementById('meshTotalSpeed');
-      cell.textContent = isContributingMesh ? '24.1 Mbps' : 'Standby';
-      wifi.textContent = isContributingMesh ? '18.4 Mbps' : 'Standby';
-      total.textContent = isContributingMesh ? '142.5 Mbps' : 'Idle';
-      document.getElementById('meshValue').textContent = isContributingMesh ? '52.4 Mbps' : '0.0 Mbps';
-      document.getElementById('meshSessions').textContent = isContributingMesh ? '2 active' : '0 active';
-      document.getElementById('meshState').textContent = isContributingMesh ? 'Contributing' : 'Paused';
-      document.getElementById('meshStatus').classList.toggle('paused', !isContributingMesh);
-      btn.textContent = isContributingMesh ? 'Pause Network Contribution' : 'Resume Network Contribution';
-      btn.className = isContributingMesh ? 'btn-secondary' : 'btn-gradient';
     }
 
     // Set system time
@@ -3640,7 +3612,7 @@
     if (cleanScreen) {
       if (cleanScreen === 'host-entry') openSessionEntry('host');
       else if (cleanScreen === 'participant-entry') openSessionEntry('participant');
-      else if (['splash', 'category-selection', 'mesh', 'login', 'signup', 'home', 'streamer', 'relay', 'host-workflow', 'participant-workflow'].includes(cleanScreen)) {
+      else if (['splash', 'category-selection', 'login', 'signup', 'home', 'streamer', 'relay', 'host-workflow', 'participant-workflow'].includes(cleanScreen)) {
         navigateTo(cleanScreen);
       }
     }
