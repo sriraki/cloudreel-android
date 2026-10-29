@@ -2165,8 +2165,8 @@
         <div class="app-screen" id="screen-streamer">
           <div class="cam" id="cam">
             <div class="cam-feed" id="camFeed" ondblclick="camToggleOverlays()" data-a11y-role="Camera Preview (double-tap hides controls)"></div>
-            <div class="cam-camoff" id="camCamOff"><span>You</span></div>
-            <div class="cam-guests" id="camGuests"></div>
+            <div class="cam-camoff" id="camCamOff" ondblclick="camToggleOverlays()"><span>You</span></div>
+            <div class="cam-guests" id="camGuests" ondblclick="camToggleOverlays()"></div>
             <div class="cam-hint" id="camHint">Double-tap to show controls</div>
             <div class="cam-ui">
               <button class="cam-btn cam-back" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
