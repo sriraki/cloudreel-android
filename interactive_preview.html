@@ -1578,6 +1578,18 @@
     .meta-buttons button.primary { background: #3B82F6; color: #fff; }
     .meta-buttons button.outline { border: 1px solid var(--border-device); }
     .cam-hint.show { opacity: 1; }
+    /* Android Toast stand-in, e.g. "Saved to Download/CloudReel/Report live". */
+    .cam-toast { position: absolute; left: 50%; bottom: 120px; z-index: 6; transform: translateX(-50%); max-width: 80%; padding: 8px 14px; border-radius: 18px;
+      background: rgba(50,50,50,0.92); color: #fff; font-size: 12.5px; text-align: center; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
+    .cam-toast.show { opacity: 1; }
+    /* Recordings page (RecordingsScreen.kt): one tab per Download/CloudReel folder. */
+    .rec-tabs { display: flex; overflow-x: auto; border-bottom: 1px solid var(--border-device); padding: 0 8px; }
+    .rec-tabs button { flex-shrink: 0; padding: 12px 14px; border: 0; border-bottom: 2px solid transparent; background: none; color: var(--text-muted); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .rec-tabs button.on { color: var(--cr-violet); border-bottom-color: var(--cr-violet); }
+    .rec-row { display: flex; align-items: center; gap: 8px; padding: 12px 16px; border-bottom: 1px solid var(--border-device); font-size: 14px; }
+    .rec-row div { flex: 1; min-width: 0; }
+    .rec-row small { display: block; color: var(--text-muted); font-size: 12px; }
+    .rec-empty { padding: 32px; text-align: center; color: var(--text-muted); font-size: 14px; }
   </style>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 </head>
@@ -2237,7 +2249,7 @@
                 <button id="hbVideo" onclick="hostToggleCamera()"><span class="material-icons">videocam</span><small>Video</small></button>
                 <button id="hbMic" onclick="camToggleMic()"><span class="material-icons">mic</span><small>Mic</small></button>
                 <button class="host-only" id="hbShareBtn" onclick="hostToggleShare()"><span class="material-icons">screen_share</span><small>Share</small></button>
-                <button class="host-only" onclick="alert('Session recording: not active yet')"><span class="material-icons">fiber_manual_record</span><small>Record</small></button>
+                <button id="hbRecord" onclick="hostToggleRecord()"><span class="material-icons">fiber_manual_record</span><small>Record</small></button>
                 <button class="off" onclick="hostOpenLeave()"><span class="material-icons">call_end</span><small>Leave</small></button>
               </div>
             </div>
@@ -2296,7 +2308,7 @@
                   <div class="cam-links" id="camLinks"></div>
                 </div>
                 <div class="cam-shutter">
-                  <button class="cam-thumb" id="camThumb" onclick="alert('Recordings: saved clips and upload')" title="Recordings"><span class="material-icons">video_library</span></button>
+                  <button class="cam-thumb" id="camThumb" onclick="recOpen()" title="Recordings"><span class="material-icons">video_library</span></button>
                   <button class="cam-rec" onclick="camRecord()" data-a11y-role="Record (68dp)">
                     <span class="cam-rec-ring"><span class="cam-rec-core"></span></span>
                     <span id="camRecLabel">Go live</span>
@@ -2322,6 +2334,16 @@
               <div class="cs-body" id="csBody"></div>
               <div class="cs-dialog" id="csDialog" onclick="if (event.target === this) csCloseDialog()"><div class="cs-card" id="csCard"></div></div>
             </div>
+
+            <div class="cs" id="recPage">
+              <div class="cs-head">
+                <button onclick="document.getElementById('recPage').classList.remove('open')" title="Back"><span class="material-icons">arrow_back</span></button>
+                <span>Recordings</span>
+              </div>
+              <div class="rec-tabs" id="recTabs"></div>
+              <div class="cs-body" id="recList" style="padding:0;"></div>
+            </div>
+            <div class="cam-toast" id="camToast"></div>
           </div>
         </div>
 
@@ -3155,9 +3177,8 @@
         }).join('') + '<span style="opacity:0.6;">Mbps</span>';
       // Three fixed slots: recordings | record or stop | flip. Pause and details join the camera icons while running.
       document.getElementById('camDetailsBtn').hidden = !(isActive && cam.mode === 'live');
-      // Recordings leaves the camera, and flipping would end a local recording, so they wait; a broadcast can flip.
+      // Recordings leaves the camera, so it waits until idle; flip works any time, a recording carries on.
       document.getElementById('camThumb').disabled = isActive;
-      document.getElementById('camFlipBtn').disabled = isActive && cam.mode !== 'live';
       document.getElementById('camSettingsBtn').disabled = isActive;
       const pauseBtn = document.getElementById('camPauseBtn');
       pauseBtn.hidden = !isActive;
@@ -3204,6 +3225,8 @@
         // Stopping a broadcast is confirmed first (StopBroadcastDialog).
         if (wasLive && !isConfirmed) { openSessionModal('stopBroadcastModal'); return; }
         // Stop keeps the camera open to go live again; the back arrow returns to the setup page.
+        // Every broadcast is also saved on the phone; Record mode saves its own clips.
+        recSave(wasLive ? 'Report live' : 'Recordings', cam.elapsed);
         camStop();
         return;
       }
@@ -3476,6 +3499,9 @@
       const mic = document.getElementById('hbMic');
       mic.classList.toggle('off', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
+      const record = document.getElementById('hbRecord');
+      record.classList.toggle('off', Boolean(host.recordingSince));
+      record.querySelector('small').textContent = host.recordingSince ? 'Stop rec' : 'Record';
       const share = document.getElementById('hbShareBtn');
       share.classList.toggle('off', host.sharing);
       share.querySelector('small').textContent = host.sharing ? 'Stop share' : 'Share';
@@ -3607,8 +3633,48 @@
       openSessionModal('hostLeaveModal');
     }
     // Leaving keeps the session running, so offer to rejoin; ending closes it.
-    function hostLeave() { closeSessionModal('hostLeaveModal'); navigateTo('left-session'); }
-    function hostEnd() { closeSessionModal('hostLeaveModal'); navigateTo('category-selection'); }
+    function hostLeave() { hostStopRecord(); closeSessionModal('hostLeaveModal'); navigateTo('left-session'); }
+    function hostEnd() { hostStopRecord(); closeSessionModal('hostLeaveModal'); navigateTo('category-selection'); }
+    // Meeting Record (host and guests, only on tap): this phone's camera and mic, saved when it stops or on leaving.
+    function hostToggleRecord() {
+      if (host.recordingSince) { hostStopRecord(); } else { host.recordingSince = Date.now(); camToast('Recording your camera and mic'); }
+      hostRender();
+    }
+    function hostStopRecord() {
+      if (!host.recordingSince) return;
+      recSave(host.role === 'host' ? 'Host sessions' : 'Joined meetings', Math.round((Date.now() - host.recordingSince) / 1000));
+      host.recordingSince = 0;
+    }
+
+    // ── Recordings (RecordingFolder / RecordingsScreen.kt): files under Download/CloudReel, a tab per folder ──
+    const REC_FOLDERS = ['Report live', 'Host sessions', 'Joined meetings', 'Recordings'];
+    const recordings = [];
+    let recFolder = 'Report live';
+    function recSave(folder, seconds) {
+      const now = new Date();
+      const stamp = now.getFullYear() + [now.getMonth() + 1, now.getDate()].map(n => String(n).padStart(2, '0')).join('') + '_' +
+        [now.getHours(), now.getMinutes(), now.getSeconds()].map(n => String(n).padStart(2, '0')).join('');
+      recordings.unshift({ folder, name: `CR_${stamp}`, sizeMb: Math.max(1, seconds * 1.8).toFixed(1) });
+      camToast(`Saved to Download/CloudReel/${folder}`);
+    }
+    function recOpen() { recRender(); document.getElementById('recPage').classList.add('open'); }
+    function recRender() {
+      document.getElementById('recTabs').innerHTML = REC_FOLDERS.map(folder =>
+        `<button class="${folder === recFolder ? 'on' : ''}" onclick="recFolder='${folder}'; recRender()">${folder}</button>`).join('');
+      const items = recordings.filter(item => item.folder === recFolder);
+      document.getElementById('recList').innerHTML = items.length === 0
+        ? `<p class="rec-empty">No recordings yet. They're saved in Download/CloudReel/${recFolder}.</p>`
+        : items.map(item => `<div class="rec-row"><span class="material-icons">movie</span><div>${item.name}<small>${item.sizeMb} MB · Not uploaded</small></div>` +
+          '<span class="material-icons">upload</span><span class="material-icons">share</span><span class="material-icons" style="color:var(--cr-error);">delete</span></div>').join('');
+    }
+    let camToastTimer = null;
+    function camToast(text) {
+      const toast = document.getElementById('camToast');
+      toast.textContent = text;
+      toast.classList.add('show');
+      clearTimeout(camToastTimer);
+      camToastTimer = setTimeout(() => toast.classList.remove('show'), 2500);
+    }
 
     // Leaving the camera ends the session and restores portrait, like the app does.
     function camLeave() {
