@@ -1464,6 +1464,11 @@
     .host-btn.outline { border: 1px solid var(--border-device); background: none; color: var(--cr-violet); }
     .host-btn.text { border: 0; background: none; color: var(--cr-violet); }
     .host-btn.tonal { width: auto; height: 36px; margin: 0; padding: 0 16px; border: 0; background: color-mix(in srgb, var(--cr-violet) 18%, transparent); color: var(--text-main); }
+    .host-btn.primary { border: 0; background: var(--cr-gradient); color: #fff; }
+    /* ConfirmDialog.kt: outlined Cancel and a filled action, side by side */
+    .dialog-actions { display: flex; gap: 12px; }
+    .dialog-actions .host-btn { flex: 1; margin: 0; font-size: 16px; }
+    .dialog-actions .host-btn.outline { color: var(--text-main); }
     .host-btn.small-text { width: auto; height: 36px; margin: 0; padding: 0 10px; border: 0; background: none; color: var(--cr-violet); }
     .host-add { padding: 16px; display: flex; flex-direction: column; gap: 12px; }
     .host-add label { font-size: 14px; font-weight: 600; color: var(--text-main); }
@@ -2142,7 +2147,7 @@
           </div>
 
           <div style="text-align:right; margin-bottom:24px;">
-            <a href="#" onclick="alert('Reset link sent to your email.'); return false;" style="font-size:12px; color:var(--cr-violet); font-weight:600; text-decoration:none;">Forgot password?</a>
+            <a href="#" onclick="openResetPassword(); return false;" style="font-size:12px; color:var(--cr-violet); font-weight:600; text-decoration:none;">Forgot password?</a>
           </div>
 
           <p style="text-align:center; font-size:13px; color:var(--text-muted);">
@@ -2390,15 +2395,31 @@
       <!-- MODAL SHEETS -->
       <!-- Account dialogs (AccountDialogs.kt) -->
       <div class="app-modal-layer" id="signInPromptModal" onclick="if (event.target === this) closeSessionModal('signInPromptModal')">
-        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 12px;">
+        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 16px;">
           <h3 style="padding:0 0 8px;">Sign in to go live</h3>
-          <div style="display:flex; justify-content:flex-end; gap:4px;"><button class="host-btn small-text" onclick="closeSessionModal('signInPromptModal')">Not now</button><button class="host-btn small-text" onclick="closeSessionModal('signInPromptModal'); navigateTo('login')">Sign in</button></div>
+          <p style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:16px;">You need an account to go live.</p>
+          <div class="dialog-actions"><button class="host-btn outline" onclick="closeSessionModal('signInPromptModal')">Not now</button><button class="host-btn primary" onclick="closeSessionModal('signInPromptModal'); navigateTo('login')">Sign in</button></div>
         </div>
       </div>
       <div class="app-modal-layer" id="signOutModal" onclick="if (event.target === this) closeSessionModal('signOutModal')">
-        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 12px;">
+        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 16px;">
           <h3 style="padding:0 0 8px;">Sign out?</h3>
-          <div style="display:flex; justify-content:flex-end; gap:4px;"><button class="host-btn small-text" onclick="closeSessionModal('signOutModal')">Cancel</button><button class="host-btn small-text" style="color:var(--cr-error);" onclick="closeSessionModal('signOutModal'); logout()">Sign out</button></div>
+          <p style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:16px;">You'll need to sign in again to go live.</p>
+          <div class="dialog-actions"><button class="host-btn outline" onclick="closeSessionModal('signOutModal')">Cancel</button><button class="host-btn danger" onclick="closeSessionModal('signOutModal'); logout()">Sign out</button></div>
+        </div>
+      </div>
+      <div class="app-modal-layer" id="stopBroadcastModal" onclick="if (event.target === this) closeSessionModal('stopBroadcastModal')">
+        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 16px;">
+          <h3 style="padding:0 0 8px;">Stop broadcast?</h3>
+          <p style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:16px;">Viewers will stop seeing your video.</p>
+          <div class="dialog-actions"><button class="host-btn outline" onclick="closeSessionModal('stopBroadcastModal')">Keep live</button><button class="host-btn danger" onclick="closeSessionModal('stopBroadcastModal'); camRecord(true)">Stop</button></div>
+        </div>
+      </div>
+      <div class="app-modal-layer" id="resetPasswordModal" onclick="if (event.target === this) closeSessionModal('resetPasswordModal')">
+        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 16px;">
+          <h3 style="padding:0 0 8px;">Reset password</h3>
+          <p id="resetPasswordText" style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:16px;"></p>
+          <div class="dialog-actions"><button class="host-btn outline" onclick="closeSessionModal('resetPasswordModal')">Cancel</button><button class="host-btn primary" onclick="closeSessionModal('resetPasswordModal')">Send link</button></div>
         </div>
       </div>
 
@@ -2418,7 +2439,7 @@
         <div class="app-modal-sheet host-sheet" style="padding:20px 20px 16px;">
           <h3 id="relayConfirmTitle" style="padding:0 0 8px;"></h3>
           <p id="relayConfirmText" style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:16px;"></p>
-          <div style="display:flex; gap:10px;"><button class="host-btn outline" onclick="closeSessionModal('relayConfirmModal')">Cancel</button><button class="host-btn danger" style="background:var(--cr-violet);" onclick="relayConnect()">Connect</button></div>
+          <div class="dialog-actions"><button class="host-btn outline" onclick="closeSessionModal('relayConfirmModal')">Cancel</button><button class="host-btn primary" onclick="relayConnect()">Connect</button></div>
         </div>
       </div>
 
@@ -3014,7 +3035,7 @@
       input.value = formatRelayCode(text);
       document.getElementById('relayStartBtn').disabled = input.value.length !== 9;
       document.getElementById('relayConfirmTitle').textContent = `Connect to ${input.value}?`;
-      document.getElementById('relayConfirmText').textContent = "Uses this phone's mobile data.";
+      document.getElementById('relayConfirmText').textContent = "Your mobile data will help send the reporter's video.";
     }
     function relayConnect() {
       closeSessionModal('relayConfirmModal');
@@ -3165,10 +3186,12 @@
       }, 1000);
     }
 
-    function camRecord() {
+    function camRecord(isConfirmed) {
       if (cam.phase === 'connecting') return;
       if (cam.phase !== 'idle') {
         const wasLive = cam.mode === 'live';
+        // Stopping a broadcast is confirmed first (StopBroadcastDialog).
+        if (wasLive && !isConfirmed) { openSessionModal('stopBroadcastModal'); return; }
         camStop();
         // A broadcast started from the setup page goes back there when it stops.
         if (wasLive && streamerBackTo === 'golive-setup') { isNavigatingBack = true; navigateTo('golive-setup'); }
@@ -3184,6 +3207,12 @@
       }
       camStartClock();
       camRender();
+    }
+
+    function openResetPassword() {
+      const email = document.getElementById('loginEmail').value.trim();
+      document.getElementById('resetPasswordText').textContent = email ? `We'll email ${email} a link to set a new password.` : "We'll email you a link to set a new password.";
+      openSessionModal('resetPasswordModal');
     }
 
     function camTogglePause() {
@@ -3514,8 +3543,8 @@
     function hostOpenLeave() {
       const isHost = host.role === 'host';
       document.getElementById('hostLeaveText').textContent = isHost
-        ? 'If you only leave, guests stay.'
-        : 'You can rejoin with the same link.';
+        ? 'Guests can stay if you just leave.'
+        : 'You can join again with the same link.';
       document.getElementById('hostEndBtn').hidden = !isHost;
       document.getElementById('hostLeaveBtn').className = 'host-btn ' + (isHost ? 'outline' : 'danger');
       openSessionModal('hostLeaveModal');
