@@ -2016,7 +2016,7 @@
 
             <!-- Camera Flip Overlay Action Bottom-Right -->
             <button class="btn-cam-flip-action" onclick="flipActiveCamera()" title="Flip Camera" data-a11y-role="Flip Camera">
-              <span class="material-icons" style="font-size:22px; color:white;">cameraswitch</span>
+              <span class="material-icons" style="font-size:22px; color:white;">cached</span>
             </button>
           </div>
 
@@ -2228,7 +2228,7 @@
               <div class="hb-top">
                 <span class="hb-pill"><span class="material-icons">schedule</span><b id="hbTime">00:00</b></span>
                 <span style="flex:1;"></span>
-                <button class="hb-icon" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
+                <button class="hb-icon" onclick="camFlip()" title="Switch camera"><span class="material-icons">cached</span></button>
                 <button class="hb-pill" id="hbPeople" onclick="hostOpenSheet('incall')" title="People"><span class="material-icons">group</span><b id="hbPeopleCount">1</b><em id="hbPeopleDot"></em></button>
               </div>
               <div class="hb-share" id="hbShare" hidden><span class="material-icons">screen_share</span><span>You're sharing your screen</span><button onclick="hostToggleShare()">Stop</button></div>
@@ -2301,7 +2301,7 @@
                     <span class="cam-rec-ring"><span class="cam-rec-core"></span></span>
                     <span id="camRecLabel">Go live</span>
                   </button>
-                  <button class="cam-btn" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
+                  <button class="cam-btn" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cached</span></button>
                 </div>
               </div>
             </div>
@@ -3203,9 +3203,8 @@
         const wasLive = cam.mode === 'live';
         // Stopping a broadcast is confirmed first (StopBroadcastDialog).
         if (wasLive && !isConfirmed) { openSessionModal('stopBroadcastModal'); return; }
+        // Stop keeps the camera open to go live again; the back arrow returns to the setup page.
         camStop();
-        // A broadcast started from the setup page goes back there when it stops.
-        if (wasLive && streamerBackTo === 'golive-setup') { isNavigatingBack = true; navigateTo('golive-setup'); }
         return;
       }
       cam.elapsed = 0;
