@@ -1298,9 +1298,11 @@
     .cam-ui button { pointer-events: auto; }
     .cam.overlays-hidden .cam-ui { opacity: 0; }
     .cam.overlays-hidden .cam-ui button { pointer-events: none; }
-    .cam-btn { width: 44px; height: 44px; border-radius: 50%; border: 0; background: rgba(0,0,0,0.55); color: #fff;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; }
-    .cam-btn .material-icons { font-size: 22px; }
+    /* Compact 40dp circles with a 48dp touch target (OverlayCircle in StreamerControls.kt). */
+    .cam-btn { width: 40px; height: 40px; margin: 4px; border-radius: 50%; border: 0; background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; flex-shrink: 0; position: relative; }
+    .cam-btn::after { content: ''; position: absolute; inset: -4px; border-radius: 50%; }
+    .cam-btn .material-icons { font-size: 20px; }
     .cam-btn.on { background: rgba(59,130,246,0.85); }
     .cam-btn.warn { background: rgba(239,68,68,0.85); }
     .cam-btn:disabled { opacity: 0.4; cursor: default; }
@@ -1322,9 +1324,9 @@
     .cam-format-icon .material-icons-outlined { font-size: 36px; }
     .cam-format-icon b { position: absolute; left: 3px; width: 22px; text-align: center; font-size: 10px; }
     .cam-format-item small { font-size: 9px; font-weight: 400; opacity: 0.6; }
-    .cam-thumb { width: 52px; height: 52px; border-radius: 12px; border: 2px solid #fff; background: rgba(0,0,0,0.55); color: #fff;
+    .cam-thumb { width: 48px; height: 48px; border-radius: 12px; border: 2px solid #fff; background: rgba(0,0,0,0.55); color: #fff;
       display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; }
-    .cam-slot { width: 52px; height: 52px; }
+    .cam-thumb:disabled { opacity: 0.4; cursor: default; }
     .cam-row { position: relative; width: 100%; min-height: 78px; display: flex; align-items: flex-end; justify-content: center; }
     .cam-pill { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 24px; border: 0;
       background: rgba(0,0,0,0.55); color: #fff; text-align: left; font-family: inherit; cursor: pointer; }
@@ -1348,10 +1350,19 @@
     .cam-vu-labels { display: flex; justify-content: space-between; font-size: 8px; opacity: 0.75; margin-top: 2px; }
     .cam-left { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .cam-btn b { font-size: 11px; }
-    .cam-zoombar { display: none; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; align-self: flex-end; margin-right: 60px; max-width: calc(100% - 116px); }
-    .cam-zoombar.open { display: flex; }
-    .cam-zoombar input { flex: 1; min-width: 0; width: 210px; accent-color: #3B82F6; }
-    .cam-utils { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
+    /* Zoom bar (ZoomBar in StreamerControls.kt): opens from the zoom icon, stops marked, thumb shows the zoom. */
+    .cam-zoom { position: absolute; display: none; height: 64px; border-radius: 32px; background: rgba(0,0,0,0.55); pointer-events: auto; touch-action: none; cursor: pointer; z-index: 1; }
+    .cam-zoom.open { display: block; }
+    .cam-zoom.vertical { width: 64px; height: 180px; }
+    .cam-zoom-track { position: absolute; left: 22px; right: 22px; top: 21px; height: 2px; background: rgba(255,255,255,0.4); }
+    .cam-zoom.vertical .cam-zoom-track { left: 41px; right: auto; top: 22px; bottom: 22px; width: 2px; height: auto; }
+    .cam-zoom-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); }
+    .cam-zoom-label { position: absolute; width: 30px; text-align: center; font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.7); }
+    .cam-zoom-label.on { color: #fff; font-weight: 700; }
+    .cam-zoom-thumb { position: absolute; width: 32px; height: 32px; border-radius: 50%; background: #3B82F6; color: #fff; font-size: 10px; font-weight: 700;
+      display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); }
+    /* Portrait: camera icons in a rail on the right, under the format chip. */
+    .cam-utils { position: absolute; right: 8px; top: 56px; display: flex; flex-direction: column; }
     /* Host session (mirrors HostSessionUi.kt): meeting-style view. Portrait fills the screen; landscape is the 16:9 program. */
     .cam:not(.host) .cam-program, .cam:not(.host) .host-bars { display: none; }
     .cam.host .cam-ui, .cam.host .cam-hint { display: none !important; }
@@ -1404,9 +1415,6 @@
     .relay-line { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; font-size: 15px; color: var(--text-main); }
     .relay-line.muted { color: var(--text-muted); }
     .relay-line span { color: var(--text-main); }
-    .cam-details { align-self: center; display: flex; align-items: center; gap: 4px; padding: 10px 18px; border: 0; border-radius: 24px; background: rgba(0,0,0,0.55); color: #fff; font: inherit; font-size: 15px; font-weight: 600; cursor: pointer; }
-    .cam-details[hidden] { display: none; }
-    .cam-details .material-icons { font-size: 18px; }
     .live-details { padding: 8px 20px 24px; }
     .live-details h3 { padding: 8px 0 0; }
     .live-details .sub { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
@@ -1498,10 +1506,14 @@
     .cam.connecting .cam-rec-core { background: #F59E0B; animation: pulseLogo 1s infinite; }
     /* Landscape: rotate/tools/settings move to the top right, mode or transport sits beside the record column. */
     .cam.landscape .cam-formats { right: 96px; max-height: calc(100% - 80px); }
-    .cam.landscape .cam-utils { top: 12px; right: 84px; transform: none; flex-direction: row; gap: 8px; }
+    /* Landscape: meter and network card bottom left, every camera icon bottom right beside the shutter column. */
+    .cam.landscape .cam-utils { top: auto; bottom: 8px; right: 96px; flex-direction: row; }
+    .cam.landscape .cam-row { justify-content: flex-start; gap: 8px; justify-self: start; }
+    /* The network card lists its links in a column, so every icon fits on narrow phones too. */
+    .cam.landscape .cam-links { flex-direction: column; align-items: flex-start; gap: 4px; border-radius: 12px; padding: 8px 10px; }
+    .cam.landscape .cam-vu { position: static; }
     .cam.landscape .cam-bottom { inset: 12px; display: grid; grid-template-columns: 1fr auto auto; grid-template-rows: 1fr auto auto auto; row-gap: 8px;
       align-items: center; justify-items: center; column-gap: 16px; }
-    .cam.landscape .cam-zoombar { grid-column: 1 / span 2; grid-row: 2; }
     .cam.landscape .cam-tools { grid-column: 1 / span 2; grid-row: 3; }
     .cam.landscape .cam-row { grid-column: 1 / span 2; grid-row: 4; }
     .cam.landscape .cam-shutter { grid-column: 3; grid-row: 1 / span 4; width: auto; flex-direction: column; gap: 10px; }
@@ -2252,19 +2264,21 @@
                 <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
               </div>
 
-              <!-- Zoom on the right, where a right-handed thumb rests (StreamerControls.kt) -->
+              <!-- Camera icons; zoom last, nearest a right-handed thumb (StreamerControls.kt) -->
               <div class="cam-utils">
                 <button class="cam-btn" id="camRotateBtn" onclick="camToggleRotate()" title="Rotate screen"><span class="material-icons">screen_rotation</span></button>
                 <button class="cam-btn" id="camToolsBtn" onclick="camToggleTools()" title="Show camera tools"><span class="material-icons">tune</span></button>
                 <button class="cam-btn" id="camSettingsBtn" onclick="csOpen('list')" title="Settings"><span class="material-icons">settings</span></button>
+                <button class="cam-btn" id="camPauseBtn" onclick="camTogglePause()" title="Pause" hidden><span class="material-icons">pause</span></button>
+                <button class="cam-btn" id="camDetailsBtn" onclick="liveOpenDetails()" title="Broadcast details" hidden><span class="material-icons-outlined">info</span></button>
                 <button class="cam-btn" id="camZoomBtn" onclick="camToggleZoomBar()" title="Zoom"><span class="material-icons">zoom_in</span></button>
+              </div>
+              <div class="cam-zoom" id="camZoom" role="slider" aria-label="Zoom" onpointerdown="this.setPointerCapture(event.pointerId); camZoomPointer(event)" onpointermove="if (event.buttons) camZoomPointer(event)">
+                <div class="cam-zoom-track"></div>
+                <div id="camZoomMarks"></div>
               </div>
 
               <div class="cam-bottom">
-                <div class="cam-zoombar" id="camZoomBar">
-                  <input type="range" id="camZoomRange" min="1" max="5" step="0.1" value="1" oninput="camSetZoom(this.value)" aria-label="Zoom">
-                  <span id="camZoomVal">1.0×</span>
-                </div>
                 <div class="cam-tools" id="camTools">
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Autofocus"><span class="material-icons">center_focus_strong</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Flash"><span class="material-icons">flash_off</span></button>
@@ -2273,7 +2287,6 @@
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Grid"><span class="material-icons">grid_off</span></button>
                   <button class="cam-btn" onclick="this.classList.toggle('on')" title="Exposure lock"><span class="material-icons">lock_open</span></button>
                 </div>
-                <button class="cam-details" id="camDetailsBtn" onclick="liveOpenDetails()" hidden>Details <span class="material-icons">keyboard_arrow_up</span></button>
                 <div class="cam-row">
                   <div class="cam-vu" title="Audio level (L / R)">
                     <div class="cam-vu-bars"><div class="cam-vu-bar" id="camVuL"></div><div class="cam-vu-bar" id="camVuR"></div></div>
@@ -2283,13 +2296,11 @@
                 </div>
                 <div class="cam-shutter">
                   <button class="cam-thumb" id="camThumb" onclick="alert('Recordings: saved clips and upload')" title="Recordings"><span class="material-icons">video_library</span></button>
-                  <span class="cam-slot" id="camThumbSlot" hidden></span>
                   <button class="cam-rec" onclick="camRecord()" data-a11y-role="Record (68dp)">
                     <span class="cam-rec-ring"><span class="cam-rec-core"></span></span>
                     <span id="camRecLabel">Go live</span>
                   </button>
                   <button class="cam-btn" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cameraswitch</span></button>
-                  <button class="cam-btn" id="camPauseBtn" onclick="camTogglePause()" title="Pause" hidden><span class="material-icons">pause</span></button>
                 </div>
               </div>
             </div>
@@ -3141,11 +3152,11 @@
           const isOn = !key || settings[key];
           return `<span class="${isOn ? '' : 'off'}"><span class="material-icons">${icon}</span>${isOn ? reading : 'off'}</span>`;
         }).join('') + '<span style="opacity:0.6;">Mbps</span>';
-      // Three fixed slots: recordings | record | flip while idle, empty | stop | pause-resume while running.
+      // Three fixed slots: recordings | record or stop | flip. Pause and details join the camera icons while running.
       document.getElementById('camDetailsBtn').hidden = !(isActive && cam.mode === 'live');
-      document.getElementById('camThumb').hidden = isActive;
-      document.getElementById('camThumbSlot').hidden = !isActive;
-      document.getElementById('camFlipBtn').hidden = isActive;
+      // Recordings leaves the camera, and flipping would end a local recording, so they wait; a broadcast can flip.
+      document.getElementById('camThumb').disabled = isActive;
+      document.getElementById('camFlipBtn').disabled = isActive && cam.mode !== 'live';
       document.getElementById('camSettingsBtn').disabled = isActive;
       const pauseBtn = document.getElementById('camPauseBtn');
       pauseBtn.hidden = !isActive;
@@ -3164,13 +3175,12 @@
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
       const mirrorX = (cam.front ? -1 : 1) * (settings.mirroring === 'Horizontally' ? -1 : 1);
       const mirrorY = settings.mirroring === 'Vertically' ? -1 : 1;
-      document.getElementById('camFeed').style.transform = `scale(${cam.zoom}) scale(${mirrorX}, ${mirrorY})`;
-      const zoomText = cam.zoom.toFixed(1) + '×';
-      document.getElementById('camZoomBar').classList.toggle('open', cam.zoomOpen);
-      document.getElementById('camZoomVal').textContent = zoomText;
+      // The sample feed can't show wider than itself, so below 1× it stays at full size.
+      document.getElementById('camFeed').style.transform = `scale(${Math.max(1, cam.zoom)}) scale(${mirrorX}, ${mirrorY})`;
       const zoomBtn = document.getElementById('camZoomBtn');
       zoomBtn.classList.toggle('on', cam.zoomOpen);
-      zoomBtn.innerHTML = Math.abs(cam.zoom - 1) < 0.05 ? '<span class="material-icons">zoom_in</span>' : `<b>${zoomText}</b>`;
+      zoomBtn.innerHTML = Math.abs(cam.zoom - 1) < 0.05 ? '<span class="material-icons">zoom_in</span>' : `<b>${formatZoom(cam.zoom)}</b>`;
+      camRenderZoom();
       hostRender();
     }
 
@@ -3307,20 +3317,63 @@
     function camToggleTools() { cam.tools = !cam.tools; camRender(); }
     function camToggleMic() { cam.mic = !cam.mic; camRender(); }
     function camFlip() { cam.front = !cam.front; camRender(); }
-    // Zoom bar: snaps to 1× and 2× when dragged close, closes 3s after the last change.
+    // Zoom bar (zoomStops / zoomFraction / zoomAtFraction in StreamerModels.kt): log scale, snaps to a stop
+    // when close, closes 3s after the last change. A sample ultra-wide lens gives 0.6× to 8×.
+    const CAM_ZOOM_MIN = 0.6, CAM_ZOOM_MAX = 8, ZOOM_INSET = 22, ZOOM_CROSS = 22;
+    const camZoomStops = () => [CAM_ZOOM_MIN, ...[1, 2, 3].filter(zoom => zoom > CAM_ZOOM_MIN + 0.05 && zoom <= CAM_ZOOM_MAX)];
+    const camZoomFraction = zoom => Math.min(1, Math.max(0, Math.log(zoom / CAM_ZOOM_MIN) / Math.log(CAM_ZOOM_MAX / CAM_ZOOM_MIN)));
+    function camZoomAtFraction(fraction) {
+      const clamped = Math.min(1, Math.max(0, fraction));
+      return camZoomStops().find(stop => Math.abs(camZoomFraction(stop) - clamped) < 0.04) ?? CAM_ZOOM_MIN * Math.pow(CAM_ZOOM_MAX / CAM_ZOOM_MIN, clamped);
+    }
+    const formatZoom = zoom => Math.abs(zoom - Math.round(zoom)) < 0.05 ? Math.round(zoom) + '×' : zoom.toFixed(1) + '×';
     let camZoomHideTimer = null;
     function camArmZoomHide() {
       clearTimeout(camZoomHideTimer);
       if (cam.zoomOpen) camZoomHideTimer = setTimeout(() => { cam.zoomOpen = false; camRender(); }, 3000);
     }
     function camToggleZoomBar() { cam.zoomOpen = !cam.zoomOpen; camRender(); camArmZoomHide(); }
-    function camSetZoom(value) {
-      let zoom = parseFloat(value);
-      const snap = [1, 2].find(point => Math.abs(point - zoom) < 0.1);
-      if (snap) { zoom = snap; document.getElementById('camZoomRange').value = snap; }
-      cam.zoom = zoom;
+    function camZoomPointer(event) {
+      const bar = document.getElementById('camZoom');
+      const rect = bar.getBoundingClientRect();
+      const isVertical = bar.classList.contains('vertical');
+      const length = isVertical ? rect.height : rect.width;
+      const along = isVertical ? rect.bottom - event.clientY : event.clientX - rect.left;
+      // Ratios, so a scaled phone frame still maps correctly.
+      cam.zoom = camZoomAtFraction((along / length * (isVertical ? 180 : bar.offsetWidth) - ZOOM_INSET) / ((isVertical ? 180 : bar.offsetWidth) - ZOOM_INSET * 2));
       camRender();
       camArmZoomHide();
+    }
+    // Opens from the zoom icon: straight above it in landscape, to its left in portrait.
+    function camRenderZoom() {
+      const bar = document.getElementById('camZoom');
+      bar.classList.toggle('open', cam.zoomOpen);
+      if (!cam.zoomOpen) return;
+      const isVertical = document.getElementById('cam').classList.contains('landscape');
+      bar.classList.toggle('vertical', isVertical);
+      const utils = document.querySelector('.cam-utils');
+      const button = document.getElementById('camZoomBtn');
+      const buttonLeft = utils.offsetLeft + button.offsetLeft, buttonTop = utils.offsetTop + button.offsetTop;
+      if (isVertical) {
+        bar.style.width = '';
+        bar.style.left = (buttonLeft + button.offsetWidth / 2 - 32) + 'px';
+        bar.style.top = (buttonTop - 12 - 180) + 'px';
+      } else {
+        const right = buttonLeft - 12, left = Math.max(60, right - 260);
+        bar.style.left = left + 'px';
+        bar.style.width = (right - left) + 'px';
+        bar.style.top = (buttonTop + button.offsetHeight / 2 - 32) + 'px';
+      }
+      const length = isVertical ? 180 : bar.offsetWidth;
+      const along = zoom => ZOOM_INSET + (length - ZOOM_INSET * 2) * camZoomFraction(zoom);
+      // x/y of a point on the track; the widest zoom is at the left, or the bottom when vertical.
+      const point = zoom => isVertical ? `left:${64 - ZOOM_CROSS}px; top:${length - along(zoom)}px` : `left:${along(zoom)}px; top:${ZOOM_CROSS}px`;
+      document.getElementById('camZoomMarks').innerHTML = camZoomStops().map(stop => {
+        const isCurrent = Math.abs(stop - cam.zoom) < 0.05;
+        const label = isVertical ? `left:2px; top:${length - along(stop) - 8}px` : `left:${along(stop) - 15}px; top:${ZOOM_CROSS + 18}px`;
+        return `<span class="cam-zoom-dot" style="${point(stop)}"></span><span class="cam-zoom-label${isCurrent ? ' on' : ''}" style="${label}">${formatZoom(stop)}</span>`;
+      }).join('') + `<span class="cam-zoom-thumb" style="${point(Math.min(CAM_ZOOM_MAX, Math.max(CAM_ZOOM_MIN, cam.zoom)))}">${formatZoom(cam.zoom)}</span>`;
+      bar.setAttribute('aria-valuetext', formatZoom(cam.zoom));
     }
 
     // The rotate button writes the saved orientation; Settings > Advanced can set it back to Auto.
@@ -3335,6 +3388,10 @@
       const isLandscape = cs.values.orientation === 'Landscape';
       document.getElementById('mobileDevice').classList.toggle('landscape', isLandscape);
       document.getElementById('cam').classList.toggle('landscape', isLandscape);
+      // Landscape moves metadata and mic in front of the camera icons at the bottom right (MetadataAndMicButtons).
+      const meta = document.getElementById('camMetaBtn'), mic = document.getElementById('camMicBtn');
+      if (isLandscape) document.querySelector('.cam-utils').prepend(meta, mic); else document.querySelector('.cam-left').append(meta, mic);
+      camRenderZoom();
     }
 
     function camToggleOverlays() {
