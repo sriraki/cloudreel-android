@@ -1435,7 +1435,16 @@
     @keyframes lobbyPulse { from { transform: scale(0.9); } to { transform: scale(1.1); } }
     .hb-bottom > button { flex: 1; position: relative; display: flex; flex-direction: column; align-items: center; gap: 4px; border: 0; background: none; color: #fff; font: inherit; cursor: pointer; }
     .hb-bottom > button > .material-icons { width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 22px; background: rgba(255,255,255,0.16); }
-    .hb-bottom > button.off > .material-icons { background: rgba(239,68,68,0.9); }
+    .hb-bottom > button.off > .material-icons { background: #EF4444; }
+    /* Off is a white button with a slashed icon, so red only ever means recording, sharing or leaving */
+    .hb-bottom > button.muted > .material-icons { background: #fff; color: #000; }
+    .hb-bottom > button.leave > .material-icons { width: 64px; border-radius: 22px; }
+    .hb-rec { position: absolute; top: 14px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; background: #EF4444; color: #fff; font-size: 13px; font-weight: 700; }
+    .hb-rec[hidden] { display: none; }
+    .hb-rec em { width: 8px; height: 8px; border-radius: 50%; background: #fff; }
+    /* With one other person they fill the screen and you float in a small tile you can drag */
+    .cam.self-floating #camFeed, .cam.self-floating #camCamOff, .cam.self-floating #camSelf { z-index: 2; border-radius: 12px; overflow: hidden; }
+    .cam.self-floating #camFeed, .cam.self-floating #camCamOff { border: 1px solid rgba(255,255,255,0.25); touch-action: none; cursor: grab; }
     .hb-bottom small { font-size: 11px; }
     .hb-wait { display: flex; align-items: center; gap: 10px; margin: 0 12px; padding: 6px 6px 6px 12px; border-radius: 16px; background: rgba(0,0,0,0.75); pointer-events: auto; cursor: pointer; }
     .hb-wait[hidden] { display: none; }
@@ -2228,10 +2237,10 @@
         <!-- 8. STREAMER SCREEN (mirrors StreamerScreen.kt / StreamerControls.kt) -->
         <div class="app-screen" id="screen-streamer">
           <div class="cam" id="cam">
-            <div class="cam-feed" id="camFeed" ondblclick="camToggleOverlays()" data-a11y-role="Camera Preview (double-tap hides controls)"></div>
+            <div class="cam-feed" id="camFeed" ondblclick="camToggleOverlays()" onpointerdown="hostFloatDrag(event)" data-a11y-role="Camera Preview (double-tap hides controls)"></div>
             <!-- Meeting gallery (MeetingGallery in HostSessionUi.kt): the camera feed moves in here as the "You" tile -->
             <div class="cam-program" id="camProgram" onclick="hostToggleBars()">
-              <div class="cam-camoff" id="camCamOff" ondblclick="camToggleOverlays()"><span>You</span></div>
+              <div class="cam-camoff" id="camCamOff" ondblclick="camToggleOverlays()" onpointerdown="hostFloatDrag(event)"><span>You</span></div>
               <div class="cam-self" id="camSelf"><i><span class="material-icons">screen_share</span>You're sharing your screen</i><b>You</b></div>
               <div class="cam-guests" id="camGuests"></div>
             </div>
@@ -2243,14 +2252,16 @@
                 <button class="hb-icon" onclick="camFlip()" title="Switch camera"><span class="material-icons">cached</span></button>
                 <button class="hb-pill" id="hbPeople" onclick="hostOpenSheet('incall')" title="People"><span class="material-icons">group</span><b id="hbPeopleCount">1</b><em id="hbPeopleDot"></em></button>
               </div>
+              <!-- Stays on screen when the bars hide, so you always know you're recording -->
+              <span class="hb-rec" id="hbRec" hidden><em></em>REC</span>
               <div class="hb-share" id="hbShare" hidden><span class="material-icons">screen_share</span><span>You're sharing your screen</span><button onclick="hostToggleShare()">Stop</button></div>
               <div class="hb-wait" id="hbWait" hidden></div>
               <div class="hb-bottom">
-                <button id="hbVideo" onclick="hostToggleCamera()"><span class="material-icons">videocam</span><small>Video</small></button>
+                <button id="hbVideo" onclick="hostToggleCamera()"><span class="material-icons">videocam</span><small>Camera</small></button>
                 <button id="hbMic" onclick="camToggleMic()"><span class="material-icons">mic</span><small>Mic</small></button>
                 <button class="host-only" id="hbShareBtn" onclick="hostToggleShare()"><span class="material-icons">screen_share</span><small>Share</small></button>
                 <button id="hbRecord" onclick="hostToggleRecord()"><span class="material-icons">fiber_manual_record</span><small>Record</small></button>
-                <button class="off" onclick="hostOpenLeave()"><span class="material-icons">call_end</span><small>Leave</small></button>
+                <button class="off leave" onclick="hostOpenLeave()"><span class="material-icons">call_end</span><small>Leave</small></button>
               </div>
             </div>
             <!-- Participants as a full page over the call (ParticipantsPage in HostSessionUi.kt) -->
@@ -3507,10 +3518,10 @@
       if (!host.on) { document.getElementById('camGuests').innerHTML = ''; host.rendered = ''; el.classList.remove('bars-hidden'); return; }
       document.getElementById('hbTime').textContent = formatCallTime(Math.floor((Date.now() - host.startedAt) / 1000));
       const video = document.getElementById('hbVideo');
-      video.classList.toggle('off', host.camOff);
+      video.classList.toggle('muted', host.camOff);
       video.querySelector('.material-icons').textContent = host.camOff ? 'videocam_off' : 'videocam';
       const mic = document.getElementById('hbMic');
-      mic.classList.toggle('off', !cam.mic);
+      mic.classList.toggle('muted', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
       const record = document.getElementById('hbRecord');
       record.classList.toggle('off', Boolean(host.recordingSince));
@@ -3519,11 +3530,21 @@
       share.classList.toggle('off', host.sharing);
       share.querySelector('small').textContent = host.sharing ? 'Stop share' : 'Share';
       document.getElementById('hbShare').hidden = !host.sharing;
+      document.getElementById('hbRec').hidden = !host.recordingSince;
       document.getElementById('hbPeopleCount').textContent = host.guests.length + 1;
       document.getElementById('hbPeopleDot').hidden = host.waiting.length === 0;
 
-      const cells = galleryCells(host.guests.length + 1, el.classList.contains('landscape'));
-      ['camFeed', 'camCamOff', 'camSelf'].forEach(id => Object.assign(document.getElementById(id).style, cellStyle(cells[0])));
+      const isLandscape = el.classList.contains('landscape');
+      const isSelfFloating = host.guests.length === 1;
+      el.classList.toggle('self-floating', isSelfFloating);
+      if (host.floatLandscape !== isLandscape) Object.assign(host, { floatLandscape: isLandscape, floatRight: FLOAT_EDGE_GAP, floatBottom: FLOAT_BOTTOM_GAP });
+      const gallery = galleryCells(host.guests.length + 1, isLandscape);
+      const cells = isSelfFloating ? [gallery[0], [0, 0, 1, 1]] : gallery;
+      const [floatWidth, floatHeight] = hostFloatSize();
+      const selfStyle = isSelfFloating
+        ? { left: 'auto', top: 'auto', right: host.floatRight + 'px', bottom: host.floatBottom + 'px', width: floatWidth + 'px', height: floatHeight + 'px' }
+        : { ...cellStyle(cells[0]), right: '', bottom: '' };
+      ['camFeed', 'camCamOff', 'camSelf'].forEach(id => Object.assign(document.getElementById(id).style, selfStyle));
       document.getElementById('camSelf').classList.toggle('sharing', host.sharing);
       // Rebuild tiles only when something changed, so photos don't flicker on every clock tick.
       const key = JSON.stringify([cells, host.guests]);
@@ -3548,6 +3569,36 @@
           `<button class="deny" onclick="event.stopPropagation(); hostDeny(${next.id})">Deny</button><button class="admit" onclick="event.stopPropagation(); hostAdmit(${next.id})">Admit</button>`;
         wait.onclick = () => hostOpenSheet('waiting');
       }
+    }
+
+    // The floating self tile starts above the bottom bar and is dragged only between the bars, so it never covers a button.
+    const FLOAT_TOP_GAP = 64, FLOAT_BOTTOM_GAP = 112, FLOAT_EDGE_GAP = 12;
+    const hostFloatSize = () => document.getElementById('cam').classList.contains('landscape') ? [160, 120] : [108, 144];
+    function hostFloatDrag(event) {
+      if (!document.getElementById('cam').classList.contains('self-floating')) return;
+      const program = document.getElementById('camProgram');
+      const [floatWidth, floatHeight] = hostFloatSize();
+      const start = { x: event.clientX, y: event.clientY, right: host.floatRight, bottom: host.floatBottom };
+      let hasMoved = false;
+      const clamp = (value, low, high) => Math.min(Math.max(value, low), high);
+      const onMove = moveEvent => {
+        hasMoved = hasMoved || Math.abs(moveEvent.clientX - start.x) + Math.abs(moveEvent.clientY - start.y) > 6;
+        if (!hasMoved) return;
+        host.floatRight = clamp(start.right - (moveEvent.clientX - start.x), FLOAT_EDGE_GAP, program.clientWidth - floatWidth - FLOAT_EDGE_GAP);
+        host.floatBottom = clamp(start.bottom - (moveEvent.clientY - start.y), FLOAT_BOTTOM_GAP, program.clientHeight - floatHeight - FLOAT_TOP_GAP);
+        hostRender();
+      };
+      const onUp = () => {
+        removeEventListener('pointermove', onMove);
+        removeEventListener('pointerup', onUp);
+        // A drag is not a tap: don't let it toggle the bars.
+        if (!hasMoved) return;
+        const swallowClick = clickEvent => clickEvent.stopPropagation();
+        addEventListener('click', swallowClick, true);
+        setTimeout(() => removeEventListener('click', swallowClick, true), 0);
+      };
+      addEventListener('pointermove', onMove);
+      addEventListener('pointerup', onUp);
     }
 
     function hostToggleBars() {
