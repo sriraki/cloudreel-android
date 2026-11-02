@@ -2142,7 +2142,7 @@
           </div>
 
           <div style="text-align:right; margin-bottom:24px;">
-            <a href="#" onclick="alert('Password reset link sent to your work email.'); return false;" style="font-size:12px; color:var(--cr-violet); font-weight:600; text-decoration:none;">Forgot password?</a>
+            <a href="#" onclick="alert('Reset link sent to your email.'); return false;" style="font-size:12px; color:var(--cr-violet); font-weight:600; text-decoration:none;">Forgot password?</a>
           </div>
 
           <p style="text-align:center; font-size:13px; color:var(--text-muted);">
@@ -2392,14 +2392,12 @@
       <div class="app-modal-layer" id="signInPromptModal" onclick="if (event.target === this) closeSessionModal('signInPromptModal')">
         <div class="app-modal-sheet host-sheet" style="padding:20px 20px 12px;">
           <h3 style="padding:0 0 8px;">Sign in to go live</h3>
-          <p style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:12px;">Going live streams to your channel's workspace, so you need to sign in first. Joining a debate or sharing mobile data doesn't need an account.</p>
           <div style="display:flex; justify-content:flex-end; gap:4px;"><button class="host-btn small-text" onclick="closeSessionModal('signInPromptModal')">Not now</button><button class="host-btn small-text" onclick="closeSessionModal('signInPromptModal'); navigateTo('login')">Sign in</button></div>
         </div>
       </div>
       <div class="app-modal-layer" id="signOutModal" onclick="if (event.target === this) closeSessionModal('signOutModal')">
         <div class="app-modal-sheet host-sheet" style="padding:20px 20px 12px;">
           <h3 style="padding:0 0 8px;">Sign out?</h3>
-          <p style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:12px;">You'll need to sign in again to go live.</p>
           <div style="display:flex; justify-content:flex-end; gap:4px;"><button class="host-btn small-text" onclick="closeSessionModal('signOutModal')">Cancel</button><button class="host-btn small-text" style="color:var(--cr-error);" onclick="closeSessionModal('signOutModal'); logout()">Sign out</button></div>
         </div>
       </div>
@@ -2413,12 +2411,12 @@
           <h3>Scan on the relay phone</h3>
           <div id="liveQrCode" style="display:flex; justify-content:center; margin:12px 0;"></div>
           <div class="live-code" id="liveQrText"></div>
-          <p style="font-size:14px; color:var(--text-muted); line-height:1.45;">On the other phone choose Share mobile data, then scan this code or type it in.</p>
+          <p style="font-size:14px; color:var(--text-muted); line-height:1.45;">On the other phone, tap Share mobile data, then Scan QR code.</p>
         </div>
       </div>
       <div class="app-modal-layer" id="relayConfirmModal" onclick="if (event.target === this) closeSessionModal('relayConfirmModal')">
         <div class="app-modal-sheet host-sheet" style="padding:20px 20px 16px;">
-          <h3 style="padding:0 0 8px;">Connect to the reporter's phone?</h3>
+          <h3 id="relayConfirmTitle" style="padding:0 0 8px;"></h3>
           <p id="relayConfirmText" style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:16px;"></p>
           <div style="display:flex; gap:10px;"><button class="host-btn outline" onclick="closeSessionModal('relayConfirmModal')">Cancel</button><button class="host-btn danger" style="background:var(--cr-violet);" onclick="relayConnect()">Connect</button></div>
         </div>
@@ -2462,7 +2460,7 @@
             <span class="material-icons" style="font-size:26px;">call_end</span>
           </div>
           <h3 style="font-size:18px; font-weight:800; margin-bottom:6px;">Leave Session?</h3>
-          <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">Are you sure you want to exit this live session? Your video stream and bonded transmission will be disconnected.</p>
+          <p style="font-size:13px; color:var(--text-muted); margin-bottom:20px; line-height:1.5;">Your stream will stop.</p>
           <div style="display:flex; gap:10px;">
             <button class="btn-secondary" style="flex:1;" onclick="closeSessionModal('leaveModal')">Cancel</button>
             <button class="btn-secondary" style="flex:1; background:#EF4444; color:white; border-color:#EF4444;" onclick="confirmLeaveSession()">Leave</button>
@@ -2995,7 +2993,7 @@
         `<div class="live-line">Camera<span class="host-chips"><button class="${cam.front ? '' : 'on'}" onclick="cam.front = false; camRender(); liveRenderDetails()">Back</button><button class="${cam.front ? 'on' : ''}" onclick="cam.front = true; camRender(); liveRenderDetails()">Front</button></span></div>` +
         `<div class="live-line">Relay server<b>in-mum</b></div><div class="live-line">Max bitrate<b>${cs.values.totalBandwidth} kbps</b></div>` +
         `<div class="live-line">Latency<b>${parseFloat(cs.values.delay) * 1000} ms</b></div><div class="live-line">Codec<b>${cs.values.codec}</b></div>` +
-        `<h3 style="font-size:16px;">Relay phones</h3><p>No relay phones yet. On the other phone choose Share mobile data and enter this code. Keep both phones on the same Wi-Fi; some guest or office Wi-Fi blocks phone-to-phone traffic.</p>` +
+        `<h3 style="font-size:16px;">Relay phones</h3><p>None yet. On the other phone, tap Share mobile data and enter this code.</p>` +
         `<button class="host-btn danger" style="margin-top:12px;" onclick="closeSessionModal('liveDetailsModal'); camRecord()">Stop broadcast</button>`;
     }
     function liveOpenQr() {
@@ -3015,7 +3013,8 @@
       const input = document.getElementById('relayCodeInput');
       input.value = formatRelayCode(text);
       document.getElementById('relayStartBtn').disabled = input.value.length !== 9;
-      document.getElementById('relayConfirmText').textContent = `This phone's mobile data will carry part of the live stream for code ${input.value}. Keep both phones on the same Wi-Fi.`;
+      document.getElementById('relayConfirmTitle').textContent = `Connect to ${input.value}?`;
+      document.getElementById('relayConfirmText').textContent = "Uses this phone's mobile data.";
     }
     function relayConnect() {
       closeSessionModal('relayConfirmModal');
@@ -3515,8 +3514,8 @@
     function hostOpenLeave() {
       const isHost = host.role === 'host';
       document.getElementById('hostLeaveText').textContent = isHost
-        ? "Leave on your own and the guests stay connected, or end it for everyone and close the session. Ending can't be undone."
-        : 'You can rejoin with the same link while the session is active.';
+        ? 'If you only leave, guests stay.'
+        : 'You can rejoin with the same link.';
       document.getElementById('hostEndBtn').hidden = !isHost;
       document.getElementById('hostLeaveBtn').className = 'host-btn ' + (isHost ? 'outline' : 'danger');
       openSessionModal('hostLeaveModal');
