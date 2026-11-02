@@ -1361,8 +1361,8 @@
     .cam-zoom-label.on { color: #fff; font-weight: 700; }
     .cam-zoom-thumb { position: absolute; width: 32px; height: 32px; border-radius: 50%; background: #3B82F6; color: #fff; font-size: 10px; font-weight: 700;
       display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); }
-    /* Portrait: camera icons in a rail on the right, under the format chip. */
-    .cam-utils { position: absolute; right: 8px; top: 56px; display: flex; flex-direction: column; }
+    /* Portrait: rotate, tools, zoom in a rail on the right, centred like the left rail. */
+    .cam-utils { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; }
     /* Host session (mirrors HostSessionUi.kt): meeting-style view. Portrait fills the screen; landscape is the 16:9 program. */
     .cam:not(.host) .cam-program, .cam:not(.host) .host-bars { display: none; }
     .cam.host .cam-ui, .cam.host .cam-hint { display: none !important; }
@@ -1508,7 +1508,7 @@
     .cam.landscape .cam-formats { right: 96px; max-height: calc(100% - 80px); }
     .cam.landscape .cam-format { right: 96px; }
     /* Landscape: meter and network card bottom left, every camera icon bottom right beside the shutter column. */
-    .cam.landscape .cam-utils { top: auto; bottom: 8px; right: 96px; flex-direction: row; }
+    .cam.landscape .cam-utils { top: auto; bottom: 8px; right: 96px; transform: none; flex-direction: row; }
     .cam.landscape .cam-row { justify-content: flex-start; gap: 8px; justify-self: start; }
     /* The network card lists its links in a column, so every icon fits on narrow phones too. */
     .cam.landscape .cam-links { flex-direction: column; align-items: flex-start; gap: 4px; border-radius: 12px; padding: 8px 10px; }
@@ -2275,15 +2275,14 @@
               <div class="cam-left">
                 <button class="cam-btn" id="camMetaBtn" onclick="camOpenMetadata()" title="Metadata"><span class="material-icons">sell</span></button>
                 <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
+                <button class="cam-btn" id="camSettingsBtn" onclick="csOpen('list')" title="Settings"><span class="material-icons">settings</span></button>
+                <button class="cam-btn" id="camDetailsBtn" onclick="liveOpenDetails()" title="Broadcast details" hidden><span class="material-icons-outlined">info</span></button>
               </div>
 
-              <!-- Camera icons; zoom last, nearest a right-handed thumb (StreamerControls.kt) -->
+              <!-- Portrait: tag, mic, settings, details on the left; rotate, tools, zoom on the right, both centred (StreamerControls.kt) -->
               <div class="cam-utils">
                 <button class="cam-btn" id="camRotateBtn" onclick="camToggleRotate()" title="Rotate screen"><span class="material-icons">screen_rotation</span></button>
                 <button class="cam-btn" id="camToolsBtn" onclick="camToggleTools()" title="Show camera tools"><span class="material-icons">tune</span></button>
-                <button class="cam-btn" id="camSettingsBtn" onclick="csOpen('list')" title="Settings"><span class="material-icons">settings</span></button>
-                <button class="cam-btn" id="camPauseBtn" onclick="camTogglePause()" title="Pause" hidden><span class="material-icons">pause</span></button>
-                <button class="cam-btn" id="camDetailsBtn" onclick="liveOpenDetails()" title="Broadcast details" hidden><span class="material-icons-outlined">info</span></button>
                 <button class="cam-btn" id="camZoomBtn" onclick="camToggleZoomBar()" title="Zoom"><span class="material-icons">zoom_in</span></button>
               </div>
               <div class="cam-zoom" id="camZoom" role="slider" aria-label="Zoom" onpointerdown="this.setPointerCapture(event.pointerId); camZoomPointer(event)" onpointermove="if (event.buttons) camZoomPointer(event)">
@@ -2314,6 +2313,7 @@
                     <span id="camRecLabel">Go live</span>
                   </button>
                   <button class="cam-btn" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cached</span></button>
+                  <button class="cam-btn" id="camPauseBtn" onclick="camTogglePause()" title="Pause" hidden><span class="material-icons">pause</span></button>
                 </div>
               </div>
             </div>
@@ -3161,7 +3161,6 @@
       document.getElementById('camFormatLabel').textContent = format.label.toUpperCase();
       document.getElementById('camFormatRate').textContent = format.rate;
       const formatChip = document.getElementById('camFormatChip');
-      formatChip.disabled = isActive;
       formatChip.classList.toggle('on', cam.formatsOpen && !isActive);
       document.getElementById('camFormats').classList.toggle('open', cam.formatsOpen && !isActive);
       document.getElementById('camFormats').innerHTML = CAM_FORMATS.map((option, index) => {
@@ -3175,10 +3174,11 @@
           const isOn = !key || settings[key];
           return `<span class="${isOn ? '' : 'off'}"><span class="material-icons">${icon}</span>${isOn ? reading : 'off'}</span>`;
         }).join('') + '<span style="opacity:0.6;">Mbps</span>';
-      // Three fixed slots: recordings | record or stop | flip. Pause and details join the camera icons while running.
+      // Three fixed slots, like the phone's camera: recordings | record | flip while idle,
+      // recordings (greyed, leaving would end the session) | stop | pause while running.
       document.getElementById('camDetailsBtn').hidden = !(isActive && cam.mode === 'live');
-      // Recordings leaves the camera, so it waits until idle; flip works any time, a recording carries on.
       document.getElementById('camThumb').disabled = isActive;
+      document.getElementById('camFlipBtn').hidden = isActive;
       document.getElementById('camSettingsBtn').disabled = isActive;
       const pauseBtn = document.getElementById('camPauseBtn');
       pauseBtn.hidden = !isActive;
@@ -3299,7 +3299,12 @@
     function csMetaEdit() { metaStartDraft(); meta.pageEditing = true; csRenderPage(); }
     function csMetaCancel() { meta.pageEditing = false; csRenderPage(); }
     function csMetaSave() { metaSaveDraft(); meta.pageEditing = false; csRenderPage(); }
-    function camToggleFormats() { cam.formatsOpen = !cam.formatsOpen; camRender(); }
+    // The chip always shows the quality; changing it restarts the camera, which would cut the file and the stream.
+    function camToggleFormats() {
+      if (cam.phase !== 'idle') { camToast('Stop to change quality'); return; }
+      cam.formatsOpen = !cam.formatsOpen;
+      camRender();
+    }
     function camSelectFormat(index) {
       cam.formatsOpen = false;
       csSet('format', CAM_FORMATS[index].name);
@@ -3376,7 +3381,9 @@
       bar.classList.toggle('vertical', isVertical);
       const utils = document.querySelector('.cam-utils');
       const button = document.getElementById('camZoomBtn');
-      const buttonLeft = utils.offsetLeft + button.offsetLeft, buttonTop = utils.offsetTop + button.offsetTop;
+      // Portrait centres the rail with translateY(-50%), which offsetTop leaves out.
+      const buttonLeft = utils.offsetLeft + button.offsetLeft;
+      const buttonTop = utils.offsetTop + button.offsetTop - (isVertical ? 0 : utils.offsetHeight / 2);
       if (isVertical) {
         bar.style.width = '';
         bar.style.left = (buttonLeft + button.offsetWidth / 2 - 32) + 'px';
@@ -3411,9 +3418,15 @@
       const isLandscape = cs.values.orientation === 'Landscape';
       document.getElementById('mobileDevice').classList.toggle('landscape', isLandscape);
       document.getElementById('cam').classList.toggle('landscape', isLandscape);
-      // Landscape moves metadata and mic in front of the camera icons at the bottom right (MetadataAndMicButtons).
-      const meta = document.getElementById('camMetaBtn'), mic = document.getElementById('camMicBtn');
-      if (isLandscape) document.querySelector('.cam-utils').prepend(meta, mic); else document.querySelector('.cam-left').append(meta, mic);
+      // Landscape gathers every icon at the bottom right: tag, mic, rotate, tools, settings, details, zoom.
+      const leftIcons = ['camMetaBtn', 'camMicBtn', 'camSettingsBtn', 'camDetailsBtn'].map(id => document.getElementById(id));
+      const [meta, mic, settingsBtn, details] = leftIcons;
+      if (isLandscape) {
+        document.querySelector('.cam-utils').prepend(meta, mic);
+        document.getElementById('camZoomBtn').before(settingsBtn, details);
+      } else {
+        document.querySelector('.cam-left').append(...leftIcons);
+      }
       camRenderZoom();
     }
 
