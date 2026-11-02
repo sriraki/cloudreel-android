@@ -619,23 +619,26 @@
       cursor: pointer; margin-bottom: 18px; transition: transform 0.15s; }
     .cat-card:active { filter: brightness(0.85); }
     /* Home (CategorySelectionScreen.kt): app-sized title, cards share the screen height (min 200px). */
-    .join-card { background: var(--cr-gradient); color: #fff; border-radius: 24px; padding: 20px; cursor: pointer; margin: 8px 0 16px; }
+    .join-card { background: var(--cr-gradient); color: #fff; border-radius: 24px; padding: 16px; cursor: pointer; margin: 8px 0 12px; }
     .join-card:active { filter: brightness(0.9); }
-    .join-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 16px; }
+    .join-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
     .avatar-stack { display: flex; }
     .avatar-stack img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
     .avatar-stack img + img { margin-left: -12px; }
     .join-card h3 { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
-    .join-card p { font-size: 14px; line-height: 1.45; opacity: 0.9; margin: 0 0 16px; }
+    .join-card p { font-size: 14px; line-height: 1.45; opacity: 0.9; margin: 0 0 12px; }
     .join-card-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 20px; border: none; border-radius: 20px; background: #fff; color: #3031CB; font-size: 14px; font-weight: 600; cursor: pointer; }
-    .report-card { min-height: 200px; border-radius: 24px; overflow: hidden; cursor: pointer; display: flex; align-items: center; color: #fff;
+    /* Home fits one screen (CategorySelectionScreen.kt): the Report live photo takes the leftover height. */
+    #screen-category-selection.active-screen { overflow: hidden; }
+    .report-card { flex: 1; min-height: 150px; position: relative; border-radius: 24px; overflow: hidden; cursor: pointer; display: flex; align-items: flex-end; color: #fff;
       background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, transparent 75%), url('images/category/category_broadcast.webp') center / cover no-repeat; }
     .report-card:active { filter: brightness(0.9); }
-    .report-text { width: 66%; padding: 20px; }
+    .report-text { width: 66%; padding: 16px; }
+    .report-card .report-chip { position: absolute; top: 12px; right: 12px; }
     .report-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; background: rgba(0,0,0,0.45); font-size: 12px; font-weight: 500; white-space: nowrap; }
     .report-chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--cr-success); }
-    .report-card h3 { font-size: 24px; font-weight: 700; margin: 12px 0 4px; }
-    .report-card p { font-size: 14px; line-height: 1.45; opacity: 0.9; margin: 0 0 14px; }
+    .report-card h3 { font-size: 24px; font-weight: 700; margin: 0 0 2px; }
+    .report-card p { font-size: 14px; line-height: 1.45; opacity: 0.9; margin: 0 0 12px; }
     .report-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 20px; border: none; border-radius: 20px; background: var(--cr-error); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
     .cat-preview { position: absolute; inset: 0; }
     .cat-debate { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; padding: 10px; }
@@ -1345,9 +1348,9 @@
     .cam-vu-labels { display: flex; justify-content: space-between; font-size: 8px; opacity: 0.75; margin-top: 2px; }
     .cam-left { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
     .cam-btn b { font-size: 11px; }
-    .cam-zoombar { display: none; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; }
+    .cam-zoombar { display: none; align-items: center; gap: 10px; padding: 8px 14px; border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; align-self: flex-end; margin-right: 60px; max-width: calc(100% - 116px); }
     .cam-zoombar.open { display: flex; }
-    .cam-zoombar input { width: 210px; accent-color: #3B82F6; }
+    .cam-zoombar input { flex: 1; min-width: 0; width: 210px; accent-color: #3B82F6; }
     .cam-utils { position: absolute; right: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; gap: 10px; }
     /* Host session (mirrors HostSessionUi.kt): meeting-style view. Portrait fills the screen; landscape is the 16:9 program. */
     .cam:not(.host) .cam-program, .cam:not(.host) .host-bars { display: none; }
@@ -1645,7 +1648,7 @@
           <button class="header-btn" onclick="toggleTheme()" title="Toggle Theme" data-a11y-role="Theme Toggle (48dp)">
             <span class="material-icons" id="headerThemeIcon" style="font-size:20px;">dark_mode</span>
           </button>
-          <button id="signOutBtn" class="header-btn" onclick="logout()" title="Sign Out" data-a11y-role="Sign Out (48dp)">
+          <button id="signOutBtn" class="header-btn" onclick="openSessionModal('signOutModal')" title="Sign Out" data-a11y-role="Sign Out (48dp)">
             <span class="material-icons" style="font-size:20px;">logout</span>
           </button>
         </div>
@@ -1671,15 +1674,15 @@
               <div class="cat-live" style="position:static; background:rgba(0,0,0,0.25);"><i></i>LIVE</div>
             </div>
             <h3>Join a debate</h3>
-            <p>Enter the code from your channel and take part live.</p>
+            <p>Enter your channel's code and take part live.</p>
             <button class="join-card-btn" onclick="event.stopPropagation(); openSessionEntry('participant')">Enter code <span class="material-icons" style="font-size:18px;">arrow_forward</span></button>
           </div>
 
           <div class="report-card" role="button" onclick="onStreamerTapped()" data-a11y-role="Report live (Button)">
+            <span class="report-chip"><i></i>Network ready · 143 Mbps</span>
             <div class="report-text">
-              <span class="report-chip"><i></i>Network ready · 143 Mbps</span>
               <h3>Report live</h3>
-              <p>Stream from any location for your channel.</p>
+              <p>Stream live from anywhere.</p>
               <button class="report-btn" onclick="event.stopPropagation(); onStreamerTapped()"><span class="material-icons" style="font-size:18px;">videocam</span>Go live</button>
             </div>
           </div>
@@ -2126,14 +2129,14 @@
           <div class="input-group">
             <label class="input-label">Work Email</label>
             <div class="input-box" data-a11y-role="Input (50dp)">
-              <input type="email" id="loginEmail" placeholder="name@organization.com" value="producer@cloudreel.com">
+              <input type="email" id="loginEmail" placeholder="name@organization.com" value="reporter@cloudreel.test">
             </div>
           </div>
 
           <div class="input-group">
             <label class="input-label">Password</label>
             <div class="input-box" data-a11y-role="Input (50dp)">
-              <input type="password" id="loginPassword" placeholder="Enter your password" value="••••••••••••">
+              <input type="password" id="loginPassword" placeholder="Enter your password" value="Reporter@2026">
               <button class="toggle-pass-btn" onclick="togglePass('loginPassword')">Show</button>
             </div>
           </div>
@@ -2242,13 +2245,14 @@
               <div class="cam-left">
                 <button class="cam-btn" id="camMetaBtn" onclick="camOpenMetadata()" title="Metadata"><span class="material-icons">sell</span></button>
                 <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
-                <button class="cam-btn" id="camZoomBtn" onclick="camToggleZoomBar()" title="Zoom"><span class="material-icons">zoom_in</span></button>
               </div>
 
+              <!-- Zoom on the right, where a right-handed thumb rests (StreamerControls.kt) -->
               <div class="cam-utils">
                 <button class="cam-btn" id="camRotateBtn" onclick="camToggleRotate()" title="Rotate screen"><span class="material-icons">screen_rotation</span></button>
                 <button class="cam-btn" id="camToolsBtn" onclick="camToggleTools()" title="Show camera tools"><span class="material-icons">tune</span></button>
                 <button class="cam-btn" id="camSettingsBtn" onclick="csOpen('list')" title="Settings"><span class="material-icons">settings</span></button>
+                <button class="cam-btn" id="camZoomBtn" onclick="camToggleZoomBar()" title="Zoom"><span class="material-icons">zoom_in</span></button>
               </div>
 
               <div class="cam-bottom">
@@ -2315,7 +2319,7 @@
           <p class="list-section-title">Stream settings</p>
           <div id="glChips"></div>
           <p class="setup-footnote" style="text-align:left;">The server address and stream key are set up automatically when you go live.</p>
-          <button class="host-btn text" style="width:auto; color:var(--cr-error); text-align:left; padding:0;" onclick="logout()">Sign out</button>
+          <button class="host-btn text" style="width:auto; color:var(--cr-error); text-align:left; padding:0;" onclick="openSessionModal('signOutModal')">Sign out</button>
           <div class="bottom-action">
             <button class="btn-gradient" onclick="setupGoLive()">Go live</button>
           </div>
@@ -2384,6 +2388,22 @@
       </div>
 
       <!-- MODAL SHEETS -->
+      <!-- Account dialogs (AccountDialogs.kt) -->
+      <div class="app-modal-layer" id="signInPromptModal" onclick="if (event.target === this) closeSessionModal('signInPromptModal')">
+        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 12px;">
+          <h3 style="padding:0 0 8px;">Sign in to go live</h3>
+          <p style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:12px;">Going live streams to your channel's workspace, so you need to sign in first. Joining a debate or sharing mobile data doesn't need an account.</p>
+          <div style="display:flex; justify-content:flex-end; gap:4px;"><button class="host-btn small-text" onclick="closeSessionModal('signInPromptModal')">Not now</button><button class="host-btn small-text" onclick="closeSessionModal('signInPromptModal'); navigateTo('login')">Sign in</button></div>
+        </div>
+      </div>
+      <div class="app-modal-layer" id="signOutModal" onclick="if (event.target === this) closeSessionModal('signOutModal')">
+        <div class="app-modal-sheet host-sheet" style="padding:20px 20px 12px;">
+          <h3 style="padding:0 0 8px;">Sign out?</h3>
+          <p style="font-size:14px; color:var(--text-muted); line-height:1.45; margin-bottom:12px;">You'll need to sign in again to go live.</p>
+          <div style="display:flex; justify-content:flex-end; gap:4px;"><button class="host-btn small-text" onclick="closeSessionModal('signOutModal')">Cancel</button><button class="host-btn small-text" style="color:var(--cr-error);" onclick="closeSessionModal('signOutModal'); logout()">Sign out</button></div>
+        </div>
+      </div>
+
       <!-- Live details (LiveDetailsSheet.kt) -->
       <div class="app-modal-layer bottom-sheet" id="liveDetailsModal" onclick="if (event.target === this) closeSessionModal('liveDetailsModal')">
         <div class="app-modal-sheet host-sheet live-details" id="liveDetailsBody"></div>
@@ -2935,7 +2955,7 @@
 
     // Reporting needs a signed-in account: sign in first, then the Go live setup page (as in AppNavigation.kt).
     function onStreamerTapped() {
-      navigateTo(isAuthenticated ? 'golive-setup' : 'login');
+      if (isAuthenticated) navigateTo('golive-setup'); else openSessionModal('signInPromptModal');
     }
 
     // ── Go live setup + live details (mirror GoLiveSetupScreen.kt / LiveDetailsSheet.kt) ──
