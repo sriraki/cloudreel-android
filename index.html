@@ -1712,15 +1712,15 @@
 
         <!-- 2. CATEGORY SELECTION SCREEN (NEW ROOT POST-SPLASH) -->
         <div class="app-screen active-screen" id="screen-category-selection">
-          <!-- Mirrors CategorySelectionScreen.kt: a greeting, then Meeting (join, host) and Live Stream (stream live, share mobile data). -->
+          <!-- Mirrors CategorySelectionScreen.kt: a greeting, then Studio (join or host a meeting) and Broadcast (stream live, share mobile data). -->
           <div class="home-greeting"><h2 id="homeGreeting">Welcome to CloudReel</h2><p>What would you like to do?</p></div>
           <div class="home-panel">
-            <div class="home-section"><span class="home-badge"><span class="material-icons">groups</span></span><div><h3>Meeting</h3><small>Join or start a meeting</small></div></div>
+            <div class="home-section"><span class="home-badge"><span class="material-icons">groups</span></span><div><h3>Studio</h3><small>Join or start a meeting</small></div></div>
             <button class="home-cta primary" onclick="openSessionEntry('participant')"><span class="material-icons">groups</span>Join meeting<span class="material-icons">chevron_right</span></button>
             <button class="home-cta tinted" onclick="openSessionEntry('host')"><span class="material-icons">podcasts</span>Start as Host<span class="material-icons">chevron_right</span></button>
           </div>
           <div class="home-panel live">
-            <div class="home-section"><span class="home-badge"><span class="material-icons">sensors</span></span><div><h3>Live Stream</h3><small>Broadcast from your phone</small></div><span class="home-net" id="homeNet"><i></i><span>Wi-Fi</span></span></div>
+            <div class="home-section"><span class="home-badge"><span class="material-icons">sensors</span></span><div><h3>Broadcast</h3><small>Go live from your phone</small></div><span class="home-net" id="homeNet"><i></i><span>Wi-Fi</span></span></div>
             <button class="home-cta live" onclick="onStreamerTapped()"><span class="material-icons">videocam</span>Stream live<span class="material-icons">chevron_right</span></button>
             <button class="home-cta tinted" onclick="navigateTo('relay')"><span class="material-icons">cell_tower</span>Share mobile data<span class="material-icons">chevron_right</span></button>
           </div>
