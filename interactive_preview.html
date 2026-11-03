@@ -618,19 +618,36 @@
     .cat-card { position: relative; height: 230px; border-radius: 22px; overflow: hidden; background: #0E1218; color: #fff;
       cursor: pointer; margin-bottom: 18px; transition: transform 0.15s; }
     .cat-card:active { filter: brightness(0.85); }
-    /* Home (CategorySelectionScreen.kt): two sections of buttons, each with one filled main action. */
-    #screen-category-selection.active-screen { overflow: hidden; }
-    .home-section { display: flex; align-items: center; gap: 8px; margin: 16px 4px 12px; }
-    .home-section h3 { flex: 1; margin: 0; font-size: 22px; font-weight: 700; color: var(--text-main); }
+    /* Home (CategorySelectionScreen.kt): a greeting, then two tinted sections of buttons, each with one filled main action. */
+    #screen-category-selection.active-screen { overflow: hidden; display: flex; flex-direction: column; justify-content: center; gap: 16px; padding-bottom: 12px; }
+    .home-greeting { margin: 0 4px; }
+    .home-greeting h2 { margin: 0; font-size: 28px; font-weight: 700; color: var(--text-main); }
+    .home-greeting p { margin: 0; font-size: 16px; color: var(--text-muted); }
+    .home-panel { --tint: 121, 40, 202; display: flex; flex-direction: column; gap: 12px; padding: 16px; border-radius: 24px;
+      background: rgba(var(--tint), 0.07); border: 1px solid rgba(var(--tint), 0.16); animation: homeEnter 0.3s ease-out both; }
+    .home-panel.live { --tint: 239, 68, 68; animation-delay: 80ms; }
+    @keyframes homeEnter { from { opacity: 0; transform: translateY(12px); } }
+    @media (prefers-reduced-motion: reduce) { .home-panel { animation: none; } }
+    .home-section { display: flex; align-items: center; gap: 12px; }
+    .home-section > div { flex: 1; min-width: 0; }
+    .home-section h3 { margin: 0; font-size: 22px; font-weight: 700; color: var(--text-main); }
+    .home-section small { display: block; font-size: 12px; color: var(--text-muted); }
+    .home-badge { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; color: #fff; background: var(--cr-gradient); flex-shrink: 0; }
+    .home-badge .material-icons { font-size: 22px; }
+    .home-panel.live .home-badge { background: linear-gradient(135deg, #EF4444, #D300EA); }
     .home-net { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
     .home-net i { width: 8px; height: 8px; border-radius: 50%; background: var(--cr-success); }
-    .home-cta { width: 100%; height: 54px; margin-bottom: 12px; border-radius: 27px; border: 1px solid var(--border-device); background: var(--bg-device-subtle); color: var(--text-main);
-      display: flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 16px; font-weight: 600; letter-spacing: 0.2px; cursor: pointer; }
-    .home-cta:active { filter: brightness(0.9); }
+    .home-net.offline { color: var(--cr-error); }
+    .home-net.offline i { background: var(--cr-error); }
+    .home-cta { width: 100%; height: 54px; border-radius: 27px; border: 0; display: flex; align-items: center; justify-content: center; gap: 8px;
+      font: inherit; font-size: 16px; font-weight: 600; letter-spacing: 0.2px; cursor: pointer; transition: transform 0.12s; }
+    .home-cta:active { transform: scale(0.97); filter: brightness(0.95); }
     .home-cta .material-icons { font-size: 20px; }
     .home-cta .material-icons:last-child { font-size: 22px; margin-left: -2px; }
-    .home-cta.primary { border: 0; background: var(--cr-gradient); color: #fff; }
-    .home-cta.live { border: 0; background: var(--cr-error); color: #fff; }
+    .home-cta.primary { background: var(--cr-gradient); color: #fff; }
+    .home-cta.live { background: var(--cr-error); color: #fff; }
+    .home-cta.tinted { background: rgba(var(--tint), 0.14); color: rgb(var(--tint)); }
+    body.dark .home-cta.tinted { color: color-mix(in srgb, rgb(var(--tint)) 60%, #fff); }
     .cat-preview { position: absolute; inset: 0; }
     .cat-debate { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; padding: 10px; }
     .cat-tile { position: relative; border-radius: 12px; overflow: hidden; background: #151A23; }
@@ -1695,13 +1712,18 @@
 
         <!-- 2. CATEGORY SELECTION SCREEN (NEW ROOT POST-SPLASH) -->
         <div class="app-screen active-screen" id="screen-category-selection">
-          <!-- Mirrors CategorySelectionScreen.kt: CloudReel (join a meeting, host) and Live Stream (stream live, share mobile data). -->
-          <div class="home-section"><h3>CloudReel</h3></div>
-          <button class="home-cta primary" onclick="openSessionEntry('participant')"><span class="material-icons">groups</span>Join meeting<span class="material-icons">chevron_right</span></button>
-          <button class="home-cta" onclick="openSessionEntry('host')"><span class="material-icons">podcasts</span>Start as Host<span class="material-icons">chevron_right</span></button>
-          <div class="home-section" style="margin-top: 28px;"><h3>Live Stream</h3><span class="home-net"><i></i>Network ready · 143 Mbps</span></div>
-          <button class="home-cta live" onclick="onStreamerTapped()"><span class="material-icons">videocam</span>Stream live<span class="material-icons">chevron_right</span></button>
-          <button class="home-cta" onclick="navigateTo('relay')"><span class="material-icons">cell_tower</span>Share mobile data<span class="material-icons">chevron_right</span></button>
+          <!-- Mirrors CategorySelectionScreen.kt: a greeting, then Meeting (join, host) and Live Stream (stream live, share mobile data). -->
+          <div class="home-greeting"><h2 id="homeGreeting">Welcome to CloudReel</h2><p>What would you like to do?</p></div>
+          <div class="home-panel">
+            <div class="home-section"><span class="home-badge"><span class="material-icons">groups</span></span><div><h3>Meeting</h3><small>Join or start a meeting</small></div></div>
+            <button class="home-cta primary" onclick="openSessionEntry('participant')"><span class="material-icons">groups</span>Join meeting<span class="material-icons">chevron_right</span></button>
+            <button class="home-cta tinted" onclick="openSessionEntry('host')"><span class="material-icons">podcasts</span>Start as Host<span class="material-icons">chevron_right</span></button>
+          </div>
+          <div class="home-panel live">
+            <div class="home-section"><span class="home-badge"><span class="material-icons">sensors</span></span><div><h3>Live Stream</h3><small>Broadcast from your phone</small></div><span class="home-net" id="homeNet"><i></i><span>Wi-Fi</span></span></div>
+            <button class="home-cta live" onclick="onStreamerTapped()"><span class="material-icons">videocam</span>Stream live<span class="material-icons">chevron_right</span></button>
+            <button class="home-cta tinted" onclick="navigateTo('relay')"><span class="material-icons">cell_tower</span>Share mobile data<span class="material-icons">chevron_right</span></button>
+          </div>
         </div>
 
         <!-- 6. HOME SCREEN (LEGACY 4 OPTIONS VIEW) -->
@@ -2654,10 +2676,26 @@
 
       if (screenId === 'category-selection' || screenId === 'home') {
         signOutBtn.style.display = isAuthenticated ? 'flex' : 'none';
+        homeRenderGreeting();
       } else {
         signOutBtn.style.display = 'none';
       }
     }
+
+    // Home greeting (greeting() in CategorySelectionScreen.kt): time of day and first name once signed in.
+    function homeRenderGreeting() {
+      const hour = new Date().getHours();
+      const partOfDay = hour >= 5 && hour <= 11 ? 'Good morning' : hour >= 12 && hour <= 16 ? 'Good afternoon' : 'Good evening';
+      document.getElementById('homeGreeting').textContent = isAuthenticated ? `${partOfDay}, Demo` : 'Welcome to CloudReel';
+    }
+    // Real connection state, like the app's network callback: this browser can only tell online from offline.
+    function homeRenderNetwork() {
+      const net = document.getElementById('homeNet');
+      net.classList.toggle('offline', !navigator.onLine);
+      net.querySelector('span').textContent = navigator.onLine ? 'Wi-Fi' : 'No internet';
+    }
+    addEventListener('online', homeRenderNetwork);
+    addEventListener('offline', homeRenderNetwork);
 
     // Browsers only allow sound after the visitor has interacted with the page, so the first
     // autoplay may be muted; the app itself always plays with sound.
