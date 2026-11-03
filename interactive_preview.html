@@ -1364,8 +1364,12 @@
     .cam-links .material-icons { font-size: 14px; color: #10B981; vertical-align: -3px; margin-right: 2px; }
     .cam-links .off .material-icons { color: #EF4444; }
     #camMicBtn { grid-area: mic; }
-    #camMoreBtn { grid-area: more; }
-    .cam:not(.landscape).ruler-open #camMicBtn, .cam:not(.landscape).ruler-open #camMoreBtn { display: none; }
+    /* Details, Rotate and Settings stand above ⋮⋮: the stack keeps the button's own size and grows upward. */
+    .cam-more-stack { grid-area: more; position: relative; width: 48px; height: 48px; }
+    .cam-more-stack > div { position: absolute; left: 0; bottom: 0; display: flex; flex-direction: column; }
+    .cam-more-stack > div > .cam-btn { margin: 2px 4px; }
+    .cam.panel-open #camDetailsBtn, .cam.panel-open #camRotateBtn, .cam.panel-open #camSettingsBtn { display: none; }
+    .cam:not(.landscape).ruler-open #camMicBtn, .cam:not(.landscape).ruler-open .cam-more-stack { display: none; }
     .cam:not(.landscape).ruler-open .cam-zoom { grid-column: 1 / -1; }
     .cam-adjust-panel { display: flex; align-items: center; gap: 8px; max-width: 100%; box-sizing: border-box; overflow-x: auto; padding: 4px 4px 4px 12px;
       border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; pointer-events: auto; }
@@ -1409,7 +1413,7 @@
     .cam.landscape .cam-dock { display: flex; justify-content: center; gap: 12px; }
     .cam.landscape #camMicBtn { order: 1; }
     .cam.landscape .cam-links { order: 2; }
-    .cam.landscape #camMoreBtn { order: 3; }
+    .cam.landscape .cam-more-stack { order: 3; }
     /* Centred below the top bar, so a long pill (.5 to 10) never runs into the format label. */
     .cam.landscape .cam-zoom { position: absolute; right: 100px; top: calc(50% + 28px); transform: translateY(-50%); flex-direction: row; }
     .cam.landscape .cam-zoom-pill { flex-direction: column-reverse; }
@@ -2315,7 +2319,12 @@
                   <div class="cam-links" id="camLinks"></div>
                   <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
                   <div class="cam-zoom" id="camZoom" role="slider" aria-label="Zoom" onpointerdown="camZoomDown(event)" onpointermove="camZoomMove(event)" onpointerup="camZoomUp(event)"></div>
-                  <button class="cam-btn" id="camMoreBtn" onclick="camToggleMore()" title="More controls"><span class="material-icons">grid_view</span></button>
+                  <div class="cam-more-stack"><div>
+                    <button class="cam-btn" id="camDetailsBtn" onclick="liveOpenDetails()" title="Broadcast details"><span class="material-icons">info_outline</span></button>
+                    <button class="cam-btn" id="camRotateBtn" onclick="camToggleRotate()" title="Rotate screen"><span class="material-icons">screen_rotation</span></button>
+                    <button class="cam-btn" id="camSettingsBtn" onclick="csOpen()" title="Settings"><span class="material-icons">settings</span></button>
+                    <button class="cam-btn" id="camMoreBtn" onclick="camToggleMore()" title="More controls"><span class="material-icons">grid_view</span></button>
+                  </div></div>
                   <div class="cam-shutter">
                     <button class="cam-thumb" id="camThumb" onclick="recOpen()" title="Recordings"><span class="material-icons">video_library</span></button>
                     <button class="cam-rec" onclick="camRecord()" data-a11y-role="Record (72dp)">
@@ -3028,19 +3037,24 @@
     function liveOpenDetails() { liveRenderDetails(); openSessionModal('liveDetailsModal'); }
     function liveRenderDetails() {
       const name = cs.values.slugline || 'Live broadcast';
-      const status = cam.phase === 'live' ? 'Live · ' + camFmt(cam.elapsed) : 'Getting ready…';
+      // It opens before going live too; the relay code, watch link and Stop wait for the broadcast (LiveDetailsSheet.kt).
+      const isBroadcasting = cam.phase !== 'idle';
+      const status = cam.phase === 'live' ? 'Live · ' + camFmt(cam.elapsed) : isBroadcasting ? 'Getting ready…' : 'Not live yet';
       document.getElementById('liveDetailsBody').innerHTML =
         `<h3>${name}</h3><div class="sub">${status} in Zynora's Workspace, CloudReel News Desk</div>` +
-        `<div class="live-code-card"><div><small>Relay code</small><div class="live-code">${cam.relayCode}</div></div>` +
-        `<button class="host-icon" title="Copy relay code" onclick="navigator.clipboard?.writeText(cam.relayCode)"><span class="material-icons">content_copy</span></button>` +
-        `<button class="host-icon" title="Show QR code" onclick="liveOpenQr()"><span class="material-icons">qr_code_2</span></button>` +
-        `<button class="host-btn small-text" onclick="cam.relayCode = newRelayCode(); liveRenderDetails()">New code</button></div>` +
-        `<div style="display:flex; gap:12px;"><button class="host-btn outline" onclick="cam.left += 3600; camRender()">Add 1 hour</button><button class="host-btn outline" onclick="liveShareLink()">Share link</button></div>` +
+        (isBroadcasting
+          ? `<div class="live-code-card"><div><small>Relay code</small><div class="live-code">${cam.relayCode}</div></div>` +
+            `<button class="host-icon" title="Copy relay code" onclick="navigator.clipboard?.writeText(cam.relayCode)"><span class="material-icons">content_copy</span></button>` +
+            `<button class="host-icon" title="Show QR code" onclick="liveOpenQr()"><span class="material-icons">qr_code_2</span></button>` +
+            `<button class="host-btn small-text" onclick="cam.relayCode = newRelayCode(); liveRenderDetails()">New code</button></div>`
+          : '<div class="live-code-card"><div><small>Relay code</small><div>Made when you go live</div></div></div>') +
+        `<div style="display:flex; gap:12px;"><button class="host-btn outline" onclick="cam.left += 3600; camRender()">Add 1 hour</button>` +
+        (isBroadcasting ? '<button class="host-btn outline" onclick="liveShareLink()">Share link</button>' : '') + '</div>' +
         `<div class="live-line">Camera<span class="host-chips"><button class="${cam.front ? '' : 'on'}" onclick="cam.front = false; camRender(); liveRenderDetails()">Back</button><button class="${cam.front ? 'on' : ''}" onclick="cam.front = true; camRender(); liveRenderDetails()">Front</button></span></div>` +
         `<div class="live-line">Relay server<b>in-mum</b></div><div class="live-line">Max bitrate<b>${cs.values.totalBandwidth} kbps</b></div>` +
         `<div class="live-line">Latency<b>${parseFloat(cs.values.delay) * 1000} ms</b></div><div class="live-line">Codec<b>${cs.values.codec}</b></div>` +
         `<h3 style="font-size:16px;">Relay phones</h3><p>None yet. On the other phone, tap Share mobile data and enter this code.</p>` +
-        `<button class="host-btn danger" style="margin-top:12px;" onclick="closeSessionModal('liveDetailsModal'); camRecord()">Stop broadcast</button>`;
+        (isBroadcasting ? `<button class="host-btn danger" style="margin-top:12px;" onclick="closeSessionModal('liveDetailsModal'); camRecord()">Stop broadcast</button>` : '');
     }
     function liveOpenQr() {
       const box = document.getElementById('liveQrCode');
@@ -3190,7 +3204,11 @@
       const moreBtn = document.getElementById('camMoreBtn');
       moreBtn.classList.toggle('on', cam.moreOpen);
       moreBtn.title = cam.moreOpen ? 'Close more controls' : 'More controls';
-      camRenderMore(isActive);
+      // Rotating or leaving for Settings would cut a running stream or file; Details is always on.
+      document.getElementById('camRotateBtn').disabled = isActive;
+      document.getElementById('camSettingsBtn').disabled = isActive;
+      el.classList.toggle('panel-open', cam.moreOpen || !!cam.adjust);
+      camRenderMore();
       camRenderAdjust();
       const mic = document.getElementById('camMicBtn');
       mic.classList.toggle('warn', !cam.mic);
@@ -3359,7 +3377,7 @@
       camRender();
     }
     // Switches flip in place and the grid stays open; tools that open something else close it first (MoreToolsPanel.kt).
-    function camRenderMore(isActive) {
+    function camRenderMore() {
       const grid = document.getElementById('camMore');
       grid.hidden = !cam.moreOpen;
       if (!cam.moreOpen) return;
@@ -3371,10 +3389,6 @@
         ['wb_auto', 'White balance', cam.adjust === 'wb' || cam.wb !== 'Auto', false, "camOpenAdjust('wb')"],
         [cam.grid ? 'grid_on' : 'grid_off', 'Grid', cam.grid, false, 'cam.grid = !cam.grid; camRender()'],
         [cam.aeLock ? 'lock' : 'lock_open', 'AE lock', cam.aeLock, false, 'cam.aeLock = !cam.aeLock; camRender()'],
-        // Rotating or leaving for Settings would cut a running stream or file, so both wait until idle.
-        ['screen_rotation', 'Rotate', false, isActive, 'camCloseMore(); camToggleRotate()'],
-        ['settings', 'Settings', false, isActive, "camCloseMore(); csOpen('list')"],
-        ...(isActive && cam.mode === 'live' ? [['info', 'Details', false, false, 'camCloseMore(); liveOpenDetails()']] : [])
       ];
       grid.innerHTML = tiles.map(([icon, label, isOn, isDisabled, action]) =>
         `<button class="cam-tile${isOn ? ' on' : ''}" ${isDisabled ? 'disabled' : ''} onclick="${action}" title="${label}"><i><span class="material-icons">${icon}</span></i>${label}</button>`).join('');
