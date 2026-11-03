@@ -1314,43 +1314,41 @@
     .cam-btn.on { background: rgba(59,130,246,0.85); }
     .cam-btn.warn { background: rgba(239,68,68,0.85); }
     .cam-btn:disabled { opacity: 0.4; cursor: default; }
-    .cam-back { position: absolute; top: 12px; left: 12px; }
-    .cam-status { position: absolute; top: 12px; left: 64px; white-space: nowrap; cursor: default; }
-    .cam-format { position: absolute; top: 12px; right: 12px; display: flex; flex-direction: column; align-items: center; gap: 2px; padding: 5px 10px;
-      border: 0; border-radius: 12px; background: rgba(0,0,0,0.55); color: #fff; font-size: 11px; font-weight: 700; cursor: pointer; pointer-events: auto; }
-    .cam-format.on { background: rgba(59,130,246,0.85); }
-    .cam-format:disabled { opacity: 0.5; cursor: default; }
-    .cam-format i { font-style: normal; font-size: 10px; color: #000; background: #fff; border-radius: 3px; padding: 0 4px; }
-    /* Stream settings panel (StreamSettingsPanel.kt): quality, delay, codec and aspect ratio, opened from the format chip. */
-    .cam-formats { position: absolute; top: 68px; right: 12px; z-index: 2; display: none; flex-direction: column; gap: 10px; padding: 12px;
-      width: min(320px, calc(100% - 24px)); box-sizing: border-box; max-height: calc(100% - 80px); overflow-y: auto; border-radius: 16px;
-      background: rgba(0,0,0,0.75); color: #fff; pointer-events: auto; }
-    .cam-formats h4 { margin: 0; font-size: 15px; }
-    .cam-formats label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; opacity: 0.7; }
-    .cam-formats small { font-size: 11px; opacity: 0.6; }
-    .cam-set-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
-    .cam-set-row button { flex-shrink: 0; height: 36px; padding: 0 14px; border: 0; border-radius: 18px; background: rgba(255,255,255,0.14);
-      color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .cam-set-row button.on { background: #3B82F6; }
+    /* Camera overlay (StreamerControls.kt), laid out like the phone's camera app: plain text on soft scrims at the top,
+       the zoom pill between mic and More above the shutter row, panels over the video. Selected things are yellow. */
     .cam [hidden] { display: none !important; }
+    .cam-ui { text-shadow: 0 0 6px rgba(0,0,0,0.6); }
+    .cam-scrim { position: absolute; left: 0; right: 0; pointer-events: none; }
+    .cam-scrim.top { top: 0; height: 120px; background: linear-gradient(rgba(0,0,0,0.5), transparent); }
+    .cam-scrim.bottom { bottom: 0; height: 240px; background: linear-gradient(transparent, rgba(0,0,0,0.45)); }
+    .cam.landscape .cam-scrim.bottom { height: 120px; }
+    .cam-btn.plain { background: transparent; }
+    .cam-btn.on { background: rgba(255,200,61,0.85); color: #000; text-shadow: none; }
+    .cam-top { position: absolute; top: 12px; left: 12px; display: flex; align-items: center; }
+    .cam-top .cam-btn .material-icons { font-size: 24px; }
+    .cam-status { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border: 0; border-radius: 16px; background: none; color: #fff;
+      font: inherit; white-space: nowrap; cursor: default; }
+    .cam-status.tappable { cursor: pointer; }
+    .cam-status b { font-size: 13px; padding: 3px 0; border-radius: 6px; }
+    .cam-status b.badge { padding: 3px 8px; text-shadow: none; }
+    .cam-status span { font-size: 12px; opacity: 0.85; }
+    .cam-format { position: absolute; top: 12px; right: 12px; width: 56px; height: 48px; display: flex; flex-direction: column; align-items: center;
+      justify-content: center; border: 0; border-radius: 12px; background: none; color: #fff; font: inherit; font-size: 12px; font-weight: 700; line-height: 1.25; cursor: pointer; }
+    .cam-format.on { color: #FFC83D; }
+    /* Stream settings (StreamSettingsPanel.kt): one row per setting with the choices in columns, and a line describing the format. */
+    .cam-formats { position: absolute; top: 68px; left: 12px; right: 12px; margin-left: auto; z-index: 2; display: none; flex-direction: column; gap: 6px;
+      max-width: 400px; max-height: calc(100% - 80px); box-sizing: border-box; overflow-y: auto; padding: 8px 8px 16px 20px; border-radius: 28px;
+      background: rgba(21,24,31,0.88); border: 1px solid rgba(255,255,255,0.08); color: #fff; pointer-events: auto; text-shadow: none; }
     .cam-formats.open { display: flex; }
-    .cam-thumb { width: 48px; height: 48px; border-radius: 12px; border: 2px solid #fff; background: rgba(0,0,0,0.55); color: #fff;
-      display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; }
-    .cam-thumb:disabled { opacity: 0.4; cursor: default; }
-    .cam-row { position: relative; width: 100%; min-height: 78px; display: flex; align-items: flex-end; justify-content: center; }
-    .cam-pill { display: flex; align-items: center; gap: 8px; padding: 7px 14px; border-radius: 24px; border: 0;
-      background: rgba(0,0,0,0.55); color: #fff; text-align: left; font-family: inherit; cursor: pointer; }
-    .cam-pill:disabled { cursor: default; }
-    .cam-dot { width: 9px; height: 9px; border-radius: 50%; background: #9CA3AF; flex-shrink: 0; }
-    .cam-pill-main { display: block; font-size: 12px; font-weight: 700; letter-spacing: 0.04em; }
-    .cam-pill-main span { font-weight: 500; margin-left: 6px; font-family: 'JetBrains Mono', monospace; }
-    .cam-pill-sub { display: block; font-size: 10.5px; opacity: 0.7; }
-    .cam-links { display: flex; align-items: center; gap: 10px; padding: 6px 11px; border-radius: 20px;
-      background: rgba(0,0,0,0.55); font-size: 11px; }
-    .cam-links .material-icons { font-size: 14px; color: #10B981; vertical-align: -3px; margin-right: 2px; }
-    .cam-links .off .material-icons { color: #EF4444; }
-    /* Stereo meter: 12 segments over -60..0 dBFS, green / yellow / red, peak held 1s. */
-    .cam-vu { position: absolute; left: 0; bottom: 0; padding: 5px 5px 2px; border-radius: 8px; background: rgba(0,0,0,0.45); }
+    .cam-set-head { display: flex; align-items: center; justify-content: space-between; font-size: 18px; font-weight: 600; }
+    .cam-set-row { display: grid; grid-template-columns: 60px repeat(5, 1fr); align-items: center; margin-right: 12px; }
+    .cam-set-row label { font-size: 13px; font-weight: 600; opacity: 0.6; }
+    .cam-set-row button { height: 40px; padding: 0; border: 0; border-radius: 20px; background: none; color: #fff; font: inherit; font-size: 14px; font-weight: 600;
+      white-space: nowrap; cursor: pointer; }
+    .cam-set-row button.on { background: rgba(0,0,0,0.45); color: #FFC83D; }
+    .cam-set-desc { margin: 4px 12px 0 0; padding-top: 8px; border-top: 1px solid rgba(255,255,255,0.15); font-size: 14px; }
+    /* Stereo meter on the left edge: 12 segments over -60..0 dBFS, green / yellow / red, peak held 1s. */
+    .cam-vu { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); padding: 5px 5px 2px; border-radius: 8px; background: rgba(0,0,0,0.45); }
     .cam-vu-bars { display: flex; gap: 3px; }
     .cam-vu-bar { display: flex; flex-direction: column-reverse; gap: 2px; }
     .cam-vu-bar i { width: 6px; height: 3px; border-radius: 1px; background: #10B981; opacity: 0.18; }
@@ -1358,21 +1356,65 @@
     .cam-vu-bar i:nth-child(n+11) { background: #EF4444; }
     .cam-vu-bar i.lit { opacity: 1; }
     .cam-vu-labels { display: flex; justify-content: space-between; font-size: 8px; opacity: 0.75; margin-top: 2px; }
-    .cam-left { position: absolute; left: 12px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; align-items: center; gap: 8px; }
-    .cam-btn b { font-size: 11px; }
-    /* Zoom bar (ZoomBar in StreamerControls.kt): opens from the zoom icon, stops marked, thumb shows the zoom. */
-    .cam-zoom { position: absolute; display: none; height: 64px; border-radius: 32px; background: rgba(0,0,0,0.55); pointer-events: auto; touch-action: none; cursor: pointer; z-index: 1; }
-    .cam-zoom.open { display: block; }
-    .cam-zoom.vertical { width: 64px; height: 180px; }
-    .cam-zoom-track { position: absolute; left: 22px; right: 22px; top: 21px; height: 2px; background: rgba(255,255,255,0.4); }
-    .cam-zoom.vertical .cam-zoom-track { left: 41px; right: auto; top: 22px; bottom: 22px; width: 2px; height: auto; }
-    .cam-zoom-dot { position: absolute; width: 6px; height: 6px; border-radius: 50%; background: #fff; transform: translate(-50%, -50%); }
-    .cam-zoom-label { position: absolute; width: 30px; text-align: center; font-size: 11px; font-weight: 500; color: rgba(255,255,255,0.7); }
-    .cam-zoom-label.on { color: #fff; font-weight: 700; }
-    .cam-zoom-thumb { position: absolute; width: 32px; height: 32px; border-radius: 50%; background: #3B82F6; color: #fff; font-size: 10px; font-weight: 700;
-      display: flex; align-items: center; justify-content: center; transform: translate(-50%, -50%); }
-    /* Portrait: rotate, tools, zoom in a rail on the right, centred like the left rail. */
-    .cam-utils { position: absolute; right: 8px; top: 50%; transform: translateY(-50%); display: flex; flex-direction: column; }
+    /* Bottom: adjust panel and More grid above the dock (network, mic · zoom · More, shutter row). */
+    .cam-bottom { position: absolute; left: 12px; right: 12px; bottom: 16px; display: flex; flex-direction: column; align-items: center; gap: 10px; }
+    .cam-dock { width: 100%; display: grid; grid-template-columns: 48px 1fr 48px; row-gap: 10px; align-items: center; justify-items: center;
+      grid-template-areas: "net net net" "mic zoom more" "shutter shutter shutter"; }
+    .cam-links { grid-area: net; display: flex; align-items: center; gap: 10px; padding: 5px 10px; border-radius: 20px; background: rgba(0,0,0,0.55); font-size: 11px; }
+    .cam-links .material-icons { font-size: 14px; color: #10B981; vertical-align: -3px; margin-right: 2px; }
+    .cam-links .off .material-icons { color: #EF4444; }
+    #camMicBtn { grid-area: mic; }
+    #camMoreBtn { grid-area: more; }
+    .cam:not(.landscape).ruler-open #camMicBtn, .cam:not(.landscape).ruler-open #camMoreBtn { display: none; }
+    .cam:not(.landscape).ruler-open .cam-zoom { grid-column: 1 / -1; }
+    .cam-adjust-panel { display: flex; align-items: center; gap: 8px; max-width: 100%; box-sizing: border-box; overflow-x: auto; padding: 4px 4px 4px 12px;
+      border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; pointer-events: auto; }
+    .cam-adjust-panel input[type=range] { width: 160px; accent-color: #FFC83D; }
+    .cam-adjust-panel .wb { height: 40px; padding: 0 12px; border: 0; border-radius: 20px; background: none; color: #fff; font: inherit; font-weight: 600; cursor: pointer; }
+    .cam-adjust-panel .wb.on { background: rgba(0,0,0,0.45); color: #FFC83D; }
+    /* More (MoreToolsPanel.kt): camera tools as icon tiles; switches turn yellow when on. */
+    .cam-more-grid { width: 100%; max-width: 480px; box-sizing: border-box; display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 8px; padding: 12px 8px;
+      border-radius: 28px; background: rgba(21,24,31,0.88); border: 1px solid rgba(255,255,255,0.08); pointer-events: auto; text-shadow: none; }
+    .cam.landscape .cam-more-grid { grid-template-columns: repeat(5, 1fr); }
+    .cam-tile { display: flex; flex-direction: column; align-items: center; gap: 6px; padding: 8px 0; border: 0; border-radius: 16px; background: none; color: #fff;
+      font: inherit; font-size: 11px; font-weight: 500; text-transform: uppercase; text-align: center; cursor: pointer; }
+    .cam-tile i { width: 44px; height: 44px; box-sizing: border-box; border-radius: 50%; border: 1.5px solid currentColor; display: flex; align-items: center; justify-content: center; font-style: normal; }
+    .cam-tile .material-icons { font-size: 22px; }
+    .cam-tile.on { color: #FFC83D; }
+    .cam-tile:disabled { opacity: 0.4; cursor: default; }
+    /* Zoom (ZoomControl.kt): a pill of stops; dragging along it opens the ruler with the value in yellow. */
+    .cam-zoom { grid-area: zoom; display: flex; flex-direction: column; align-items: center; gap: 8px; touch-action: none; pointer-events: auto; cursor: pointer; }
+    .cam-zoom-pill { display: flex; gap: 2px; border-radius: 24px; background: rgba(0,0,0,0.55); }
+    .cam-zoom-pill span { width: 40px; height: 40px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; }
+    .cam-zoom-pill span.on { background: rgba(0,0,0,0.55); font-size: 13px; }
+    .cam-zoom-value { color: #FFC83D; font-size: 18px; font-weight: 700; }
+    .cam-ruler { position: relative; width: 300px; height: 52px; border-radius: 26px; background: rgba(0,0,0,0.55); }
+    .cam-ruler i { position: absolute; background: rgba(255,255,255,0.55); }
+    /* Shutter row: round last recording, white shutter with a red dot, flip (pause while running). */
+    .cam-shutter { grid-area: shutter; width: 100%; display: flex; align-items: center; justify-content: space-evenly; }
+    .cam-thumb { width: 52px; height: 52px; border-radius: 50%; border: 2px solid #fff; background: rgba(0,0,0,0.55); color: #fff;
+      display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; }
+    .cam-thumb:disabled { opacity: 0.4; cursor: default; }
+    .cam-side { width: 52px; height: 52px; }
+    .cam-side .material-icons { font-size: 26px; }
+    .cam-rec { display: flex; flex-direction: column; align-items: center; gap: 4px; background: none; border: 0; color: #fff;
+      cursor: pointer; font-family: inherit; font-size: 11px; font-weight: 600; }
+    .cam-rec-ring { width: 72px; height: 72px; border-radius: 50%; background: #fff; display: flex; align-items: center; justify-content: center; }
+    .cam-rec-core { width: 30px; height: 30px; border-radius: 50%; background: #EF4444; transition: all 0.2s; }
+    .cam.active .cam-rec-core { width: 26px; height: 26px; border-radius: 6px; }
+    .cam.connecting .cam-rec-core { background: #F59E0B; animation: pulseLogo 1s infinite; }
+    /* Landscape: the shutter column on the right edge with the zoom pill beside it; mic and More flank the network bar. */
+    .cam.landscape .cam-format, .cam.landscape .cam-formats { right: 112px; }
+    .cam.landscape .cam-bottom { inset: 12px; padding: 0 164px 0 44px; justify-content: flex-end; }
+    .cam.landscape .cam-dock { display: flex; justify-content: center; gap: 12px; }
+    .cam.landscape #camMicBtn { order: 1; }
+    .cam.landscape .cam-links { order: 2; }
+    .cam.landscape #camMoreBtn { order: 3; }
+    /* Centred below the top bar, so a long pill (.5 to 10) never runs into the format label. */
+    .cam.landscape .cam-zoom { position: absolute; right: 100px; top: calc(50% + 28px); transform: translateY(-50%); flex-direction: row; }
+    .cam.landscape .cam-zoom-pill { flex-direction: column-reverse; }
+    .cam.landscape .cam-ruler { width: 52px; height: 220px; }
+    .cam.landscape .cam-shutter { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 88px; flex-direction: column; gap: 16px; }
     /* Host session (mirrors HostSessionUi.kt): meeting-style view. Portrait fills the screen; landscape is the 16:9 program. */
     .cam:not(.host) .cam-program, .cam:not(.host) .host-bars { display: none; }
     .cam.host .cam-ui, .cam.host .cam-hint { display: none !important; }
@@ -1469,7 +1511,6 @@
     .cam-guests .tile b { position: absolute; left: 4px; bottom: 4px; display: flex; align-items: center; gap: 3px; padding: 1px 5px; border-radius: 6px; background: rgba(0,0,0,0.55); font-size: 10px; font-weight: 500; white-space: nowrap; }
     .cam-guests .tile b .material-icons { font-size: 10px; color: #EF4444; }
     .av { border-radius: 50%; object-fit: cover; display: inline-flex; align-items: center; justify-content: center; flex-shrink: 0; color: #fff; font-size: 11px; font-weight: 700; }
-    .cam.host:not(.landscape) .cam-left, .cam.host:not(.landscape) .cam-utils, .cam.host:not(.landscape) .cam-row { display: none !important; }
     .cam-hvu-bars { flex: 1; display: flex; flex-direction: column; gap: 6px; }
     .host-sheet { max-height: 80%; overflow-y: auto; padding: 8px 0 24px; }
     .host-sheet h3 { font-size: 20px; font-weight: 700; padding: 12px 16px 4px; }
@@ -1509,32 +1550,6 @@
     .host-action .material-icons { color: var(--text-muted); }
     .host-action.danger, .host-action.danger .material-icons { color: var(--cr-error); }
 
-    .cam-bottom { position: absolute; left: 12px; right: 12px; bottom: 16px; display: flex; flex-direction: column; align-items: center; gap: 12px; }
-    .cam-tools { display: none; gap: 4px; padding: 5px; border-radius: 26px; background: rgba(0,0,0,0.55); max-width: 100%; overflow-x: auto; }
-    .cam-tools.open { display: flex; }
-    .cam-tools .cam-btn { background: transparent; }
-    .cam-tools .cam-btn.on { background: rgba(59,130,246,0.85); }
-    .cam-shutter { width: 100%; display: flex; align-items: center; justify-content: space-evenly; }
-    .cam-rec { display: flex; flex-direction: column; align-items: center; gap: 3px; background: none; border: 0; color: #fff;
-      cursor: pointer; font-family: inherit; font-size: 10.5px; font-weight: 600; }
-    .cam-rec-ring { width: 68px; height: 68px; border-radius: 50%; border: 4px solid #fff; display: flex; align-items: center; justify-content: center; }
-    .cam-rec-core { width: 52px; height: 52px; border-radius: 50%; background: #EF4444; transition: all 0.2s; }
-    .cam.active .cam-rec-core { width: 24px; height: 24px; border-radius: 6px; }
-    .cam.connecting .cam-rec-core { background: #F59E0B; animation: pulseLogo 1s infinite; }
-    /* Landscape: rotate/tools/settings move to the top right, mode or transport sits beside the record column. */
-    .cam.landscape .cam-formats { right: 96px; max-height: calc(100% - 80px); }
-    .cam.landscape .cam-format { right: 96px; }
-    /* Landscape: meter and network card bottom left, every camera icon bottom right beside the shutter column. */
-    .cam.landscape .cam-utils { top: auto; bottom: 8px; right: 96px; transform: none; flex-direction: row; }
-    .cam.landscape .cam-row { justify-content: flex-start; gap: 8px; justify-self: start; }
-    /* The network card lists its links in a column, so every icon fits on narrow phones too. */
-    .cam.landscape .cam-links { flex-direction: column; align-items: flex-start; gap: 4px; border-radius: 12px; padding: 8px 10px; }
-    .cam.landscape .cam-vu { position: static; }
-    .cam.landscape .cam-bottom { inset: 12px; display: grid; grid-template-columns: 1fr auto auto; grid-template-rows: 1fr auto auto auto; row-gap: 8px;
-      align-items: center; justify-items: center; column-gap: 16px; }
-    .cam.landscape .cam-tools { grid-column: 1 / span 2; grid-row: 3; }
-    .cam.landscape .cam-row { grid-column: 1 / span 2; grid-row: 4; }
-    .cam.landscape .cam-shutter { grid-column: 3; grid-row: 1 / span 4; width: auto; flex-direction: column; gap: 10px; }
     .cam-hint { position: absolute; left: 50%; bottom: 46%; transform: translateX(-50%); padding: 6px 12px; border-radius: 14px;
       background: rgba(0,0,0,0.6); font-size: 11.5px; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
 
@@ -2230,7 +2245,7 @@
         <!-- 8. STREAMER SCREEN (mirrors StreamerScreen.kt / StreamerControls.kt) -->
         <div class="app-screen" id="screen-streamer">
           <div class="cam" id="cam">
-            <div class="cam-feed" id="camFeed" ondblclick="camToggleOverlays()" onpointerdown="hostFloatDrag(event)" data-a11y-role="Camera Preview (double-tap hides controls)"></div>
+            <div class="cam-feed" id="camFeed" onclick="camTapFeed()" ondblclick="camToggleOverlays()" onpointerdown="hostFloatDrag(event)" data-a11y-role="Camera Preview (double-tap hides controls)"></div>
             <!-- Meeting gallery (MeetingGallery in HostSessionUi.kt): the camera feed moves in here as the "You" tile -->
             <div class="cam-program" id="camProgram" onclick="hostToggleBars()">
               <div class="cam-camoff" id="camCamOff" ondblclick="camToggleOverlays()" onpointerdown="hostFloatDrag(event)"><span>You</span></div>
@@ -2265,59 +2280,37 @@
             </div>
             <div class="cam-hint" id="camHint">Double-tap to show controls</div>
             <div class="cam-ui">
-              <button class="cam-btn cam-back" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
-              <div class="cam-pill cam-status" id="camStatus">
-                <span class="cam-dot" id="camDot"></span>
-                <span>
-                  <span class="cam-pill-main"><b id="camLabel">READY</b><span id="camTimer"></span></span>
-                  <span class="cam-pill-sub" id="camDetails"></span>
-                </span>
+              <div class="cam-scrim top"></div>
+              <div class="cam-scrim bottom"></div>
+              <!-- Top: back and status on the left, the format on the right (StreamerControls.kt) -->
+              <div class="cam-top">
+                <button class="cam-btn plain" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
+                <button class="cam-status" id="camStatus" onclick="camStatusTap()"><b id="camLabel">READY</b><span id="camDetails"></span></button>
               </div>
-
-              <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Stream settings"><span id="camFormatLabel">1080P</span><i id="camFormatRate">30</i></button>
+              <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Stream settings"><span id="camFormatLabel">1080P</span><span id="camFormatRate">30</span></button>
               <div class="cam-formats" id="camFormats"></div>
-              <div class="cam-left">
-                <button class="cam-btn" id="camMetaBtn" onclick="camOpenMetadata()" title="Metadata"><span class="material-icons">sell</span></button>
-                <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
-                <button class="cam-btn" id="camSettingsBtn" onclick="csOpen('list')" title="Settings"><span class="material-icons">settings</span></button>
-                <button class="cam-btn" id="camDetailsBtn" onclick="liveOpenDetails()" title="Broadcast details" hidden><span class="material-icons-outlined">info</span></button>
-              </div>
-
-              <!-- Portrait: tag, mic, settings, details on the left; rotate, tools, zoom on the right, both centred (StreamerControls.kt) -->
-              <div class="cam-utils">
-                <button class="cam-btn" id="camRotateBtn" onclick="camToggleRotate()" title="Rotate screen"><span class="material-icons">screen_rotation</span></button>
-                <button class="cam-btn" id="camToolsBtn" onclick="camToggleTools()" title="Show camera tools"><span class="material-icons">tune</span></button>
-                <button class="cam-btn" id="camZoomBtn" onclick="camToggleZoomBar()" title="Zoom"><span class="material-icons">zoom_in</span></button>
-              </div>
-              <div class="cam-zoom" id="camZoom" role="slider" aria-label="Zoom" onpointerdown="this.setPointerCapture(event.pointerId); camZoomPointer(event)" onpointermove="if (event.buttons) camZoomPointer(event)">
-                <div class="cam-zoom-track"></div>
-                <div id="camZoomMarks"></div>
+              <div class="cam-vu" title="Audio level (L / R)">
+                <div class="cam-vu-bars"><div class="cam-vu-bar" id="camVuL"></div><div class="cam-vu-bar" id="camVuR"></div></div>
+                <div class="cam-vu-labels"><span>L</span><span>R</span></div>
               </div>
 
               <div class="cam-bottom">
-                <div class="cam-tools" id="camTools">
-                  <button class="cam-btn" onclick="this.classList.toggle('on')" title="Autofocus"><span class="material-icons">center_focus_strong</span></button>
-                  <button class="cam-btn" onclick="this.classList.toggle('on')" title="Flash"><span class="material-icons">flash_off</span></button>
-                  <button class="cam-btn" onclick="this.classList.toggle('on')" title="Exposure"><span class="material-icons">exposure</span></button>
-                  <button class="cam-btn" onclick="this.classList.toggle('on')" title="White balance"><span class="material-icons">wb_auto</span></button>
-                  <button class="cam-btn" onclick="this.classList.toggle('on')" title="Grid"><span class="material-icons">grid_off</span></button>
-                  <button class="cam-btn" onclick="this.classList.toggle('on')" title="Exposure lock"><span class="material-icons">lock_open</span></button>
-                </div>
-                <div class="cam-row">
-                  <div class="cam-vu" title="Audio level (L / R)">
-                    <div class="cam-vu-bars"><div class="cam-vu-bar" id="camVuL"></div><div class="cam-vu-bar" id="camVuR"></div></div>
-                    <div class="cam-vu-labels"><span>L</span><span>R</span></div>
-                  </div>
+                <div class="cam-adjust-panel" id="camAdjust" hidden></div>
+                <div class="cam-more-grid" id="camMore" hidden></div>
+                <div class="cam-dock">
                   <div class="cam-links" id="camLinks"></div>
-                </div>
-                <div class="cam-shutter">
-                  <button class="cam-thumb" id="camThumb" onclick="recOpen()" title="Recordings"><span class="material-icons">video_library</span></button>
-                  <button class="cam-rec" onclick="camRecord()" data-a11y-role="Record (68dp)">
-                    <span class="cam-rec-ring"><span class="cam-rec-core"></span></span>
-                    <span id="camRecLabel">Go live</span>
-                  </button>
-                  <button class="cam-btn" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cached</span></button>
-                  <button class="cam-btn" id="camPauseBtn" onclick="camTogglePause()" title="Pause" hidden><span class="material-icons">pause</span></button>
+                  <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
+                  <div class="cam-zoom" id="camZoom" role="slider" aria-label="Zoom" onpointerdown="camZoomDown(event)" onpointermove="camZoomMove(event)" onpointerup="camZoomUp(event)"></div>
+                  <button class="cam-btn" id="camMoreBtn" onclick="camToggleMore()" title="More controls"><span class="material-icons">grid_view</span></button>
+                  <div class="cam-shutter">
+                    <button class="cam-thumb" id="camThumb" onclick="recOpen()" title="Recordings"><span class="material-icons">video_library</span></button>
+                    <button class="cam-rec" onclick="camRecord()" data-a11y-role="Record (72dp)">
+                      <span class="cam-rec-ring"><span class="cam-rec-core"></span></span>
+                      <span id="camRecLabel">Go live</span>
+                    </button>
+                    <button class="cam-btn cam-side" id="camFlipBtn" onclick="camFlip()" title="Switch camera"><span class="material-icons">cached</span></button>
+                    <button class="cam-btn cam-side" id="camPauseBtn" onclick="camTogglePause()" title="Pause" hidden><span class="material-icons">pause</span></button>
+                  </div>
                 </div>
               </div>
             </div>
@@ -3123,7 +3116,9 @@
     document.getElementById('systemTime').textContent = `${now.getHours()}:${now.getMinutes().toString().padStart(2, '0')}`;
 
     // ── Streamer camera screen (mirrors StreamerScreen.kt) ──
-    const cam = { mode: 'live', phase: 'idle', elapsed: 0, left: 2 * 3600, tools: false, mic: true, zoom: 1, zoomOpen: false, front: false, clock: null, peak: 0, peakAt: 0, formatsOpen: false };
+    const cam = { mode: 'live', phase: 'idle', elapsed: 0, left: 2 * 3600, mic: true, zoom: 1, zoomOpen: false, front: false, clock: null, peak: 0, peakAt: 0, formatsOpen: false,
+      // The More grid and its tools (MoreToolsPanel.kt); adjust is the open exposure or white balance panel.
+      moreOpen: false, adjust: null, flash: false, focusLock: false, grid: false, aeLock: false, ev: 0, wb: 'Auto' };
 
     function camFmt(t) { return [Math.floor(t / 3600), Math.floor(t / 60) % 60, t % 60].map(n => String(n).padStart(2, '0')).join(':'); }
     function camLeftText(t) { const h = Math.floor(t / 3600), m = Math.floor(t / 60) % 60; return h > 0 ? `${h}h ${m}m left` : `${m}m left`; }
@@ -3135,9 +3130,13 @@
         recording: ['REC', '#EF4444'], paused: ['PAUSED', '#F59E0B'] }[cam.phase];
       el.classList.toggle('active', isActive);
       el.classList.toggle('connecting', cam.phase === 'connecting');
-      document.getElementById('camLabel').textContent = label;
-      document.getElementById('camDot').style.background = color;
-      document.getElementById('camTimer').textContent = ['live', 'recording', 'paused'].includes(cam.phase) ? camFmt(cam.elapsed) : '';
+      // READY is plain text; once running the state becomes a coloured badge with the timer, which opens the details while live.
+      const statusLabel = document.getElementById('camLabel');
+      statusLabel.textContent = ['live', 'recording', 'paused'].includes(cam.phase) ? `${label} ${camFmt(cam.elapsed)}` : label;
+      statusLabel.classList.toggle('badge', isActive);
+      statusLabel.style.background = isActive ? color : '';
+      document.getElementById('camStatus').classList.toggle('tappable', isActive && cam.mode === 'live');
+      el.classList.toggle('ruler-open', cam.zoomOpen);
       const settings = cs.values;
       document.getElementById('camDetails').textContent =
         `${settings.delay.replace(' sec', 's')} delay · ${camLeftText(cam.left)}`;
@@ -3147,19 +3146,17 @@
       const formatChip = document.getElementById('camFormatChip');
       formatChip.classList.toggle('on', cam.formatsOpen && !isActive);
       document.getElementById('camFormats').classList.toggle('open', cam.formatsOpen && !isActive);
-      const settingRow = (title, key, options) => `<div><label>${title}</label><div class="cam-set-row">` +
-        options.map(([value, label]) => `<button class="${settings[key] === value ? 'on' : ''}" onclick="csSet('${key}', '${value}')">${label}</button>`).join('') + '</div></div>';
-      document.getElementById('camFormats').innerHTML = '<h4>Stream settings</h4>' +
-        settingRow('Quality', 'format', CAM_FORMATS.map(option => [option.name, option.rate === 'Auto' ? option.name : option.label + option.rate])) +
-        '<small>Interlaced (i) formats: Not active yet</small>' +
-        settingRow('Delay', 'delay', [['2 sec', '2s'], ['3 sec', '3s'], ['4 sec', '4s']]) +
-        settingRow('Codec', 'codec', [['H.265', 'H.265'], ['H.264', 'H.264']]) +
-        settingRow('Aspect ratio', 'orientation', [['Auto', 'Auto'], ['Landscape', '16:9'], ['Portrait', '9:16']]);
-      // Each row opens scrolled to its selected chip, so 720p30 isn't hidden past the edge.
-      document.querySelectorAll('.cam-set-row').forEach(row => {
-        const selected = row.querySelector('.on');
-        if (selected) row.scrollLeft = selected.offsetLeft - row.offsetLeft;
-      });
+      // One row per setting, choices in columns (StreamSettingsPanel.kt); every action takes the chosen value last.
+      const settingRow = (title, options, selected, action) => `<div class="cam-set-row"><label>${title}</label>` +
+        options.map(([value, text]) => `<button class="${value === selected ? 'on' : ''}" onclick="${action}'${value}')" title="${title} ${text}">${text}</button>`).join('') + '</div>';
+      document.getElementById('camFormats').innerHTML =
+        '<div class="cam-set-head">Stream settings<button class="cam-btn plain" onclick="camToggleFormats()" title="Close stream settings"><span class="material-icons">close</span></button></div>' +
+        settingRow('Size', CAM_SIZES.map(size => [size, size]), format.label, 'camSelectSize(') +
+        settingRow('FPS', CAM_FORMATS.filter(option => option.label === format.label).map(option => [option.name, option.rate]), format.name, "csSet('format', ") +
+        settingRow('Delay', [['2 sec', '2s'], ['3 sec', '3s'], ['4 sec', '4s']], settings.delay, "csSet('delay', ") +
+        settingRow('Codec', [['H.265', 'H.265'], ['H.264', 'H.264']], settings.codec, "csSet('codec', ") +
+        settingRow('Aspect', [['Auto', 'Auto'], ['Landscape', '16:9'], ['Portrait', '9:16']], settings.orientation, "csSet('orientation', ") +
+        `<div class="cam-set-desc">${camFormatDescription(format)}</div>`;
       document.getElementById('camLinks').innerHTML = [['wifi', 'wifi', '18.4'], ['cellular', 'cell_tower', '24.1'], [null, 'public', 'ok'], ['wired', 'cable', 'on']]
         .map(([key, icon, reading]) => {
           const isOn = !key || settings[key];
@@ -3167,22 +3164,20 @@
         }).join('') + '<span style="opacity:0.6;">Mbps</span>';
       // Three fixed slots, like the phone's camera: recordings | record | flip while idle,
       // recordings (greyed, leaving would end the session) | stop | pause while running.
-      document.getElementById('camDetailsBtn').hidden = !(isActive && cam.mode === 'live');
       document.getElementById('camThumb').disabled = isActive;
       document.getElementById('camFlipBtn').hidden = isActive;
-      document.getElementById('camSettingsBtn').disabled = isActive;
       const pauseBtn = document.getElementById('camPauseBtn');
       pauseBtn.hidden = !isActive;
       pauseBtn.disabled = cam.phase === 'connecting';
       pauseBtn.title = cam.phase === 'paused' ? 'Resume' : 'Pause';
       pauseBtn.querySelector('.material-icons').textContent = cam.phase === 'paused' ? 'play_arrow' : 'pause';
-      document.getElementById('camRotateBtn').disabled = isActive;
       document.getElementById('camRecLabel').textContent =
         cam.phase === 'connecting' ? 'Connecting' : isActive ? 'Stop' : cam.mode === 'live' ? 'Go live' : 'Record';
-      document.getElementById('camTools').classList.toggle('open', cam.tools);
-      document.getElementById('camToolsBtn').classList.toggle('on', cam.tools);
-      document.getElementById('camMetaBtn').classList.toggle('on',
-        settings.metaEnabled && CS_METADATA_FIELDS.some(([, key]) => settings[key].trim()));
+      const moreBtn = document.getElementById('camMoreBtn');
+      moreBtn.classList.toggle('on', cam.moreOpen);
+      moreBtn.title = cam.moreOpen ? 'Close more controls' : 'More controls';
+      camRenderMore(isActive);
+      camRenderAdjust();
       const mic = document.getElementById('camMicBtn');
       mic.classList.toggle('warn', !cam.mic);
       mic.querySelector('.material-icons').textContent = cam.mic ? 'mic' : 'mic_off';
@@ -3190,9 +3185,6 @@
       const mirrorY = settings.mirroring === 'Vertically' ? -1 : 1;
       // The sample feed can't show wider than itself, so below 1× it stays at full size.
       document.getElementById('camFeed').style.transform = `scale(${Math.max(1, cam.zoom)}) scale(${mirrorX}, ${mirrorY})`;
-      const zoomBtn = document.getElementById('camZoomBtn');
-      zoomBtn.classList.toggle('on', cam.zoomOpen);
-      zoomBtn.innerHTML = Math.abs(cam.zoom - 1) < 0.05 ? '<span class="material-icons">zoom_in</span>' : `<b>${formatZoom(cam.zoom)}</b>`;
       camRenderZoom();
       hostRender();
     }
@@ -3248,6 +3240,18 @@
     const CAM_FORMATS = [['1080p', '60', true], ['1080p', '50', true], ['1080p', '30', true], ['1080i', '60', false], ['1080i', '50', false],
       ['720p', '60', true], ['720p', '50', true], ['720p', '30', true], ['576i', '25', false], ['576i', 'Auto', false],
       ['480i', '30', false], ['480i', 'Auto', false]].map(([label, rate, isNative]) => ({ label, rate, isNative, name: `${label} ${rate}` }));
+    const CAM_SIZES = [...new Set(CAM_FORMATS.map(option => option.label))];
+    // A new size keeps the frame rate when it has it, else takes its first one (withSize in StreamerModels.kt).
+    function camSelectSize(size) {
+      const current = CAM_FORMATS.find(option => option.name === cs.values.format);
+      const options = CAM_FORMATS.filter(option => option.label === size);
+      csSet('format', (options.find(option => option.rate === current.rate) ?? options[0]).name);
+    }
+    function camFormatDescription(format) {
+      const resolution = format.label.startsWith('1080') ? 'Full HD' : format.label === '720p' ? 'HD' : 'SD';
+      const rate = format.rate === 'Auto' ? 'auto frame rate' : format.rate + ' fps';
+      return format.isNative ? `${resolution}, ${rate}` : `${resolution} interlaced, ${rate}. Not active yet: the camera records progressive video.`;
+    }
     // Metadata: read-only until Edit, edits stay a draft until Save (mirrors MetadataDialog / MetadataPage).
     const hasMetadata = () => CS_METADATA_FIELDS.some(([, key]) => cs.values[key].trim());
     const meta = { popupEditing: false, pageEditing: false, draft: {} };
@@ -3329,13 +3333,66 @@
         segment.classList.toggle('lit', index < litCount || index === cam.peak - 1)));
     }
 
-    function camToggleTools() { cam.tools = !cam.tools; camRender(); }
+    function camStatusTap() { if (cam.phase !== 'idle' && cam.mode === 'live') liveOpenDetails(); }
+    function camToggleMore() { cam.moreOpen = !cam.moreOpen; camRender(); }
+    function camCloseMore() { cam.moreOpen = false; camRender(); }
+    function camOpenAdjust(tool) { cam.moreOpen = false; cam.adjust = cam.adjust === tool ? null : tool; camRender(); }
+    // As in the phone's camera, a tap on the picture first closes an open panel.
+    function camTapFeed() {
+      if (!(cam.moreOpen || cam.formatsOpen || cam.adjust || cam.zoomOpen)) return;
+      cam.moreOpen = cam.formatsOpen = cam.zoomOpen = false;
+      cam.adjust = null;
+      camRender();
+    }
+    // Switches flip in place and the grid stays open; tools that open something else close it first (MoreToolsPanel.kt).
+    function camRenderMore(isActive) {
+      const grid = document.getElementById('camMore');
+      grid.hidden = !cam.moreOpen;
+      if (!cam.moreOpen) return;
+      const tiles = [
+        ['sell', 'Metadata', cs.values.metaEnabled && hasMetadata(), false, 'camCloseMore(); camOpenMetadata()'],
+        [cam.flash ? 'flash_on' : 'flash_off', 'Flash', cam.flash, false, 'cam.flash = !cam.flash; camRender()'],
+        [cam.focusLock ? 'center_focus_weak' : 'center_focus_strong', cam.focusLock ? 'Focus lock' : 'Autofocus', cam.focusLock, false, 'cam.focusLock = !cam.focusLock; camRender()'],
+        ['exposure', 'Exposure', cam.adjust === 'exposure' || cam.ev !== 0, false, "camOpenAdjust('exposure')"],
+        ['wb_auto', 'White balance', cam.adjust === 'wb' || cam.wb !== 'Auto', false, "camOpenAdjust('wb')"],
+        [cam.grid ? 'grid_on' : 'grid_off', 'Grid', cam.grid, false, 'cam.grid = !cam.grid; camRender()'],
+        [cam.aeLock ? 'lock' : 'lock_open', 'AE lock', cam.aeLock, false, 'cam.aeLock = !cam.aeLock; camRender()'],
+        // Rotating or leaving for Settings would cut a running stream or file, so both wait until idle.
+        ['screen_rotation', 'Rotate', false, isActive, 'camCloseMore(); camToggleRotate()'],
+        ['settings', 'Settings', false, isActive, "camCloseMore(); csOpen('list')"],
+        ...(isActive && cam.mode === 'live' ? [['info', 'Details', false, false, 'camCloseMore(); liveOpenDetails()']] : [])
+      ];
+      grid.innerHTML = tiles.map(([icon, label, isOn, isDisabled, action]) =>
+        `<button class="cam-tile${isOn ? ' on' : ''}" ${isDisabled ? 'disabled' : ''} onclick="${action}" title="${label}"><i><span class="material-icons">${icon}</span></i>${label}</button>`).join('');
+    }
+    // Rebuilt only when the tool changes, so dragging the exposure slider isn't interrupted by the clock's re-render.
+    function camRenderAdjust() {
+      const panel = document.getElementById('camAdjust');
+      panel.hidden = !cam.adjust;
+      if (panel.dataset.tool === (cam.adjust ?? '')) return;
+      panel.dataset.tool = cam.adjust ?? '';
+      const close = `<button class="cam-btn plain" onclick="camOpenAdjust('${cam.adjust}')" title="Close"><span class="material-icons">close</span></button>`;
+      panel.innerHTML = cam.adjust === 'exposure'
+        ? `<button class="cam-btn" onclick="camSetEv(cam.ev - 1)" title="Decrease exposure"><span class="material-icons">remove</span></button>` +
+          `<input type="range" min="-12" max="12" value="${cam.ev}" oninput="camSetEv(+this.value)" aria-label="Exposure">` +
+          `<button class="cam-btn" onclick="camSetEv(cam.ev + 1)" title="Increase exposure"><span class="material-icons">add</span></button><span id="camEv">EV ${cam.ev}</span>` + close
+        : cam.adjust === 'wb'
+          ? ['Auto', 'Daylight', 'Cloudy', 'Tungsten', 'Fluorescent'].map(option =>
+            `<button class="wb${cam.wb === option ? ' on' : ''}" onclick="cam.wb = '${option}'; camRedrawAdjust()">${option}</button>`).join('') + close
+          : '';
+    }
+    function camRedrawAdjust() { document.getElementById('camAdjust').dataset.tool = ''; camRender(); }
+    function camSetEv(value) {
+      cam.ev = Math.max(-12, Math.min(12, value));
+      document.getElementById('camEv').textContent = 'EV ' + cam.ev;
+      document.querySelector('#camAdjust input').value = cam.ev;
+    }
     function camToggleMic() { cam.mic = !cam.mic; camRender(); }
     function camFlip() { cam.front = !cam.front; camRender(); }
-    // Zoom bar (zoomStops / zoomFraction / zoomAtFraction in StreamerModels.kt): log scale, snaps to a stop
-    // when close, closes 3s after the last change. A sample flagship with an ultra-wide gives 0.5× to 10×;
-    // a phone without one starts at 1×. A stop too close to the one before it on the bar is left out.
-    const CAM_ZOOM_MIN = 0.5, CAM_ZOOM_MAX = 10, ZOOM_INSET = 22, ZOOM_CROSS = 22;
+    // Zoom (zoomStops / zoomFraction / zoomAtFraction in StreamerModels.kt): log scale, snaps to a stop when close.
+    // A sample flagship with an ultra-wide gives 0.5× to 10×; a phone without one starts at 1×.
+    // A stop too close to the one before it on the ruler is left out.
+    const CAM_ZOOM_MIN = 0.5, CAM_ZOOM_MAX = 10;
     const camZoomStops = () => [1, 2, 3, 5, 10].filter(zoom => zoom > CAM_ZOOM_MIN + 0.05 && zoom <= CAM_ZOOM_MAX)
       .reduce((stops, zoom) => camZoomFraction(zoom) - camZoomFraction(stops.at(-1)) < 0.12 ? stops : [...stops, zoom], [CAM_ZOOM_MIN]);
     const camZoomFraction = zoom => Math.min(1, Math.max(0, Math.log(zoom / CAM_ZOOM_MIN) / Math.log(CAM_ZOOM_MAX / CAM_ZOOM_MIN)));
@@ -3347,51 +3404,74 @@
     let camZoomHideTimer = null;
     function camArmZoomHide() {
       clearTimeout(camZoomHideTimer);
-      if (cam.zoomOpen) camZoomHideTimer = setTimeout(() => { cam.zoomOpen = false; camRender(); }, 3000);
+      if (cam.zoomOpen) camZoomHideTimer = setTimeout(() => { cam.zoomOpen = false; camRender(); }, 2000);
     }
-    function camToggleZoomBar() { cam.zoomOpen = !cam.zoomOpen; camRender(); camArmZoomHide(); }
-    function camZoomPointer(event) {
-      const bar = document.getElementById('camZoom');
-      const rect = bar.getBoundingClientRect();
-      const isVertical = bar.classList.contains('vertical');
-      const length = isVertical ? rect.height : rect.width;
-      const along = isVertical ? rect.bottom - event.clientY : event.clientX - rect.left;
+    // Tap a stop on the pill, or drag along it to open the ruler (ZoomControl.kt). The zoom follows how far the finger
+    // travels from where it started, so the picture never jumps; the ruler folds back 2s after the last change.
+    const RULER_LENGTH = { vertical: 220, horizontal: 300 }, RULER_INSET = 20, RULER_CROSS = 52;
+    let camZoomDrag = null;
+    function camZoomDown(event) {
+      event.currentTarget.setPointerCapture(event.pointerId);
+      camZoomDrag = { x: event.clientX, y: event.clientY, fraction: camZoomFraction(cam.zoom), hasMoved: false,
+        stop: event.target.closest('[data-zoom]')?.dataset.zoom };
+    }
+    function camZoomMove(event) {
+      if (!camZoomDrag) return;
+      const bar = event.currentTarget;
+      const isVertical = document.getElementById('cam').classList.contains('landscape');
+      const along = isVertical ? camZoomDrag.y - event.clientY : event.clientX - camZoomDrag.x;
+      if (!camZoomDrag.hasMoved && Math.abs(along) < 4) return;
+      camZoomDrag.hasMoved = true;
+      cam.zoomOpen = true;
       // Ratios, so a scaled phone frame still maps correctly.
-      cam.zoom = camZoomAtFraction((along / length * (isVertical ? 180 : bar.offsetWidth) - ZOOM_INSET) / ((isVertical ? 180 : bar.offsetWidth) - ZOOM_INSET * 2));
+      const scale = bar.getBoundingClientRect().width / bar.offsetWidth || 1;
+      const track = ((isVertical ? RULER_LENGTH.vertical : RULER_LENGTH.horizontal) - RULER_INSET * 2) * scale;
+      cam.zoom = camZoomAtFraction(camZoomDrag.fraction + along / track);
       camRender();
       camArmZoomHide();
     }
-    // Opens from the zoom icon: straight above it in landscape, to its left in portrait.
+    function camZoomUp(event) {
+      const drag = camZoomDrag;
+      camZoomDrag = null;
+      if (!drag || drag.hasMoved) return;
+      const ruler = document.querySelector('.cam-ruler');
+      if (drag.stop) {
+        cam.zoom = +drag.stop;
+      } else if (cam.zoomOpen && ruler) {
+        const rect = ruler.getBoundingClientRect();
+        const isVertical = document.getElementById('cam').classList.contains('landscape');
+        const length = isVertical ? rect.height : rect.width;
+        const inset = RULER_INSET * length / (isVertical ? ruler.offsetHeight : ruler.offsetWidth);
+        cam.zoom = camZoomAtFraction(((isVertical ? rect.bottom - event.clientY : event.clientX - rect.left) - inset) / (length - inset * 2));
+      } else {
+        return;
+      }
+      camRender();
+      camArmZoomHide();
+    }
     function camRenderZoom() {
       const bar = document.getElementById('camZoom');
-      bar.classList.toggle('open', cam.zoomOpen);
-      if (!cam.zoomOpen) return;
       const isVertical = document.getElementById('cam').classList.contains('landscape');
-      bar.classList.toggle('vertical', isVertical);
-      const utils = document.querySelector('.cam-utils');
-      const button = document.getElementById('camZoomBtn');
-      // Portrait centres the rail with translateY(-50%), which offsetTop leaves out.
-      const buttonLeft = utils.offsetLeft + button.offsetLeft;
-      const buttonTop = utils.offsetTop + button.offsetTop - (isVertical ? 0 : utils.offsetHeight / 2);
-      if (isVertical) {
-        bar.style.width = '';
-        bar.style.left = (buttonLeft + button.offsetWidth / 2 - 32) + 'px';
-        bar.style.top = (buttonTop - 12 - 180) + 'px';
+      const stops = camZoomStops();
+      if (!cam.zoomOpen) {
+        // The lit stop is the last one at or below the zoom and shows the exact value; the others only their number.
+        const active = stops.filter(stop => stop <= cam.zoom + 0.05).at(-1) ?? stops[0];
+        bar.innerHTML = '<div class="cam-zoom-pill">' + stops.map(stop =>
+          `<span data-zoom="${stop}" class="${stop === active ? 'on' : ''}" title="Zoom ${formatZoom(stop)}">${stop === active ? formatZoom(cam.zoom) : formatZoom(stop).replace('×', '').replace(/^0/, '')}</span>`).join('') + '</div>';
       } else {
-        const right = buttonLeft - 12, left = Math.max(60, right - 260);
-        bar.style.left = left + 'px';
-        bar.style.width = (right - left) + 'px';
-        bar.style.top = (buttonTop + button.offsetHeight / 2 - 32) + 'px';
+        const length = isVertical ? RULER_LENGTH.vertical : RULER_LENGTH.horizontal;
+        // A mark of the given length and thickness at a point along the ruler; the widest zoom is at the left, or the bottom.
+        const mark = (fraction, size, thickness, color) => {
+          const along = RULER_INSET + (length - RULER_INSET * 2) * fraction - thickness / 2;
+          const across = (RULER_CROSS - size) / 2;
+          return `<i style="${isVertical ? `left:${across}px; top:${length - along - thickness}px; width:${size}px; height:${thickness}px`
+            : `top:${across}px; left:${along}px; height:${size}px; width:${thickness}px`}${color ? '; background:' + color : ''}"></i>`;
+        };
+        bar.innerHTML = `<b class="cam-zoom-value">${formatZoom(cam.zoom).replace('×', ' x')}</b><div class="cam-ruler">` +
+          Array.from({ length: 41 }, (_, index) => mark(index / 40, 8, 1.5)).join('') +
+          stops.map(stop => mark(camZoomFraction(stop), 18, 2, '#fff')).join('') +
+          mark(camZoomFraction(Math.min(CAM_ZOOM_MAX, Math.max(CAM_ZOOM_MIN, cam.zoom))), 30, 3, '#FFC83D') + '</div>';
       }
-      const length = isVertical ? 180 : bar.offsetWidth;
-      const along = zoom => ZOOM_INSET + (length - ZOOM_INSET * 2) * camZoomFraction(zoom);
-      // x/y of a point on the track; the widest zoom is at the left, or the bottom when vertical.
-      const point = zoom => isVertical ? `left:${64 - ZOOM_CROSS}px; top:${length - along(zoom)}px` : `left:${along(zoom)}px; top:${ZOOM_CROSS}px`;
-      document.getElementById('camZoomMarks').innerHTML = camZoomStops().map(stop => {
-        const isCurrent = Math.abs(stop - cam.zoom) < 0.05;
-        const label = isVertical ? `left:2px; top:${length - along(stop) - 8}px` : `left:${along(stop) - 15}px; top:${ZOOM_CROSS + 18}px`;
-        return `<span class="cam-zoom-dot" style="${point(stop)}"></span><span class="cam-zoom-label${isCurrent ? ' on' : ''}" style="${label}">${formatZoom(stop)}</span>`;
-      }).join('') + `<span class="cam-zoom-thumb" style="${point(Math.min(CAM_ZOOM_MAX, Math.max(CAM_ZOOM_MIN, cam.zoom)))}">${formatZoom(cam.zoom)}</span>`;
       bar.setAttribute('aria-valuetext', formatZoom(cam.zoom));
     }
 
@@ -3407,15 +3487,6 @@
       const isLandscape = cs.values.orientation === 'Landscape';
       document.getElementById('mobileDevice').classList.toggle('landscape', isLandscape);
       document.getElementById('cam').classList.toggle('landscape', isLandscape);
-      // Landscape gathers every icon at the bottom right: tag, mic, rotate, tools, settings, details, zoom.
-      const leftIcons = ['camMetaBtn', 'camMicBtn', 'camSettingsBtn', 'camDetailsBtn'].map(id => document.getElementById(id));
-      const [meta, mic, settingsBtn, details] = leftIcons;
-      if (isLandscape) {
-        document.querySelector('.cam-utils').prepend(meta, mic);
-        document.getElementById('camZoomBtn').before(settingsBtn, details);
-      } else {
-        document.querySelector('.cam-left').append(...leftIcons);
-      }
       camRenderZoom();
     }
 
