@@ -1559,8 +1559,27 @@
     .cs-head { display: flex; align-items: center; gap: 6px; padding: 10px 6px; font-size: 17px; font-weight: 700; }
     .cs-head button { border: 0; background: none; color: inherit; cursor: pointer; padding: 6px; display: flex; }
     .cs-body { flex: 1; overflow-y: auto; padding: 0 16px 16px; }
-    .cs-section { color: #3B82F6; text-transform: uppercase; font-size: 11px; font-weight: 800; letter-spacing: 0.06em; margin: 18px 0 2px; }
-    .cs-row { width: 100%; display: flex; align-items: center; gap: 10px; padding: 12px 0; border: 0; border-bottom: 1px solid var(--border-device);
+    /* One page of cards (StreamerSettingsScreen.kt), tinted like the home panels; choices are blue chips in place. */
+    .cs-body { display: flex; flex-direction: column; gap: 16px; }
+    /* The page scrolls, so its cards and buttons keep their own height instead of shrinking to fit. */
+    .cs-body > * { flex-shrink: 0; }
+    .cs-group { display: flex; flex-direction: column; gap: 14px; padding: 16px; border-radius: 24px; background: rgba(59,130,246,0.06); border: 1px solid rgba(59,130,246,0.14); }
+    .cs-group-head { display: flex; align-items: center; gap: 12px; font-size: 16px; font-weight: 700; }
+    .cs-group-head .material-icons { width: 36px; height: 36px; border-radius: 50%; background: #3B82F6; color: #fff; font-size: 20px; display: flex; align-items: center; justify-content: center; }
+    .cs-chips { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+    .cs-chips button { height: 36px; padding: 0 14px; border-radius: 18px; border: 1px solid var(--border-device); background: none; color: inherit; font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .cs-chips button.on { background: #3B82F6; border-color: #3B82F6; color: #fff; }
+    .cs-inline-stepper { display: flex; align-items: center; }
+    .cs-inline-stepper span { width: 88px; text-align: center; font-weight: 600; font-size: 14px; }
+    .cs-inline-stepper button { border: 0; background: none; color: inherit; cursor: pointer; display: flex; padding: 8px; }
+    .cs-inline-stepper button:disabled { opacity: 0.35; cursor: default; }
+    .cs-account { display: flex; align-items: center; gap: 12px; }
+    .cs-avatar { width: 48px; height: 48px; border-radius: 50%; background: linear-gradient(90deg, #D300EA, #3031CB); color: #fff; font-weight: 700; display: flex; align-items: center; justify-content: center; }
+    .cs-signout { width: 100%; height: 44px; border-radius: 22px; border: 1px solid var(--border-device); background: none; color: #EF4444; font: inherit; font-weight: 600; cursor: pointer;
+      display: flex; align-items: center; justify-content: center; gap: 8px; }
+    .cs-signout .material-icons { font-size: 18px; }
+    .cs-footer { text-align: center; font-size: 11.5px; color: var(--text-muted); line-height: 1.5; }
+    .cs-row { width: 100%; display: flex; align-items: center; gap: 10px; padding: 0; border: 0;
       background: none; color: inherit; text-align: left; font: inherit; cursor: pointer; }
     .cs-row:disabled { opacity: 0.5; cursor: default; }
     .cs-row.info { cursor: default; }
@@ -1577,11 +1596,6 @@
     .cs-dialog.open { display: flex; }
     .cs-card { width: 100%; max-width: 320px; border-radius: 20px; padding: 20px; background: var(--bg-device-surface); }
     .cs-card h4 { font-size: 17px; margin-bottom: 10px; }
-    .cs-option { width: 100%; display: flex; align-items: center; gap: 12px; padding: 10px 0; border: 0; background: none; color: inherit; font: inherit; cursor: pointer; }
-    .cs-option .material-icons { color: var(--text-muted); }
-    .cs-option.selected .material-icons { color: #3B82F6; }
-    .cs-stepper { display: flex; align-items: center; justify-content: space-between; font-size: 22px; font-weight: 600; }
-    .cs-stepper button { border: 0; background: none; color: inherit; cursor: pointer; display: flex; padding: 6px; }
     .cs-card input { width: 100%; padding: 10px 12px; border-radius: 10px; border: 1px solid var(--border-device); background: transparent; color: inherit; font: inherit; }
     .cs-actions { display: flex; justify-content: flex-end; gap: 6px; margin-top: 14px; }
     .cs-actions button { border: 0; background: none; color: #3B82F6; font: inherit; font-weight: 700; cursor: pointer; padding: 8px 10px; }
@@ -2326,7 +2340,7 @@
             <div class="cs" id="camSettings">
               <div class="cs-head">
                 <button onclick="csBack()" title="Back"><span class="material-icons">arrow_back</span></button>
-                <span id="csTitle">Settings</span>
+                <span>Settings</span>
               </div>
               <div class="cs-body" id="csBody"></div>
               <div class="cs-dialog" id="csDialog" onclick="if (event.target === this) csCloseDialog()"><div class="cs-card" id="csCard"></div></div>
@@ -3805,9 +3819,7 @@
 
     // ── Streamer settings (mirrors StreamerSettingsScreen.kt) ──
     const cs = {
-      page: 'list',
       dialogRow: null,
-      dialogValue: null,
       values: {
         format: '1080p 30', delay: '2 sec', cbr: false, channels: 'Stereo', ifb: true, ifbLow: true, ifbVolume: 10,
         promptOnStart: false, metaEnabled: true, slugline: '', crewName: '', storyId: '', usageTerms: '', provider: '', reporter: '', keywords: '', comments: '',
@@ -3817,166 +3829,135 @@
       }
     };
     const CS_NOT_ACTIVE = { note: 'Not active yet' };
-    const csSection = title => ({ type: 'section', title });
-    const csNav = (title, page, extra) => ({ type: 'nav', title, page, ...extra });
-    const csChoice = (title, key, options, extra) => ({ type: 'choice', title, key, options, ...extra });
+    // Options are [value, label] pairs; a plain value is its own label.
+    const csPairs = options => options.map(option => Array.isArray(option) ? option : [option, option]);
+    const csChoice = (title, key, options, extra) => ({ type: 'choice', title, key, options: csPairs(options), ...extra });
     const csSwitch = (title, key, extra) => ({ type: 'switch', title, key, ...extra });
     const csNumber = (title, key, min, max, step, unit, extra) => ({ type: 'number', title, key, min, max, step, unit, ...extra });
     const csText = (title, key, extra) => ({ type: 'text', title, key, ...extra });
     const csInfo = (title, value) => ({ type: 'info', title, value });
+    const csNav = (title, extra) => ({ type: 'nav', title, ...extra });
     const CS_BANDWIDTH = [500, 20000, 500, 'kbps'];
     const CS_METADATA_FIELDS = [['Slugline', 'slugline'], ['Crew name', 'crewName'], ['Story ID', 'storyId'], ['Usage terms', 'usageTerms'],
       ['Provider', 'provider'], ['Reporter', 'reporter'], ['Keywords', 'keywords'], ['Comments', 'comments']];
 
-    const CS_PAGES = {
-      list: { title: 'Settings', rows: () => ['session', 'metadata', 'network', 'advanced', 'account', 'about'].map(page => csNav(CS_PAGES[page].title, page)) },
-      session: { title: 'Session Settings', back: 'list', rows: () => [
-        csSection('Video'),
-        csChoice('Video format', 'format', CAM_FORMATS.map(option => option.name),
-          { lock: true, note: CAM_FORMATS.find(option => option.name === cs.values.format).isNative ? null : 'Not active yet' }),
-        csChoice('Video delay', 'delay', ['2 sec', '3 sec', '4 sec'], { lock: true }),
-        csSwitch('CBR encoding', 'cbr', { lock: true, ...CS_NOT_ACTIVE }),
-        csSection('Audio'),
-        csChoice('Channels', 'channels', ['Mono', 'Stereo'], { lock: true, ...CS_NOT_ACTIVE }),
-        csSection('Return audio (IFB)'),
-        csSwitch('IFB', 'ifb', CS_NOT_ACTIVE),
-        csSwitch('IFB low delay', 'ifbLow', CS_NOT_ACTIVE),
-        csNumber('IFB volume', 'ifbVolume', 0, 10, 1, '', CS_NOT_ACTIVE)
-      ] },
-      metadata: { title: 'Metadata', back: 'list', rows: () => [
-        csSwitch('Ask before going live', 'promptOnStart', { value: 'Show this form each time you tap Go live' }),
-        csSwitch('Send with the live stream', 'metaEnabled'),
-        csSection('Fields'),
-        { type: 'html', html: meta.pageEditing
-          ? metaFormHtml('csMeta') + '<div class="meta-buttons"><button onclick="csMetaCancel()">Cancel</button><button class="primary" onclick="csMetaSave()">Save</button></div>'
-          : metaSummaryHtml() + '<div class="meta-buttons" style="justify-content:flex-start"><button class="outline" onclick="csMetaEdit()">Edit</button></div>' }
-      ] },
-      network: { title: 'Network Settings', back: 'list', rows: () => [
-        csSection('Connections'),
-        csSwitch('Wi-Fi', 'wifi'), csSwitch('Cellular', 'cellular'), csSwitch('Wired', 'wired'),
-        csSwitch('Bonding', 'bonding', { value: 'Combine connections into one stream', ...CS_NOT_ACTIVE }),
-        csSection('Bandwidth limits'),
-        csNumber('Total', 'totalBandwidth', ...CS_BANDWIDTH, CS_NOT_ACTIVE),
-        csNumber('Cellular', 'cellularBandwidth', ...CS_BANDWIDTH, CS_NOT_ACTIVE),
-        csNumber('Wi-Fi', 'wifiBandwidth', ...CS_BANDWIDTH, CS_NOT_ACTIVE),
-        csSection('Other'),
-        csChoice('Location sharing', 'location', ['Never', 'Always', 'While app is running'], CS_NOT_ACTIVE),
-        csText('Server', 'server', { empty: 'Default', ...CS_NOT_ACTIVE })
-      ] },
-      advanced: { title: 'Advanced', back: 'list', rows: () => [
-        csSection('Preview'),
-        csChoice('Orientation', 'orientation', ['Auto', 'Portrait', 'Landscape'], { lock: true }),
-        csChoice('Mirroring', 'mirroring', ['Off', 'Horizontally', 'Vertically']),
-        csSwitch('Double tap hides controls', 'doubleTap'),
-        csSection('Recordings'),
-        csText('File prefix', 'prefix', CS_NOT_ACTIVE),
-        csChoice('Time in file names', 'filenameTime', ['Local time', 'UTC+0'], CS_NOT_ACTIVE),
-        csSection('Device'),
-        csSwitch('Audio pass-through', 'passThrough', CS_NOT_ACTIVE),
-        csSwitch('Tally light', 'tally', { value: 'Flash light while live', ...CS_NOT_ACTIVE }),
-        csNav('System logs', 'logs')
-      ] },
-      logs: { title: 'System Logs', back: 'advanced', rows: () => [
-        csChoice('Severity', 'severity', ['Error', 'Warning', 'Info', 'Verbose'], CS_NOT_ACTIVE),
-        csNav('Clear logs', null, CS_NOT_ACTIVE),
-        csNav('Report an issue', null, CS_NOT_ACTIVE)
-      ] },
-      account: { title: 'Account & Plan', back: 'list', rows: () => [
-        csSection('Account'), csInfo('Signed in as', document.getElementById('loginEmail').value || 'Not signed in'),
-        csSection('Plan'), csInfo('Streaming time', camLeftText(cam.left)),
-        csSection('This device'), csInfo('Device', 'Simulator')
-      ] },
-      about: { title: 'About', back: 'list', rows: () => [
-        csInfo('App', 'CloudReel Streamer'), csInfo('Version', '1.0.0'), csInfo('Device ID', 'simulator')
-      ] }
+    // Every setting on one page of cards, each one tap away; settings the backend can't use yet keep a note.
+    const CS_CARDS = () => {
+      const format = CAM_FORMATS.find(option => option.name === cs.values.format);
+      return [
+        ['Account', 'account_circle', [{ type: 'html', html:
+          `<div class="cs-account"><span class="cs-avatar">DR</span><span class="cs-text"><span class="cs-title" style="font-weight:600">Demo Reporter</span>` +
+          `<span class="cs-value">${csEscape(document.getElementById('loginEmail').value || 'reporter@cloudreel.test')}</span></span></div>` },
+          csInfo('Workspaces', "Zynora's Workspace, CloudReel News Desk"), csInfo('Streaming time', camLeftText(cam.left))]],
+        ['Stream', 'videocam', [
+          { type: 'size', title: 'Size', options: csPairs(CAM_SIZES), selected: format.label },
+          csChoice('Frame rate', 'format', CAM_FORMATS.filter(option => option.label === format.label).map(option => [option.name, option.rate]),
+            { note: camFormatDescription(format) }),
+          csChoice('Stream delay', 'delay', [['2 sec', '2s'], ['3 sec', '3s'], ['4 sec', '4s']]),
+          csChoice('Codec', 'codec', ['H.265', 'H.264']),
+          csSwitch('Constant bitrate (CBR)', 'cbr', CS_NOT_ACTIVE),
+          csChoice('Audio channels', 'channels', ['Mono', 'Stereo'], CS_NOT_ACTIVE)]],
+        ['Camera', 'photo_camera', [
+          csChoice('Orientation', 'orientation', [['Auto', 'Auto'], ['Landscape', '16:9'], ['Portrait', '9:16']]),
+          csChoice('Mirror preview', 'mirroring', [['Off', 'Off'], ['Horizontally', 'Horizontal'], ['Vertically', 'Vertical']]),
+          csSwitch('Double-tap to hide controls', 'doubleTap')]],
+        ['Metadata', 'sell', [
+          csSwitch('Ask before going live', 'promptOnStart', { value: 'Show this form each time you tap Go live' }),
+          csSwitch('Send with the live stream', 'metaEnabled'),
+          { type: 'html', html: meta.pageEditing
+            ? metaFormHtml('csMeta') + '<div class="meta-buttons"><button onclick="csMetaCancel()">Cancel</button><button class="primary" onclick="csMetaSave()">Save</button></div>'
+            : metaSummaryHtml() + '<div class="meta-buttons" style="justify-content:flex-start"><button class="outline" onclick="csMetaEdit()">Edit</button></div>' }]],
+        ['Connections', 'wifi', [
+          csSwitch('Wi-Fi', 'wifi'), csSwitch('Cellular', 'cellular'), csSwitch('Wired', 'wired'),
+          csSwitch('Bonding', 'bonding', { value: 'Combine connections into one stream', ...CS_NOT_ACTIVE }),
+          csNumber('Total bandwidth', 'totalBandwidth', ...CS_BANDWIDTH, CS_NOT_ACTIVE),
+          csNumber('Cellular bandwidth', 'cellularBandwidth', ...CS_BANDWIDTH, CS_NOT_ACTIVE),
+          csNumber('Wi-Fi bandwidth', 'wifiBandwidth', ...CS_BANDWIDTH, CS_NOT_ACTIVE)]],
+        ['Return audio (IFB)', 'headphones', [
+          csSwitch('Return audio', 'ifb', { value: 'Hear the studio in your earpiece', ...CS_NOT_ACTIVE }),
+          csSwitch('Low delay', 'ifbLow', CS_NOT_ACTIVE),
+          csNumber('Volume', 'ifbVolume', 0, 10, 1, '', CS_NOT_ACTIVE)]],
+        ['Recordings', 'video_library', [
+          csText('File prefix', 'prefix', CS_NOT_ACTIVE),
+          csChoice('Time in file names', 'filenameTime', ['Local time', 'UTC+0'], CS_NOT_ACTIVE)]],
+        ['Device', 'tune', [
+          csChoice('Share location', 'location', ['Never', 'Always', 'While app is running'], CS_NOT_ACTIVE),
+          csText('Server', 'server', { empty: 'Default', ...CS_NOT_ACTIVE }),
+          csSwitch('Audio pass-through', 'passThrough', CS_NOT_ACTIVE),
+          csSwitch('Tally light', 'tally', { value: 'Flash the light while live', ...CS_NOT_ACTIVE })]],
+        ['Logs', 'terminal', [
+          csChoice('Detail', 'severity', ['Error', 'Warning', 'Info', 'Verbose'], CS_NOT_ACTIVE),
+          csNav('Clear logs', CS_NOT_ACTIVE), csNav('Report an issue', CS_NOT_ACTIVE)]]
+      ];
     };
+    // All rows in page order, so a tap can name its row by index.
+    const csAllRows = () => CS_CARDS().flatMap(([, , rows]) => rows);
 
     function csEscape(text) { return String(text).replace(/[&<>"']/g, ch => `&#${ch.charCodeAt(0)};`); }
 
-    function csRowValue(row) {
-      const value = cs.values[row.key];
-      if (row.type === 'number') return `${value} ${row.unit}`.trim();
-      if (row.type === 'text') return value || row.empty || 'Not set';
-      return row.type === 'choice' ? value : row.value;
+    function csRenderRow(row, index) {
+      if (row.type === 'html') return row.html;
+      const value = row.type === 'text' ? (cs.values[row.key] || row.empty || 'Not set') : row.type === 'info' ? row.value : row.value;
+      const labels = `<span class="cs-text"><span class="cs-title">${row.title}</span>` +
+        (value ? `<span class="cs-value">${csEscape(value)}</span>` : '') + (row.note ? `<span class="cs-note">${row.note}</span>` : '') + '</span>';
+      if (row.type === 'info') return `<div class="cs-row info">${labels}</div>`;
+      if (row.type === 'choice' || row.type === 'size') {
+        const selected = row.type === 'size' ? row.selected : cs.values[row.key];
+        return `<div>${labels}<div class="cs-chips">` + row.options.map(([option, text], optionIndex) =>
+          `<button class="${option === selected ? 'on' : ''}" onclick="csPick(${index}, ${optionIndex})" title="${row.title} ${text}">${text}</button>`).join('') + '</div></div>';
+      }
+      if (row.type === 'switch') return `<button class="cs-row" onclick="csSet('${row.key}', !cs.values['${row.key}'])">${labels}<span class="cs-switch${cs.values[row.key] ? ' on' : ''}"></span></button>`;
+      if (row.type === 'number') {
+        const current = cs.values[row.key];
+        return `<div class="cs-row info">${labels}<span class="cs-inline-stepper">` +
+          `<button ${current <= row.min ? 'disabled' : ''} onclick="csStepRow(${index}, -1)" title="Decrease ${row.title}"><span class="material-icons">remove</span></button>` +
+          `<span>${`${current} ${row.unit}`.trim()}</span>` +
+          `<button ${current >= row.max ? 'disabled' : ''} onclick="csStepRow(${index}, 1)" title="Increase ${row.title}"><span class="material-icons">add</span></button></span></div>`;
+      }
+      // Text opens a small dialog; the log actions have nothing to do until logging lands.
+      return `<button class="cs-row" onclick="${row.type === 'text' ? `csEditText(${index})` : ''}">${labels}<span class="material-icons">chevron_right</span></button>`;
     }
 
     function csRenderPage() {
-      const page = CS_PAGES[cs.page];
-      document.getElementById('csTitle').textContent = page.title;
-      document.getElementById('csBody').innerHTML = page.rows().map((row, index) => {
-        if (row.type === 'section') return `<div class="cs-section">${row.title}</div>`;
-        if (row.type === 'html') return row.html;
-        const isLocked = row.lock && cam.phase !== 'idle';
-        const value = csRowValue(row);
-        const note = isLocked ? 'Can\'t change while live' : row.note;
-        const text = `<span class="cs-text"><span class="cs-title">${row.title}</span>` +
-          (value ? `<span class="cs-value">${csEscape(value)}</span>` : '') +
-          (note ? `<span class="cs-note">${note}</span>` : '') + '</span>';
-        if (row.type === 'info') return `<div class="cs-row info">${text}</div>`;
-        const end = row.type === 'switch' ? `<span class="cs-switch${cs.values[row.key] ? ' on' : ''}"></span>`
-          : `<span class="material-icons">${isLocked ? 'lock' : 'chevron_right'}</span>`;
-        return `<button class="cs-row" ${isLocked || row.disabled ? 'disabled' : ''} onclick="csTap(${index})">${text}${end}</button>`;
-      }).join('');
+      let index = 0;
+      document.getElementById('csBody').innerHTML = CS_CARDS().map(([title, icon, rows]) =>
+        `<div class="cs-group"><div class="cs-group-head"><span class="material-icons">${icon}</span>${title}</div>` +
+        rows.map(row => csRenderRow(row, index++)).join('') + '</div>').join('') +
+        `<button class="cs-signout" onclick="openSessionModal('signOutModal')"><span class="material-icons">logout</span>Sign out</button>` +
+        '<div class="cs-footer">CloudReel Streamer 1.0.0<br>Simulator · Device ID simulator</div>';
     }
 
-    function csOpen(page) {
-      if (page === 'metadata' && cs.page !== 'metadata') { metaStartDraft(); meta.pageEditing = !hasMetadata(); }
-      cs.page = page;
+    // From the More grid's Settings tile; the metadata card opens in edit mode when nothing is filled in yet.
+    function csOpen() {
+      metaStartDraft();
+      meta.pageEditing = !hasMetadata();
       csRenderPage();
       document.getElementById('camSettings').classList.add('open');
     }
+    function csBack() { document.getElementById('camSettings').classList.remove('open'); }
 
-    function csBack() {
-      const back = CS_PAGES[cs.page].back;
-      if (back) csOpen(back);
-      else document.getElementById('camSettings').classList.remove('open');
+    function csPick(index, optionIndex) {
+      const row = csAllRows()[index];
+      const [value] = row.options[optionIndex];
+      if (row.type === 'size') camSelectSize(value); else csSet(row.key, value);
     }
-
-    function csTap(index) {
-      const row = CS_PAGES[cs.page].rows()[index];
-      if (row.type === 'nav') return row.page && csOpen(row.page);
-      if (row.type === 'switch') return csSet(row.key, !cs.values[row.key]);
+    function csStepRow(index, direction) {
+      const row = csAllRows()[index];
+      csSet(row.key, Math.min(row.max, Math.max(row.min, cs.values[row.key] + direction * row.step)));
+    }
+    function csEditText(index) {
+      const row = csAllRows()[index];
       cs.dialogRow = row;
-      cs.dialogValue = cs.values[row.key];
-      csRenderDialog();
+      document.getElementById('csCard').innerHTML = `<h4>${row.title}</h4><input id="csInput" value="${csEscape(cs.values[row.key])}">` +
+        '<div class="cs-actions"><button onclick="csCloseDialog()">Cancel</button><button onclick="csConfirmDialog()">OK</button></div>';
       document.getElementById('csDialog').classList.add('open');
+      document.getElementById('csInput').focus();
     }
-
-    function csRenderDialog() {
-      const row = cs.dialogRow;
-      const actions = (withOk) => `<div class="cs-actions"><button onclick="csCloseDialog()">Cancel</button>${withOk ? '<button onclick="csConfirmDialog()">OK</button>' : ''}</div>`;
-      let body = '';
-      if (row.type === 'choice') {
-        body = row.options.map((option, index) => {
-          const isSelected = option === cs.dialogValue;
-          return `<button class="cs-option${isSelected ? ' selected' : ''}" onclick="csSet('${row.key}', ${JSON.stringify(option).replace(/"/g, '&quot;')}); csCloseDialog()">` +
-            `<span class="material-icons">${isSelected ? 'radio_button_checked' : 'radio_button_unchecked'}</span>${option}</button>`;
-        }).join('') + actions(false);
-      } else if (row.type === 'number') {
-        body = `<div class="cs-stepper"><button onclick="csStep(-1)" title="Decrease"><span class="material-icons">remove</span></button>` +
-          `<span>${`${cs.dialogValue} ${row.unit}`.trim()}</span><button onclick="csStep(1)" title="Increase"><span class="material-icons">add</span></button></div>` + actions(true);
-      } else {
-        body = `<input id="csInput" value="${csEscape(cs.dialogValue)}">` + actions(true);
-      }
-      document.getElementById('csCard').innerHTML = `<h4>${row.title}</h4>${body}`;
-      if (row.type === 'text') document.getElementById('csInput').focus();
-    }
-
-    function csStep(direction) {
-      const row = cs.dialogRow;
-      cs.dialogValue = Math.min(row.max, Math.max(row.min, cs.dialogValue + direction * row.step));
-      csRenderDialog();
-    }
-
     function csConfirmDialog() {
       const row = cs.dialogRow;
-      if (row.type === 'text') {
-        let typed = document.getElementById('csInput').value.trim();
-        if (row.key === 'prefix') typed = typed.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 12) || cs.values.prefix;
-        csSet(row.key, typed);
-      } else {
-        csSet(row.key, cs.dialogValue);
-      }
+      let typed = document.getElementById('csInput').value.trim();
+      if (row.key === 'prefix') typed = typed.replace(/[^A-Za-z0-9_-]/g, '').slice(0, 12) || cs.values.prefix;
+      csSet(row.key, typed);
       csCloseDialog();
     }
 
