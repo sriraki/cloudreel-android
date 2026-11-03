@@ -618,28 +618,19 @@
     .cat-card { position: relative; height: 230px; border-radius: 22px; overflow: hidden; background: #0E1218; color: #fff;
       cursor: pointer; margin-bottom: 18px; transition: transform 0.15s; }
     .cat-card:active { filter: brightness(0.85); }
-    /* Home (CategorySelectionScreen.kt): app-sized title, cards share the screen height (min 200px). */
-    .join-card { background: var(--cr-gradient); color: #fff; border-radius: 24px; padding: 16px; cursor: pointer; margin: 8px 0 12px; }
-    .join-card:active { filter: brightness(0.9); }
-    .join-card-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 12px; }
-    .avatar-stack { display: flex; }
-    .avatar-stack img { width: 40px; height: 40px; border-radius: 50%; object-fit: cover; border: 2px solid #fff; }
-    .avatar-stack img + img { margin-left: -12px; }
-    .join-card h3 { font-size: 24px; font-weight: 700; margin: 0 0 4px; }
-    .join-card p { font-size: 14px; line-height: 1.45; opacity: 0.9; margin: 0 0 12px; }
-    .join-card-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 20px; border: none; border-radius: 20px; background: #fff; color: #3031CB; font-size: 14px; font-weight: 600; cursor: pointer; }
-    /* Home fits one screen (CategorySelectionScreen.kt): the Report live photo takes the leftover height. */
+    /* Home (CategorySelectionScreen.kt): two sections of buttons, each with one filled main action. */
     #screen-category-selection.active-screen { overflow: hidden; }
-    .report-card { flex: 1; min-height: 150px; position: relative; border-radius: 24px; overflow: hidden; cursor: pointer; display: flex; align-items: flex-end; color: #fff;
-      background: linear-gradient(90deg, rgba(0,0,0,0.85) 0%, transparent 75%), url('images/category/category_broadcast.webp') center / cover no-repeat; }
-    .report-card:active { filter: brightness(0.9); }
-    .report-text { width: 66%; padding: 16px; }
-    .report-card .report-chip { position: absolute; top: 12px; right: 12px; }
-    .report-chip { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 12px; background: rgba(0,0,0,0.45); font-size: 12px; font-weight: 500; white-space: nowrap; }
-    .report-chip i { width: 8px; height: 8px; border-radius: 50%; background: var(--cr-success); }
-    .report-card h3 { font-size: 24px; font-weight: 700; margin: 0 0 2px; }
-    .report-card p { font-size: 14px; line-height: 1.45; opacity: 0.9; margin: 0 0 12px; }
-    .report-btn { display: inline-flex; align-items: center; gap: 6px; height: 40px; padding: 0 20px; border: none; border-radius: 20px; background: var(--cr-error); color: #fff; font-size: 14px; font-weight: 600; cursor: pointer; }
+    .home-section { display: flex; align-items: center; gap: 8px; margin: 16px 4px 12px; }
+    .home-section h3 { flex: 1; margin: 0; font-size: 22px; font-weight: 700; color: var(--text-main); }
+    .home-net { display: inline-flex; align-items: center; gap: 6px; font-size: 12px; font-weight: 500; color: var(--text-muted); white-space: nowrap; }
+    .home-net i { width: 8px; height: 8px; border-radius: 50%; background: var(--cr-success); }
+    .home-cta { width: 100%; height: 54px; margin-bottom: 12px; border-radius: 27px; border: 1px solid var(--border-device); background: var(--bg-device-subtle); color: var(--text-main);
+      display: flex; align-items: center; justify-content: center; gap: 8px; font: inherit; font-size: 16px; font-weight: 600; letter-spacing: 0.2px; cursor: pointer; }
+    .home-cta:active { filter: brightness(0.9); }
+    .home-cta .material-icons { font-size: 20px; }
+    .home-cta .material-icons:last-child { font-size: 22px; margin-left: -2px; }
+    .home-cta.primary { border: 0; background: var(--cr-gradient); color: #fff; }
+    .home-cta.live { border: 0; background: var(--cr-error); color: #fff; }
     .cat-preview { position: absolute; inset: 0; }
     .cat-debate { display: grid; grid-template-columns: 1.6fr 1fr; grid-template-rows: 1fr 1fr; gap: 6px; padding: 10px; }
     .cat-tile { position: relative; border-radius: 12px; overflow: hidden; background: #151A23; }
@@ -1587,7 +1578,7 @@
     .meta-buttons button.primary { background: #3B82F6; color: #fff; }
     .meta-buttons button.outline { border: 1px solid var(--border-device); }
     .cam-hint.show { opacity: 1; }
-    /* Android Toast stand-in, e.g. "Saved to Download/CloudReel/Report live". */
+    /* Android Toast stand-in, e.g. "Saved to Download/CloudReel/Stream live". */
     .cam-toast { position: absolute; left: 50%; bottom: 120px; z-index: 6; transform: translateX(-50%); max-width: 80%; padding: 8px 14px; border-radius: 18px;
       background: rgba(50,50,50,0.92); color: #fff; font-size: 12.5px; text-align: center; opacity: 0; transition: opacity 0.3s; pointer-events: none; }
     .cam-toast.show { opacity: 1; }
@@ -1704,33 +1695,13 @@
 
         <!-- 2. CATEGORY SELECTION SCREEN (NEW ROOT POST-SPLASH) -->
         <div class="app-screen active-screen" id="screen-category-selection">
-          <!-- Mirrors CategorySelectionScreen.kt: a front door for viewers (join) and reporters (go live), then Browse. -->
-          <div class="join-card" role="button" onclick="openSessionEntry('participant')" data-a11y-role="Join a debate (Button)">
-            <div class="join-card-top">
-              <div class="avatar-stack">
-                <img src="images/category/category_host.webp" alt=""><img src="images/category/category_guest_1.webp" alt=""><img src="images/category/category_guest_2.webp" alt="">
-              </div>
-              <div class="cat-live" style="position:static; background:rgba(0,0,0,0.25);"><i></i>LIVE</div>
-            </div>
-            <h3>Join a debate</h3>
-            <p>Enter your channel's code and take part live.</p>
-            <button class="join-card-btn" onclick="event.stopPropagation(); openSessionEntry('participant')">Enter code <span class="material-icons" style="font-size:18px;">arrow_forward</span></button>
-          </div>
-
-          <div class="report-card" role="button" onclick="onStreamerTapped()" data-a11y-role="Report live (Button)">
-            <span class="report-chip"><i></i>Network ready · 143 Mbps</span>
-            <div class="report-text">
-              <h3>Report live</h3>
-              <p>Stream live from anywhere.</p>
-              <button class="report-btn" onclick="event.stopPropagation(); onStreamerTapped()"><span class="material-icons" style="font-size:18px;">videocam</span>Go live</button>
-            </div>
-          </div>
-
-          <p class="list-section-title">More ways to take part</p>
-          <div class="list-group">
-            <div class="list-row" style="--accent:var(--cr-purple);" onclick="openSessionEntry('host')" role="button"><div class="list-icon"><span class="material-icons">podcasts</span></div><div class="list-text"><div class="list-title">Start as Host</div><div class="list-sub">Create a session and invite guests.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
-            <div class="list-row" style="--accent:var(--cr-indigo);" onclick="navigateTo('relay')" role="button"><div class="list-icon"><span class="material-icons">cell_tower</span></div><div class="list-text"><div class="list-title">Share mobile data</div><div class="list-sub">Give a reporter's live stream an extra connection.</div></div><span class="material-icons list-chevron">chevron_right</span></div>
-          </div>
+          <!-- Mirrors CategorySelectionScreen.kt: CloudReel (join a meeting, host) and Live Stream (stream live, share mobile data). -->
+          <div class="home-section"><h3>CloudReel</h3></div>
+          <button class="home-cta primary" onclick="openSessionEntry('participant')"><span class="material-icons">groups</span>Join meeting<span class="material-icons">chevron_right</span></button>
+          <button class="home-cta" onclick="openSessionEntry('host')"><span class="material-icons">podcasts</span>Start as Host<span class="material-icons">chevron_right</span></button>
+          <div class="home-section" style="margin-top: 28px;"><h3>Live Stream</h3><span class="home-net"><i></i>Network ready · 143 Mbps</span></div>
+          <button class="home-cta live" onclick="onStreamerTapped()"><span class="material-icons">videocam</span>Stream live<span class="material-icons">chevron_right</span></button>
+          <button class="home-cta" onclick="navigateTo('relay')"><span class="material-icons">cell_tower</span>Share mobile data<span class="material-icons">chevron_right</span></button>
         </div>
 
         <!-- 6. HOME SCREEN (LEGACY 4 OPTIONS VIEW) -->
@@ -2657,7 +2628,7 @@
       const isHome = screenId === 'category-selection' || screenId === 'home';
       header.classList.toggle('is-home', isHome);
       document.getElementById('headerTitle').textContent = screenId === 'session-entry'
-        ? (currentSessionMode === 'host' ? 'Start as Host' : 'Join a Session')
+        ? (currentSessionMode === 'host' ? 'Start as Host' : 'Join meeting')
         : (SCREEN_TITLES[screenId] || '');
 
       if (screenId === 'splash' || screenId === 'active-session' || screenId === 'streamer' || screenId === 'left-session') {
@@ -3237,7 +3208,7 @@
         if (wasLive && !isConfirmed) { openSessionModal('stopBroadcastModal'); return; }
         // Stop keeps the camera open to go live again; the back arrow returns to the setup page.
         // Every broadcast is also saved on the phone; Record mode saves its own clips.
-        recSave(wasLive ? 'Report live' : 'Recordings', cam.elapsed);
+        recSave(wasLive ? 'Stream live' : 'Recordings', cam.elapsed);
         camStop();
         return;
       }
@@ -3711,9 +3682,9 @@
     }
 
     // ── Recordings (RecordingFolder / RecordingsScreen.kt): files under Download/CloudReel, a tab per folder ──
-    const REC_FOLDERS = ['Report live', 'Host sessions', 'Joined meetings', 'Recordings'];
+    const REC_FOLDERS = ['Stream live', 'Host sessions', 'Joined meetings', 'Recordings'];
     const recordings = [];
-    let recFolder = 'Report live';
+    let recFolder = 'Stream live';
     function recSave(folder, seconds) {
       const now = new Date();
       const stamp = now.getFullYear() + [now.getMonth() + 1, now.getDate()].map(n => String(n).padStart(2, '0')).join('') + '_' +
