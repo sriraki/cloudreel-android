@@ -1324,7 +1324,8 @@
     .cam.landscape .cam-scrim.bottom { height: 120px; }
     .cam-btn.plain { background: transparent; }
     .cam-btn.on { background: rgba(255,200,61,0.85); color: #000; text-shadow: none; }
-    .cam-top { position: absolute; top: 12px; left: 12px; display: flex; align-items: center; }
+    /* The top row spans the width: back and status on the left, the format pushed right (beside the status in landscape). */
+    .cam-top { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; align-items: center; }
     .cam-top .cam-btn .material-icons { font-size: 24px; }
     .cam-status { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border: 0; border-radius: 16px; background: none; color: #fff;
       font: inherit; white-space: nowrap; cursor: default; }
@@ -1332,7 +1333,7 @@
     .cam-status b { font-size: 13px; padding: 3px 0; border-radius: 6px; }
     .cam-status b.badge { padding: 3px 8px; text-shadow: none; }
     .cam-status span { font-size: 12px; opacity: 0.85; }
-    .cam-format { position: absolute; top: 12px; right: 12px; width: 56px; height: 48px; display: flex; flex-direction: column; align-items: center;
+    .cam-format { margin-left: auto; width: 56px; height: 48px; display: flex; flex-direction: column; align-items: center;
       justify-content: center; border: 0; border-radius: 12px; background: none; color: #fff; font: inherit; font-size: 12px; font-weight: 700; line-height: 1.25; cursor: pointer; }
     .cam-format.on { color: #FFC83D; }
     /* Stream settings (StreamSettingsPanel.kt): one row per setting with the choices in columns, and a line describing the format. */
@@ -1368,8 +1369,8 @@
     .cam-more-stack { grid-area: more; position: relative; width: 48px; height: 48px; }
     .cam-more-stack > div { position: absolute; left: 0; bottom: 0; display: flex; flex-direction: column; }
     .cam-more-stack > div > .cam-btn { margin: 2px 4px; }
-    .cam.panel-open #camDetailsBtn, .cam.panel-open #camRotateBtn, .cam.panel-open #camSettingsBtn { display: none; }
-    .cam:not(.landscape).ruler-open #camMicBtn, .cam:not(.landscape).ruler-open .cam-more-stack { display: none; }
+    .cam:not(.landscape).panel-open #camDetailsBtn, .cam:not(.landscape).panel-open #camRotateBtn, .cam:not(.landscape).panel-open #camSettingsBtn { display: none; }
+    .cam.ruler-open #camMicBtn, .cam.ruler-open .cam-more-stack { display: none; }
     .cam:not(.landscape).ruler-open .cam-zoom { grid-column: 1 / -1; }
     .cam-adjust-panel { display: flex; align-items: center; gap: 8px; max-width: 100%; box-sizing: border-box; overflow-x: auto; padding: 4px 4px 4px 12px;
       border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; pointer-events: auto; }
@@ -1407,15 +1408,19 @@
     .cam-rec-core { width: 30px; height: 30px; border-radius: 50%; background: #EF4444; transition: all 0.2s; }
     .cam.active .cam-rec-core { width: 26px; height: 26px; border-radius: 6px; }
     .cam.connecting .cam-rec-core { background: #F59E0B; animation: pulseLogo 1s infinite; }
-    /* Landscape: the shutter column on the right edge with the zoom pill beside it; mic and More flank the network bar. */
-    .cam.landscape .cam-format, .cam.landscape .cam-formats { right: 112px; }
-    .cam.landscape .cam-bottom { inset: 12px; padding: 0 164px 0 44px; justify-content: flex-end; }
-    .cam.landscape .cam-dock { display: flex; justify-content: center; gap: 12px; }
-    .cam.landscape #camMicBtn { order: 1; }
-    .cam.landscape .cam-links { order: 2; }
-    .cam.landscape .cam-more-stack { order: 3; }
-    /* Centred below the top bar, so a long pill (.5 to 10) never runs into the format label. */
-    .cam.landscape .cam-zoom { position: absolute; right: 100px; top: calc(50% + 28px); transform: translateY(-50%); flex-direction: row; }
+    /* Landscape: three columns on the right share one centre line (tools, zoom, shutter); back, meter and network on the
+       left edge; panels open in the space between. */
+    .cam.landscape .cam-format { margin-left: 12px; }
+    .cam.landscape .cam-formats { left: 60px; right: auto; margin-left: 0; width: 400px; max-width: calc(100% - 300px); }
+    .cam.landscape .cam-bottom { inset: 12px; padding-right: 224px; justify-content: flex-end; align-items: flex-start; }
+    .cam.landscape .cam-adjust-panel, .cam.landscape .cam-more-grid { margin: 0 0 8px 44px; }
+    .cam.landscape .cam-dock { display: block; }
+    .cam.landscape .cam-links { display: inline-flex; }
+    .cam.landscape #camMicBtn { position: absolute; right: 164px; top: calc(50% - 120px); }
+    .cam.landscape .cam-more-stack { position: absolute; right: 164px; top: calc(50% - 72px); height: 192px; }
+    .cam.landscape .cam-more-stack > div { position: static; }
+    .cam.landscape .cam-more-stack > div > .cam-btn { margin: 4px; }
+    .cam.landscape .cam-zoom { position: absolute; right: 100px; top: 50%; transform: translateY(-50%); flex-direction: row; }
     .cam.landscape .cam-zoom-pill { flex-direction: column-reverse; }
     .cam.landscape .cam-ruler { width: 52px; height: 220px; }
     .cam.landscape .cam-shutter { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 88px; flex-direction: column; gap: 16px; }
@@ -2304,8 +2309,8 @@
               <div class="cam-top">
                 <button class="cam-btn plain" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
                 <button class="cam-status" id="camStatus" onclick="camStatusTap()"><b id="camLabel">READY</b><span id="camDetails"></span></button>
+                <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Stream settings"><span id="camFormatLabel">1080P</span><span id="camFormatRate">30</span></button>
               </div>
-              <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Stream settings"><span id="camFormatLabel">1080P</span><span id="camFormatRate">30</span></button>
               <div class="cam-formats" id="camFormats"></div>
               <div class="cam-vu" title="Audio level (L / R)">
                 <div class="cam-vu-bars"><div class="cam-vu-bar" id="camVuL"></div><div class="cam-vu-bar" id="camVuR"></div></div>
