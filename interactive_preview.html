@@ -1329,7 +1329,6 @@
     .cam-top .cam-btn .material-icons { font-size: 24px; }
     .cam-status { display: flex; align-items: center; gap: 8px; padding: 6px 4px; border: 0; border-radius: 16px; background: none; color: #fff;
       font: inherit; white-space: nowrap; cursor: default; }
-    .cam-status.tappable { cursor: pointer; }
     .cam-status b { font-size: 13px; padding: 3px 0; border-radius: 6px; }
     .cam-status b.badge { padding: 3px 8px; text-shadow: none; }
     .cam-status span { font-size: 12px; opacity: 0.85; }
@@ -1369,7 +1368,7 @@
     .cam-more-stack { grid-area: more; position: relative; width: 48px; height: 48px; }
     .cam-more-stack > div { position: absolute; left: 0; bottom: 0; display: flex; flex-direction: column; }
     .cam-more-stack > div > .cam-btn { margin: 2px 4px; }
-    .cam:not(.landscape).panel-open #camDetailsBtn, .cam:not(.landscape).panel-open #camRotateBtn, .cam:not(.landscape).panel-open #camSettingsBtn { display: none; }
+    .cam:not(.landscape).panel-open #camRelayBtn, .cam:not(.landscape).panel-open #camRotateBtn, .cam:not(.landscape).panel-open #camSettingsBtn { display: none; }
     .cam.ruler-open #camMicBtn, .cam.ruler-open .cam-more-stack { display: none; }
     .cam:not(.landscape).ruler-open .cam-zoom { grid-column: 1 / -1; }
     .cam-adjust-panel { display: flex; align-items: center; gap: 8px; max-width: 100%; box-sizing: border-box; overflow-x: auto; padding: 4px 4px 4px 12px;
@@ -1474,7 +1473,9 @@
     .relay-line { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; font-size: 15px; color: var(--text-main); }
     .relay-line.muted { color: var(--text-muted); }
     .relay-line span { color: var(--text-main); }
-    .live-details { padding: 8px 20px 24px; }
+    /* More specific than .host-sheet, which sets no side padding. */
+    .host-sheet.live-details { padding: 8px 20px 24px; }
+    .live-details h3 { padding-left: 0; padding-right: 0; }
     .live-details h3 { padding: 8px 0 0; }
     .live-details .sub { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
     .live-code-card { display: flex; align-items: center; gap: 4px; padding: 12px 4px 12px 16px; border-radius: 16px; background: var(--bg-device-surface); margin-bottom: 12px; }
@@ -1484,6 +1485,8 @@
     .live-line { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; color: var(--text-main); }
     .live-line b { font-weight: 600; }
     .live-details p { font-size: 14px; color: var(--text-muted); line-height: 1.45; }
+    .relay-step { display: flex; align-items: center; gap: 12px; margin: 10px 0; font-size: 14px; color: var(--text-main); }
+    .relay-step b { width: 28px; height: 28px; flex-shrink: 0; border-radius: 50%; background: #3B82F6; color: #fff; display: flex; align-items: center; justify-content: center; font-size: 13px; }
     .center-state { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; text-align: center; padding: 0 16px; }
     .center-state h3 { font-size: 20px; font-weight: 700; margin: 24px 0 8px; color: var(--text-main); }
     .center-state p { font-size: 14px; color: var(--text-muted); line-height: 1.45; }
@@ -2308,7 +2311,7 @@
               <!-- Top: back and status on the left, the format on the right (StreamerControls.kt) -->
               <div class="cam-top">
                 <button class="cam-btn plain" onclick="navigateBack()" title="Back"><span class="material-icons">arrow_back</span></button>
-                <button class="cam-status" id="camStatus" onclick="camStatusTap()"><b id="camLabel">READY</b><span id="camDetails"></span></button>
+                <button class="cam-status" id="camStatus"><b id="camLabel">READY</b><span id="camDetails"></span></button>
                 <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Stream settings"><span id="camFormatLabel">1080P</span><span id="camFormatRate">30</span></button>
               </div>
               <div class="cam-formats" id="camFormats"></div>
@@ -2325,7 +2328,7 @@
                   <button class="cam-btn" id="camMicBtn" onclick="camToggleMic()" title="Mute microphone"><span class="material-icons">mic</span></button>
                   <div class="cam-zoom" id="camZoom" role="slider" aria-label="Zoom" onpointerdown="camZoomDown(event)" onpointermove="camZoomMove(event)" onpointerup="camZoomUp(event)"></div>
                   <div class="cam-more-stack"><div>
-                    <button class="cam-btn" id="camDetailsBtn" onclick="liveOpenDetails()" title="Broadcast details"><span class="material-icons">info_outline</span></button>
+                    <button class="cam-btn" id="camRelayBtn" onclick="relaySheetOpen()" title="Add phones to your broadcast"><span class="material-icons">hub</span></button>
                     <button class="cam-btn" id="camRotateBtn" onclick="camToggleRotate()" title="Rotate screen"><span class="material-icons">screen_rotation</span></button>
                     <button class="cam-btn" id="camSettingsBtn" onclick="csOpen()" title="Settings"><span class="material-icons">settings</span></button>
                     <button class="cam-btn" id="camMoreBtn" onclick="camToggleMore()" title="More controls"><span class="material-icons">grid_view</span></button>
@@ -2465,13 +2468,13 @@
         </div>
       </div>
 
-      <!-- Live details (LiveDetailsSheet.kt) -->
-      <div class="app-modal-layer bottom-sheet" id="liveDetailsModal" onclick="if (event.target === this) closeSessionModal('liveDetailsModal')">
-        <div class="app-modal-sheet host-sheet live-details" id="liveDetailsBody"></div>
+      <!-- Use other phones' internet (RelaySheet.kt) -->
+      <div class="app-modal-layer bottom-sheet" id="relaySheetModal" onclick="if (event.target === this) closeSessionModal('relaySheetModal')">
+        <div class="app-modal-sheet host-sheet live-details" id="relaySheetBody"></div>
       </div>
       <div class="app-modal-layer bottom-sheet" id="liveQrModal" onclick="if (event.target === this) closeSessionModal('liveQrModal')">
         <div class="app-modal-sheet host-sheet" style="text-align:center; padding:16px 24px 28px;">
-          <h3>Scan on the relay phone</h3>
+          <h3>Scan on the other phone</h3>
           <div id="liveQrCode" style="display:flex; justify-content:center; margin:12px 0;"></div>
           <div class="live-code" id="liveQrText"></div>
           <p style="font-size:14px; color:var(--text-muted); line-height:1.45;">On the other phone, tap Share mobile data, then Scan QR code.</p>
@@ -3034,32 +3037,30 @@
       if (isAuthenticated) navigateTo('streamer'); else openSessionModal('signInPromptModal');
     }
 
-    // ── Live details (mirrors LiveDetailsSheet.kt) ──
+    // ── Use other phones' internet (mirrors RelaySheet.kt) ──
     // A new code every time the broadcast starts, in the XXXX-XXXX form (generateRelayCode in RelayCode.kt).
     const RELAY_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     const newRelayCode = () => formatRelayCode(Array.from({ length: 8 }, () => RELAY_ALPHABET[Math.floor(Math.random() * RELAY_ALPHABET.length)]).join(''));
     const formatRelayCode = text => { const chars = text.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return chars.length > 4 ? chars.slice(0, 4) + '-' + chars.slice(4) : chars; };
-    function liveOpenDetails() { liveRenderDetails(); openSessionModal('liveDetailsModal'); }
-    function liveRenderDetails() {
-      const name = cs.values.slugline || 'Live broadcast';
-      // It opens before going live too; the relay code, watch link and Stop wait for the broadcast (LiveDetailsSheet.kt).
-      const isBroadcasting = cam.phase !== 'idle';
-      const status = cam.phase === 'live' ? 'Live · ' + camFmt(cam.elapsed) : isBroadcasting ? 'Getting ready…' : 'Not live yet';
-      document.getElementById('liveDetailsBody').innerHTML =
-        `<h3>${name}</h3><div class="sub">${status} in Zynora's Workspace, CloudReel News Desk</div>` +
-        (isBroadcasting
-          ? `<div class="live-code-card"><div><small>Relay code</small><div class="live-code">${cam.relayCode}</div></div>` +
-            `<button class="host-icon" title="Copy relay code" onclick="navigator.clipboard?.writeText(cam.relayCode)"><span class="material-icons">content_copy</span></button>` +
+    // Other phones add their mobile data to this broadcast with the relay code (RelaySheet.kt). A new code is made each
+    // time the broadcast starts, so before that the sheet only explains how it works.
+    function relaySheetOpen() { relaySheetRender(); openSessionModal('relaySheetModal'); }
+    function relaySheetRender() {
+      const hasCode = cam.phase !== 'idle' && cam.relayCode;
+      const step = (number, text) => `<div class="relay-step"><b>${number}</b><span>${text}</span></div>`;
+      document.getElementById('relaySheetBody').innerHTML =
+        "<h3>Use other phones' internet</h3><div class=\"sub\">Other phones can share their mobile data with this broadcast. More connections keep your video smooth when one is weak.</div>" +
+        (hasCode
+          ? `<div class="live-code-card"><div><small>Your code</small><div class="live-code">${cam.relayCode}</div></div>` +
+            `<button class="host-icon" title="Copy code" onclick="navigator.clipboard?.writeText(cam.relayCode)"><span class="material-icons">content_copy</span></button>` +
             `<button class="host-icon" title="Show QR code" onclick="liveOpenQr()"><span class="material-icons">qr_code_2</span></button>` +
-            `<button class="host-btn small-text" onclick="cam.relayCode = newRelayCode(); liveRenderDetails()">New code</button></div>`
-          : '<div class="live-code-card"><div><small>Relay code</small><div>Made when you go live</div></div></div>') +
-        `<div style="display:flex; gap:12px;"><button class="host-btn outline" onclick="cam.left += 3600; camRender()">Add 1 hour</button>` +
-        (isBroadcasting ? '<button class="host-btn outline" onclick="liveShareLink()">Share link</button>' : '') + '</div>' +
-        `<div class="live-line">Camera<span class="host-chips"><button class="${cam.front ? '' : 'on'}" onclick="cam.front = false; camRender(); liveRenderDetails()">Back</button><button class="${cam.front ? 'on' : ''}" onclick="cam.front = true; camRender(); liveRenderDetails()">Front</button></span></div>` +
-        `<div class="live-line">Relay server<b>in-mum</b></div><div class="live-line">Max bitrate<b>${cs.values.totalBandwidth} kbps</b></div>` +
-        `<div class="live-line">Latency<b>${parseFloat(cs.values.delay) * 1000} ms</b></div><div class="live-line">Codec<b>${cs.values.codec}</b></div>` +
-        `<h3 style="font-size:16px;">Relay phones</h3><p>None yet. On the other phone, tap Share mobile data and enter this code.</p>` +
-        (isBroadcasting ? `<button class="host-btn danger" style="margin-top:12px;" onclick="closeSessionModal('liveDetailsModal'); camRecord()">Stop broadcast</button>` : '');
+            `<button class="host-btn small-text" onclick="cam.relayCode = newRelayCode(); relaySheetRender()">New code</button></div>`
+          : '<div class="live-code-card"><div><small>Your code</small><div>You get a code when you go live.</div></div></div>') +
+        '<h3 style="font-size:16px;">On the other phone</h3>' +
+        step(1, 'Open CloudReel and tap Share mobile data.') +
+        step(2, 'Type your code, or tap Scan QR code and point it at this phone.') +
+        step(3, 'Tap Connect. Its mobile data now helps send your video.') +
+        '<h3 style="font-size:16px;">Phones helping now</h3><p>None yet.</p>';
     }
     function liveOpenQr() {
       const box = document.getElementById('liveQrCode');
@@ -3068,11 +3069,6 @@
       document.getElementById('liveQrText').textContent = cam.relayCode;
       openSessionModal('liveQrModal');
     }
-    function liveShareLink() {
-      const text = `Watch ${cs.values.slugline || 'my live broadcast'}\nhttps://hub.cloudreel.com/watch/${cam.relayCode.toLowerCase().replace('-', '')}`;
-      if (navigator.share) navigator.share({ text }).catch(() => {}); else { navigator.clipboard?.writeText(text); alert('Watch link copied'); }
-    }
-
     // ── Share mobile data (mirrors RelayScreen.kt) ──
     function relaySetCode(text) {
       const input = document.getElementById('relayCodeInput');
@@ -3168,7 +3164,6 @@
       statusLabel.textContent = ['live', 'recording', 'paused'].includes(cam.phase) ? `${label} ${camFmt(cam.elapsed)}` : label;
       statusLabel.classList.toggle('badge', isActive);
       statusLabel.style.background = isActive ? color : '';
-      document.getElementById('camStatus').classList.toggle('tappable', isActive && cam.mode === 'live');
       el.classList.toggle('ruler-open', cam.zoomOpen);
       const settings = cs.values;
       document.getElementById('camDetails').textContent =
@@ -3370,7 +3365,6 @@
         segment.classList.toggle('lit', index < litCount || index === cam.peak - 1)));
     }
 
-    function camStatusTap() { if (cam.phase !== 'idle' && cam.mode === 'live') liveOpenDetails(); }
     function camToggleMore() { cam.moreOpen = !cam.moreOpen; camRender(); }
     function camCloseMore() { cam.moreOpen = false; camRender(); }
     function camOpenAdjust(tool) { cam.moreOpen = false; cam.adjust = cam.adjust === tool ? null : tool; camRender(); }
