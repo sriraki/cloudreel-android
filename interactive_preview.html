@@ -1321,17 +1321,19 @@
     .cam-format.on { background: rgba(59,130,246,0.85); }
     .cam-format:disabled { opacity: 0.5; cursor: default; }
     .cam-format i { font-style: normal; font-size: 10px; color: #000; background: #fff; border-radius: 3px; padding: 0 4px; }
-    .cam-formats { position: absolute; top: 68px; right: 12px; z-index: 2; display: none; flex-direction: column; padding: 4px; max-height: 380px;
-      overflow-y: auto; border-radius: 16px; background: rgba(0,0,0,0.82); pointer-events: auto; }
+    /* Stream settings panel (StreamSettingsPanel.kt): quality, delay, codec and aspect ratio, opened from the format chip. */
+    .cam-formats { position: absolute; top: 68px; right: 12px; z-index: 2; display: none; flex-direction: column; gap: 10px; padding: 12px;
+      width: min(320px, calc(100% - 24px)); box-sizing: border-box; max-height: calc(100% - 80px); overflow-y: auto; border-radius: 16px;
+      background: rgba(0,0,0,0.75); color: #fff; pointer-events: auto; }
+    .cam-formats h4 { margin: 0; font-size: 15px; }
+    .cam-formats label { display: block; margin-bottom: 6px; font-size: 12px; font-weight: 600; opacity: 0.7; }
+    .cam-formats small { font-size: 11px; opacity: 0.6; }
+    .cam-set-row { display: flex; gap: 6px; overflow-x: auto; scrollbar-width: none; }
+    .cam-set-row button { flex-shrink: 0; height: 36px; padding: 0 14px; border: 0; border-radius: 18px; background: rgba(255,255,255,0.14);
+      color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
+    .cam-set-row button.on { background: #3B82F6; }
     .cam [hidden] { display: none !important; }
     .cam-formats.open { display: flex; }
-    .cam-format-item { width: 76px; display: flex; flex-direction: column; align-items: center; padding: 6px 0; border: 0; border-radius: 10px;
-      background: none; color: #fff; font: inherit; font-size: 13px; font-weight: 600; cursor: pointer; }
-    .cam-format-item.selected { color: #3B82F6; }
-    .cam-format-icon { position: relative; display: flex; align-items: center; }
-    .cam-format-icon .material-icons-outlined { font-size: 36px; }
-    .cam-format-icon b { position: absolute; left: 3px; width: 22px; text-align: center; font-size: 10px; }
-    .cam-format-item small { font-size: 9px; font-weight: 400; opacity: 0.6; }
     .cam-thumb { width: 48px; height: 48px; border-radius: 12px; border: 2px solid #fff; background: rgba(0,0,0,0.55); color: #fff;
       display: flex; align-items: center; justify-content: center; cursor: pointer; pointer-events: auto; }
     .cam-thumb:disabled { opacity: 0.4; cursor: default; }
@@ -1418,8 +1420,6 @@
     .setup-card span { font-size: 13px; color: var(--text-muted); }
     .setup-dot { width: 10px; height: 10px; border-radius: 50%; background: #10B981; display: inline-block; flex-shrink: 0; }
     .setup-dot.off { background: #EF4444; }
-    .gl-group { margin-bottom: 12px; }
-    .gl-group label { display: block; font-size: 14px; font-weight: 600; color: var(--text-main); margin-bottom: 6px; }
     .relay-line { display: flex; align-items: center; justify-content: space-between; padding: 12px 0; font-size: 15px; color: var(--text-main); }
     .relay-line.muted { color: var(--text-muted); }
     .relay-line span { color: var(--text-main); }
@@ -2274,7 +2274,7 @@
                 </span>
               </div>
 
-              <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Video format"><span id="camFormatLabel">1080P</span><i id="camFormatRate">30</i></button>
+              <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Stream settings"><span id="camFormatLabel">1080P</span><i id="camFormatRate">30</i></button>
               <div class="cam-formats" id="camFormats"></div>
               <div class="cam-left">
                 <button class="cam-btn" id="camMetaBtn" onclick="camOpenMetadata()" title="Metadata"><span class="material-icons">sell</span></button>
@@ -2348,23 +2348,6 @@
               <div class="cs-body" id="recList" style="padding:0;"></div>
             </div>
             <div class="cam-toast" id="camToast"></div>
-          </div>
-        </div>
-
-        <!-- Go live setup (mirrors GoLiveSetupScreen.kt): who is signed in, where broadcasts go, stream settings -->
-        <div class="app-screen" id="screen-golive-setup">
-          <div class="setup-card"><small>Workspaces</small><b>Zynora's Workspace, CloudReel News Desk</b><span>Your broadcasts are shown in each of these.</span></div>
-          <div class="setup-card"><small>This phone</small><b><i class="setup-dot"></i>Online</b></div>
-          <div class="input-group" style="margin-top:12px;">
-            <label class="input-label">Broadcast name (optional)</label>
-            <div class="input-box"><input type="text" id="glName" placeholder="e.g. Hyderabad rally live" oninput="cs.values.slugline = this.value"></div>
-          </div>
-          <p class="list-section-title">Stream settings</p>
-          <div id="glChips"></div>
-          <p class="setup-footnote" style="text-align:left;">The server address and stream key are set up automatically when you go live.</p>
-          <button class="host-btn text" style="width:auto; color:var(--cr-error); text-align:left; padding:0;" onclick="openSessionModal('signOutModal')">Sign out</button>
-          <div class="bottom-action">
-            <button class="btn-gradient" onclick="setupGoLive()">Go live</button>
           </div>
         </div>
 
@@ -2591,7 +2574,7 @@
 
     // The camera screen opens from Broadcast or, for host and participant, from Device Setup; Back returns there.
     let streamerBackTo = 'category-selection';
-    const SCREEN_TITLES = { relay: 'Share mobile data', 'golive-setup': 'Hi, Demo Reporter', 'device-setup': 'Device Setup', 'waiting-lobby': 'Waiting room', login: 'Sign In', signup: 'Create Account' };
+    const SCREEN_TITLES = { relay: 'Share mobile data', 'device-setup': 'Device Setup', 'waiting-lobby': 'Waiting room', login: 'Sign In', signup: 'Create Account' };
     let lobbyAdmitTimer = null;
     let isNavigatingBack = false;
     function navigateTo(screenId) {
@@ -2599,7 +2582,7 @@
       const slideClass = isNavigatingBack ? 'slide-back' : 'slide-forward';
       isNavigatingBack = false;
       if (screenId === 'streamer' && currentScreen !== 'streamer') {
-        streamerBackTo = ['device-setup', 'golive-setup'].includes(currentScreen) ? currentScreen : 'category-selection';
+        streamerBackTo = currentScreen === 'device-setup' ? currentScreen : 'category-selection';
         // The camera opens as a meeting for the host (from Device Setup), a guest (from the lobby) or a rejoin, like the app's role argument.
         const meetingRole = currentScreen === 'device-setup' && currentSessionMode === 'host' ? 'host'
           : currentScreen === 'waiting-lobby' ? 'guest' : currentScreen === 'left-session' ? host.role : null;
@@ -2613,7 +2596,6 @@
         document.getElementById('setupStartBtn').textContent = isHost ? 'Start Session' : 'Join Session';
         document.getElementById('setupWaitingNote').style.display = isHost ? 'none' : '';
       }
-      if (screenId === 'golive-setup') glRender();
       if (screenId === 'waiting-lobby') {
         const code = (document.getElementById('sessionCodeInput').value || '').trim();
         document.getElementById('lobbyCode').textContent = code ? 'Session ' + code : '';
@@ -2668,7 +2650,7 @@
         stopSessionTimer();
       }
 
-      if (['session-entry', 'device-setup', 'golive-setup', 'waiting-lobby', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
+      if (['session-entry', 'device-setup', 'waiting-lobby', 'host-workflow', 'participant-workflow', 'streamer', 'relay', 'signup', 'login'].includes(screenId)) {
         backBtn.style.display = 'flex';
       } else {
         backBtn.style.display = 'none';
@@ -3026,30 +3008,12 @@
       }
     }
 
-    // Reporting needs a signed-in account: sign in first, then the Go live setup page (as in AppNavigation.kt).
+    // Reporting needs a signed-in account: sign in first, then straight to the camera (as in AppNavigation.kt).
     function onStreamerTapped() {
-      if (isAuthenticated) navigateTo('golive-setup'); else openSessionModal('signInPromptModal');
+      if (isAuthenticated) navigateTo('streamer'); else openSessionModal('signInPromptModal');
     }
 
-    // ── Go live setup + live details (mirror GoLiveSetupScreen.kt / LiveDetailsSheet.kt) ──
-    const GL_GROUPS = [
-      ['Delay (SRT latency)', 'delay', [['2 sec', '2s'], ['3 sec', '3s'], ['4 sec', '4s']]],
-      ['Quality', 'format', [['720p 30', '720p30'], ['1080p 30', '1080p30'], ['1080p 60', '1080p60']]],
-      ['Codec', 'codec', [['H.265', 'H.265'], ['H.264', 'H.264']]],
-      ['Aspect ratio', 'orientation', [['Auto', 'Auto'], ['Landscape', '16:9'], ['Portrait', '9:16']]]
-    ];
-    function glRender() {
-      document.getElementById('glName').value = cs.values.slugline;
-      document.getElementById('glChips').innerHTML = GL_GROUPS.map(([title, key, options]) =>
-        `<div class="gl-group"><label>${title}</label><div class="host-chips">` +
-        options.map(([value, label]) => `<button class="${cs.values[key] === value ? 'on' : ''}" onclick="cs.values['${key}'] = '${value}'; glRender()">${label}</button>`).join('') +
-        '</div></div>').join('');
-    }
-    function setupGoLive() {
-      navigateTo('streamer');
-      cam.mode = 'live';
-      camRecord();
-    }
+    // ── Live details (mirrors LiveDetailsSheet.kt) ──
     // A new code every time the broadcast starts, in the XXXX-XXXX form (generateRelayCode in RelayCode.kt).
     const RELAY_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     const newRelayCode = () => formatRelayCode(Array.from({ length: 8 }, () => RELAY_ALPHABET[Math.floor(Math.random() * RELAY_ALPHABET.length)]).join(''));
@@ -3109,7 +3073,7 @@
       setTimeout(() => {
         btn.innerHTML = originalText;
         isAuthenticated = true;
-        navigateTo('golive-setup');
+        navigateTo('streamer');
       }, 500);
     }
 
@@ -3183,12 +3147,19 @@
       const formatChip = document.getElementById('camFormatChip');
       formatChip.classList.toggle('on', cam.formatsOpen && !isActive);
       document.getElementById('camFormats').classList.toggle('open', cam.formatsOpen && !isActive);
-      document.getElementById('camFormats').innerHTML = CAM_FORMATS.map((option, index) => {
-        const badge = option.rate === 'Auto' ? 'A' : ['25', '30'].includes(option.rate) ? '' : option.rate;
-        return `<button class="cam-format-item${option.name === settings.format ? ' selected' : ''}" onclick="camSelectFormat(${index})" title="${option.label} ${option.rate}">` +
-          `<span class="cam-format-icon"><span class="material-icons-outlined">videocam</span><b>${badge}</b></span>${option.label}` +
-          (option.isNative ? '' : '<small>not active</small>') + '</button>';
-      }).join('');
+      const settingRow = (title, key, options) => `<div><label>${title}</label><div class="cam-set-row">` +
+        options.map(([value, label]) => `<button class="${settings[key] === value ? 'on' : ''}" onclick="csSet('${key}', '${value}')">${label}</button>`).join('') + '</div></div>';
+      document.getElementById('camFormats').innerHTML = '<h4>Stream settings</h4>' +
+        settingRow('Quality', 'format', CAM_FORMATS.map(option => [option.name, option.rate === 'Auto' ? option.name : option.label + option.rate])) +
+        '<small>Interlaced (i) formats: Not active yet</small>' +
+        settingRow('Delay', 'delay', [['2 sec', '2s'], ['3 sec', '3s'], ['4 sec', '4s']]) +
+        settingRow('Codec', 'codec', [['H.265', 'H.265'], ['H.264', 'H.264']]) +
+        settingRow('Aspect ratio', 'orientation', [['Auto', 'Auto'], ['Landscape', '16:9'], ['Portrait', '9:16']]);
+      // Each row opens scrolled to its selected chip, so 720p30 isn't hidden past the edge.
+      document.querySelectorAll('.cam-set-row').forEach(row => {
+        const selected = row.querySelector('.on');
+        if (selected) row.scrollLeft = selected.offsetLeft - row.offsetLeft;
+      });
       document.getElementById('camLinks').innerHTML = [['wifi', 'wifi', '18.4'], ['cellular', 'cell_tower', '24.1'], [null, 'public', 'ok'], ['wired', 'cable', 'on']]
         .map(([key, icon, reading]) => {
           const isOn = !key || settings[key];
@@ -3319,15 +3290,11 @@
     function csMetaEdit() { metaStartDraft(); meta.pageEditing = true; csRenderPage(); }
     function csMetaCancel() { meta.pageEditing = false; csRenderPage(); }
     function csMetaSave() { metaSaveDraft(); meta.pageEditing = false; csRenderPage(); }
-    // The chip always shows the quality; changing it restarts the camera, which would cut the file and the stream.
+    // The chip shows the quality and opens every stream setting; changing them mid-stream would cut the file and the stream.
     function camToggleFormats() {
-      if (cam.phase !== 'idle') { camToast('Stop to change quality'); return; }
+      if (cam.phase !== 'idle') { camToast('Stop to change stream settings'); return; }
       cam.formatsOpen = !cam.formatsOpen;
       camRender();
-    }
-    function camSelectFormat(index) {
-      cam.formatsOpen = false;
-      csSet('format', CAM_FORMATS[index].name);
     }
     function camStop() {
       clearInterval(cam.clock);
@@ -3366,9 +3333,11 @@
     function camToggleMic() { cam.mic = !cam.mic; camRender(); }
     function camFlip() { cam.front = !cam.front; camRender(); }
     // Zoom bar (zoomStops / zoomFraction / zoomAtFraction in StreamerModels.kt): log scale, snaps to a stop
-    // when close, closes 3s after the last change. A sample ultra-wide lens gives 0.6× to 8×.
-    const CAM_ZOOM_MIN = 0.6, CAM_ZOOM_MAX = 8, ZOOM_INSET = 22, ZOOM_CROSS = 22;
-    const camZoomStops = () => [CAM_ZOOM_MIN, ...[1, 2, 3].filter(zoom => zoom > CAM_ZOOM_MIN + 0.05 && zoom <= CAM_ZOOM_MAX)];
+    // when close, closes 3s after the last change. A sample flagship with an ultra-wide gives 0.5× to 10×;
+    // a phone without one starts at 1×. A stop too close to the one before it on the bar is left out.
+    const CAM_ZOOM_MIN = 0.5, CAM_ZOOM_MAX = 10, ZOOM_INSET = 22, ZOOM_CROSS = 22;
+    const camZoomStops = () => [1, 2, 3, 5, 10].filter(zoom => zoom > CAM_ZOOM_MIN + 0.05 && zoom <= CAM_ZOOM_MAX)
+      .reduce((stops, zoom) => camZoomFraction(zoom) - camZoomFraction(stops.at(-1)) < 0.12 ? stops : [...stops, zoom], [CAM_ZOOM_MIN]);
     const camZoomFraction = zoom => Math.min(1, Math.max(0, Math.log(zoom / CAM_ZOOM_MIN) / Math.log(CAM_ZOOM_MAX / CAM_ZOOM_MIN)));
     function camZoomAtFraction(fraction) {
       const clamped = Math.min(1, Math.max(0, fraction));
