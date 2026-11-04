@@ -1426,6 +1426,12 @@
     /* Host session (mirrors HostSessionUi.kt): meeting-style view. Portrait fills the screen; landscape is the 16:9 program. */
     .cam:not(.host) .cam-program, .cam:not(.host) .host-bars { display: none; }
     .cam.host .cam-ui, .cam.host .cam-hint { display: none !important; }
+    .host-invite-card { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); width: calc(100% - 48px); max-width: 320px; z-index: 6; padding: 20px; border-radius: 20px; background: rgba(0,0,0,0.7); color: #fff; text-align: center; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+    .host-invite-card[hidden] { display: none; }
+    .host-invite-card b { font-size: 16px; }
+    .host-invite-card span { font-size: 14px; color: rgba(255,255,255,0.75); }
+    .host-invite-card button { margin-top: 8px; display: inline-flex; align-items: center; gap: 8px; padding: 10px 20px; border: none; border-radius: 20px; background: #fff; color: #000; font-weight: 600; font-size: 14px; cursor: pointer; }
+    .host-invite-card button .material-icons { font-size: 18px; color: #000; }
     .cam.host .cam-program { position: absolute; inset: 0; background: #0E0E12; overflow: hidden; }
     .cam.host.landscape .cam-program { inset: auto; top: 50%; left: 50%; height: 100%; aspect-ratio: 16 / 9; max-width: 100%; transform: translate(-50%, -50%); }
     .cam.host .cam-feed { inset: auto; border: 1px solid #0E0E12; box-sizing: border-box; }
@@ -2295,6 +2301,12 @@
               <div class="cam-self" id="camSelf"><i><span class="material-icons">screen_share</span>You're sharing your screen</i><b>You</b></div>
               <div class="cam-guests" id="camGuests"></div>
             </div>
+            <!-- InviteCard in HostSessionUi.kt: a host alone in the meeting -->
+            <div class="host-invite-card" id="hostInviteCard" hidden>
+              <b>You're the only one here</b>
+              <span>Send people an invite link. They wait until you let them in.</span>
+              <button onclick="event.stopPropagation(); hostOpenSheet('add')"><span class="material-icons">person_add</span>Invite people</button>
+            </div>
             <!-- Meeting bars (MeetingBars in HostSessionUi.kt): call time, switch camera, people on top; end at the bottom -->
             <div class="host-bars" id="hostBars">
               <div class="hb-top">
@@ -2771,7 +2783,7 @@
       document.getElementById('entryHeadTitle').textContent = isHost ? 'Open your meeting' : 'Join a meeting';
       document.getElementById('entryHeadSub').textContent = isHost ? 'Paste the host link from CloudReel, or type the meeting code.' : 'Enter the code or link from your invite.';
       const steps = isHost
-        ? ['Check your camera and mic.', 'Open the meeting.', 'Let people in from the waiting room.']
+        ? ['Check your camera and mic.', 'Open the meeting.', 'Share invite links, then let people in.']
         : ['Check your camera and mic.', 'Wait for the host to let you in.', "You're on stage."];
       document.getElementById('entrySteps').innerHTML = steps.map((text, index) => `<div class="relay-step"><b>${index + 1}</b><span>${text}</span></div>`).join('');
       const recent = recentMeetings(mode);
@@ -3585,14 +3597,10 @@
     }
 
     // ── Meeting (mirrors HostSessionUi.kt / StreamerModels.kt) ──
-    // Sample people stand in for the session server's participant list, as in the app.
+    // Sample people stand in for the session server's participant list, as in the app. A host starts alone.
     const HOST_SAMPLE_GUESTS = [
       { id: 1, name: 'Priya Sharma', photo: 'images/category/category_guest_1.webp' },
       { id: 2, name: 'Arjun Rao', photo: 'images/category/category_guest_2.webp', muted: true }
-    ];
-    const HOST_SAMPLE_WAITING = [
-      { id: 3, name: 'Ravi Kumar', photo: 'images/category/category_host.webp' }, { id: 4, name: 'Meera Iyer' }, { id: 5, name: 'Sameer Khan' },
-      { id: 6, name: 'Lakshmi Nair' }, { id: 7, name: 'Vikram Singh' }, { id: 8, name: 'Anjali Desai' }, { id: 9, name: 'Rahul Menon' }, { id: 10, name: 'Deepa Pillai' }
     ];
     // What a guest sees once admitted: the host and the other guests.
     const GUEST_SAMPLE_VIEW = [{ id: 11, name: 'Ravi Kumar (Host)', photo: 'images/category/category_host.webp' }, ...HOST_SAMPLE_GUESTS];
@@ -3619,8 +3627,8 @@
     // role: 'host' opens the room; 'guest' arrives from the waiting lobby.
     function hostStart(role) {
       Object.assign(host, { on: true, role, camOff: false, sharing: false, tab: 'incall', invites: [], rendered: '', startedAt: Date.now(),
-        guests: (role === 'host' ? HOST_SAMPLE_GUESTS : GUEST_SAMPLE_VIEW).map(guest => ({ muted: false, ...guest })),
-        waiting: role === 'host' ? HOST_SAMPLE_WAITING.map(guest => ({ muted: false, ...guest })) : [] });
+        guests: role === 'host' ? [] : GUEST_SAMPLE_VIEW.map(guest => ({ muted: false, ...guest })),
+        waiting: [] });
       cam.front = true;
       document.getElementById('camProgram').prepend(document.getElementById('camFeed'));
       document.getElementById('cam').classList.remove('bars-hidden');
@@ -3650,7 +3658,7 @@
       el.classList.toggle('host', host.on);
       el.classList.toggle('guest', host.on && host.role === 'guest');
       el.classList.toggle('cam-off', host.on && host.camOff);
-      if (!host.on) { document.getElementById('camGuests').innerHTML = ''; host.rendered = ''; el.classList.remove('bars-hidden'); return; }
+      if (!host.on) { document.getElementById('hostInviteCard').hidden = true; document.getElementById('camGuests').innerHTML = ''; host.rendered = ''; el.classList.remove('bars-hidden'); return; }
       document.getElementById('hbTime').textContent = formatCallTime(Math.floor((Date.now() - host.startedAt) / 1000));
       const video = document.getElementById('hbVideo');
       video.classList.toggle('muted', host.camOff);
@@ -3668,6 +3676,7 @@
       document.getElementById('hbRec').hidden = !host.recordingSince;
       document.getElementById('hbPeopleCount').textContent = host.guests.length + 1;
       document.getElementById('hbPeopleDot').hidden = host.waiting.length === 0;
+      document.getElementById('hostInviteCard').hidden = !(host.role === 'host' && host.guests.length === 0 && host.waiting.length === 0);
 
       const isLandscape = el.classList.contains('landscape');
       const isSelfFloating = host.guests.length === 1;
@@ -3817,10 +3826,21 @@
       host.invites.unshift({ name, quality: host.quality, direct: host.direct, url: `https://cloudreel.app/join/${code}?guest=${1000 + Math.floor(Math.random() * 9000)}` });
       hostRenderSheet();
     }
-    function hostCopyInvite(index) { navigator.clipboard?.writeText(host.invites[index].url); }
+    function hostCopyInvite(index) { navigator.clipboard?.writeText(host.invites[index].url); hostInviteSent(host.invites[index]); }
     function hostShareInvite(index) {
       const text = `Join my live debate on CloudReel: ${host.invites[index].url}`;
+      hostInviteSent(host.invites[index]);
       if (navigator.share) navigator.share({ text }).catch(() => {}); else { navigator.clipboard?.writeText(text); alert('Link copied to share'); }
+    }
+    // As in the app (inviteSent): with no session server, the invited guest arrives 4 seconds after the link is sent.
+    function hostInviteSent(invite) {
+      setTimeout(() => {
+        const everyone = [...host.guests, ...host.waiting];
+        if (!host.on || host.role !== 'host' || everyone.some(guest => guest.name === invite.name)) return;
+        const guest = { id: Math.max(0, ...everyone.map(g => g.id)) + 1, name: invite.name, muted: false };
+        (invite.direct ? host.guests : host.waiting).push(guest);
+        hostChanged();
+      }, 4000);
     }
     function hostOpenLeave() {
       const isHost = host.role === 'host';
