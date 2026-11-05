@@ -1412,14 +1412,22 @@
     .cam.landscape .cam-format { margin-left: 12px; }
     .cam.landscape .cam-formats { left: 60px; right: auto; margin-left: 0; width: 400px; max-width: calc(100% - 300px); }
     .cam.landscape .cam-bottom { inset: 12px; padding-right: 224px; justify-content: flex-end; align-items: flex-start; }
-    .cam.landscape .cam-adjust-panel, .cam.landscape .cam-more-grid { margin: 0 0 8px 44px; }
-    /* Landscape: ⋮⋮, tools, mic and network lie in one row on the bottom line's left end; zoom stands beside the shutter column. */
-    .cam.landscape .cam-dock { display: flex; align-items: center; gap: 4px; }
-    .cam.landscape .cam-more-stack, .cam.landscape #camMoreBtn { order: -1; }
-    .cam.landscape .cam-links { order: 1; margin-left: 4px; }
-    .cam.landscape .cam-more-stack { width: auto; height: auto; }
-    .cam.landscape .cam-more-stack > div { position: static; flex-direction: row; gap: 4px; }
+    .cam.landscape .cam-adjust-panel, .cam.landscape .cam-more-grid { margin: 0 0 44px 52px; }
+    /* Landscape: ⋮⋮, tools and mic stand down the left edge (172px stack + 4px + 40px mic, centred);
+       level and network lie in one strip at the bottom centre; zoom stands beside the shutter column. */
+    .cam.landscape .cam-more-stack { position: absolute; left: 0; top: calc(50% - 108px); width: auto; height: auto; }
+    .cam.landscape .cam-more-stack > div { position: static; gap: 4px; }
     .cam.landscape .cam-more-stack > div > .cam-btn { margin: 0; }
+    .cam.landscape #camMoreBtn { order: -1; }
+    .cam.landscape #camMicBtn { position: absolute; left: 0; top: calc(50% + 68px); margin: 0; }
+    .cam.landscape .cam-dock .cam-links, .cam:not(.landscape) .cam-strip .cam-links { display: none; }
+    .cam-strip { display: contents; }
+    .cam.landscape .cam-strip { display: flex; position: absolute; left: 0; right: 0; bottom: 12px; justify-content: center; align-items: center; gap: 8px; }
+    .cam.landscape .cam-vu { position: static; transform: none; display: flex; flex-direction: row-reverse; align-items: center; gap: 5px; padding: 5px 8px; }
+    .cam.landscape .cam-vu-bars { flex-direction: column; }
+    .cam.landscape .cam-vu-bar { flex-direction: row; }
+    .cam.landscape .cam-vu-bar i { width: 5px; height: 6px; }
+    .cam.landscape .cam-vu-labels { flex-direction: column; margin-top: 0; line-height: 9px; }
     .cam.landscape .cam-zoom { position: absolute; right: 100px; top: 50%; transform: translateY(-50%); flex-direction: row; }
     .cam.landscape .cam-zoom-pill { flex-direction: column-reverse; }
     .cam.landscape .cam-ruler { width: 52px; height: 220px; }
@@ -2345,9 +2353,13 @@
                 <button class="cam-format" id="camFormatChip" onclick="camToggleFormats()" title="Stream settings"><span id="camFormatLabel">1080P</span><span id="camFormatRate">30</span></button>
               </div>
               <div class="cam-formats" id="camFormats"></div>
-              <div class="cam-vu" title="Audio level (L / R)">
-                <div class="cam-vu-bars"><div class="cam-vu-bar" id="camVuL"></div><div class="cam-vu-bar" id="camVuR"></div></div>
-                <div class="cam-vu-labels"><span>L</span><span>R</span></div>
+              <!-- Landscape: level and network lie in one strip at the bottom centre. Portrait leaves the meter on the left edge. -->
+              <div class="cam-strip">
+                <div class="cam-vu" title="Audio level (L / R)">
+                  <div class="cam-vu-bars"><div class="cam-vu-bar" id="camVuL"></div><div class="cam-vu-bar" id="camVuR"></div></div>
+                  <div class="cam-vu-labels"><span>L</span><span>R</span></div>
+                </div>
+                <div class="cam-links"></div>
               </div>
 
               <div class="cam-bottom">
@@ -3257,11 +3269,11 @@
         settingRow('Codec', [['H.265', 'H.265'], ['H.264', 'H.264']], settings.codec, "csSet('codec', ") +
         settingRow('Aspect', [['Auto', 'Auto'], ['Landscape', '16:9'], ['Portrait', '9:16']], settings.orientation, "csSet('orientation', ") +
         `<div class="cam-set-desc">${camFormatDescription(format)}</div>`;
-      document.getElementById('camLinks').innerHTML = [['wifi', 'wifi', '18.4'], ['cellular', 'cell_tower', '24.1'], [null, 'public', 'ok'], ['wired', 'cable', 'on']]
+      document.querySelectorAll('.cam-links').forEach(links => links.innerHTML = [['wifi', 'wifi', '18.4'], ['cellular', 'cell_tower', '24.1'], [null, 'public', 'ok'], ['wired', 'cable', 'on']]
         .map(([key, icon, reading]) => {
           const isOn = !key || settings[key];
           return `<span class="${isOn ? '' : 'off'}"><span class="material-icons">${icon}</span>${isOn ? reading : 'off'}</span>`;
-        }).join('') + '<span style="opacity:0.6;">Mbps</span>';
+        }).join('') + '<span style="opacity:0.6;">Mbps</span>');
       // Three fixed slots, like the phone's camera: recordings | record | flip while idle,
       // recordings (greyed, leaving would end the session) | stop | pause while running.
       document.getElementById('camThumb').disabled = isActive;
