@@ -1369,7 +1369,7 @@
     .cam-more-stack > div { position: absolute; left: 0; bottom: 0; display: flex; flex-direction: column; }
     .cam-more-stack > div > .cam-btn { margin: 2px 4px; }
     .cam:not(.landscape).panel-open #camRelayBtn, .cam:not(.landscape).panel-open #camRotateBtn, .cam:not(.landscape).panel-open #camSettingsBtn { display: none; }
-    .cam:not(.landscape).ruler-open #camMicBtn, .cam.ruler-open .cam-more-stack { display: none; }
+    .cam:not(.landscape).ruler-open #camMicBtn, .cam:not(.landscape).ruler-open .cam-more-stack { display: none; }
     .cam:not(.landscape).ruler-open .cam-zoom { grid-column: 1 / -1; }
     .cam-adjust-panel { display: flex; align-items: center; gap: 8px; max-width: 100%; box-sizing: border-box; overflow-x: auto; padding: 4px 4px 4px 12px;
       border-radius: 24px; background: rgba(0,0,0,0.55); font-size: 12px; pointer-events: auto; }
@@ -1413,13 +1413,14 @@
     .cam.landscape .cam-formats { left: 60px; right: auto; margin-left: 0; width: 400px; max-width: calc(100% - 300px); }
     .cam.landscape .cam-bottom { inset: 12px; padding-right: 224px; justify-content: flex-end; align-items: flex-start; }
     .cam.landscape .cam-adjust-panel, .cam.landscape .cam-more-grid { margin: 0 0 8px 44px; }
-    /* Landscape: mic and network on the bottom line's left end; tools and zoom stand on that line at the right (as in portrait). */
-    .cam.landscape .cam-dock { display: flex; align-items: center; gap: 8px; }
+    /* Landscape: mic, tools and network lie in one row on the bottom line's left end; zoom stands beside the shutter column. */
+    .cam.landscape .cam-dock { display: flex; align-items: center; gap: 4px; }
     .cam.landscape #camMicBtn { order: -1; }
-    .cam.landscape .cam-more-stack { position: absolute; right: 164px; bottom: 0; height: 192px; }
-    .cam.landscape .cam-more-stack > div { position: static; }
-    .cam.landscape .cam-more-stack > div > .cam-btn { margin: 4px; }
-    .cam.landscape .cam-zoom { position: absolute; right: 100px; bottom: 0; flex-direction: row; }
+    .cam.landscape .cam-links { order: 1; margin-left: 4px; }
+    .cam.landscape .cam-more-stack { width: auto; height: auto; }
+    .cam.landscape .cam-more-stack > div { position: static; flex-direction: row; gap: 4px; }
+    .cam.landscape .cam-more-stack > div > .cam-btn { margin: 0; }
+    .cam.landscape .cam-zoom { position: absolute; right: 100px; top: 50%; transform: translateY(-50%); flex-direction: row; }
     .cam.landscape .cam-zoom-pill { flex-direction: column-reverse; }
     .cam.landscape .cam-ruler { width: 52px; height: 220px; }
     .cam.landscape .cam-shutter { position: absolute; right: 0; top: 50%; transform: translateY(-50%); width: 88px; flex-direction: column; gap: 16px; }
