@@ -1499,6 +1499,11 @@
     .live-details .sub { font-size: 14px; color: var(--text-muted); margin-bottom: 12px; }
     .live-code-card { display: flex; align-items: center; gap: 4px; padding: 12px 4px 12px 16px; border-radius: 16px; background: var(--bg-device-surface); margin-bottom: 12px; }
     .live-code-card div { flex: 1; }
+    .relay-code-card { display: flex; flex-direction: column; align-items: center; gap: 12px; padding: 16px; border-radius: 16px; background: var(--bg-device-surface); margin-bottom: 12px; }
+    .relay-qr { padding: 8px; border-radius: 8px; background: #fff; line-height: 0; }
+    .relay-actions { display: flex; gap: 12px; width: 100%; }
+    .relay-actions .host-btn { flex: 1; display: inline-flex; align-items: center; justify-content: center; gap: 6px; }
+    .relay-actions .material-icons { font-size: 18px; }
     .live-code-card small { font-size: 12px; color: var(--text-muted); }
     .live-code { font-family: ui-monospace, Menlo, monospace; font-size: 22px; font-weight: 700; color: var(--text-main); }
     .live-line { display: flex; justify-content: space-between; padding: 8px 0; font-size: 15px; color: var(--text-main); }
@@ -2521,14 +2526,6 @@
       <div class="app-modal-layer bottom-sheet" id="relaySheetModal" onclick="if (event.target === this) closeSessionModal('relaySheetModal')">
         <div class="app-modal-sheet host-sheet live-details" id="relaySheetBody"></div>
       </div>
-      <div class="app-modal-layer bottom-sheet" id="liveQrModal" onclick="if (event.target === this) closeSessionModal('liveQrModal')">
-        <div class="app-modal-sheet host-sheet" style="text-align:center; padding:16px 24px 28px;">
-          <h3>Scan on the other phone</h3>
-          <div id="liveQrCode" style="display:flex; justify-content:center; margin:12px 0;"></div>
-          <div class="live-code" id="liveQrText"></div>
-          <p style="font-size:14px; color:var(--text-muted); line-height:1.45;">On the other phone, tap Share mobile data, then Scan QR code.</p>
-        </div>
-      </div>
       <div class="app-modal-layer" id="relayConfirmModal" onclick="if (event.target === this) closeSessionModal('relayConfirmModal')">
         <div class="app-modal-sheet host-sheet" style="padding:20px 20px 16px;">
           <h3 id="relayConfirmTitle" style="padding:0 0 8px;"></h3>
@@ -2656,6 +2653,8 @@
       isNavigatingBack = false;
       if (screenId === 'streamer' && currentScreen !== 'streamer') {
         streamerBackTo = currentScreen === 'device-setup' ? currentScreen : 'category-selection';
+        // Each visit to the camera gets a fresh relay code (StreamerViewModel); it stays through going live and stopping.
+        cam.relayCode = newRelayCode();
         // The camera opens as a meeting for the host (from Device Setup), a guest (from the lobby) or a rejoin, like the app's role argument.
         const meetingRole = currentScreen === 'device-setup' && currentSessionMode === 'host' ? 'host'
           : currentScreen === 'waiting-lobby' ? 'guest' : currentScreen === 'left-session' ? host.role : null;
@@ -3129,36 +3128,37 @@
     }
 
     // ── Use other phones' internet (mirrors RelaySheet.kt) ──
-    // A new code every time the broadcast starts, in the XXXX-XXXX form (generateRelayCode in RelayCode.kt).
+    // A new code every time the camera opens, in the XXXX-XXXX form (generateRelayCode in RelayCode.kt).
     const RELAY_ALPHABET = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
     const newRelayCode = () => formatRelayCode(Array.from({ length: 8 }, () => RELAY_ALPHABET[Math.floor(Math.random() * RELAY_ALPHABET.length)]).join(''));
     const formatRelayCode = text => { const chars = text.toUpperCase().replace(/[^A-Z0-9]/g, '').slice(0, 8); return chars.length > 4 ? chars.slice(0, 4) + '-' + chars.slice(4) : chars; };
-    // Other phones add their mobile data to this broadcast with the relay code (RelaySheet.kt). A new code is made each
-    // time the broadcast starts, so before that the sheet only explains how it works.
+    // Other phones add their mobile data to this broadcast with the relay code (RelaySheet.kt). The code is ready as
+    // soon as the camera opens, shown as a QR code with Copy and Share, so phones can join before going live.
     function relaySheetOpen() { relaySheetRender(); openSessionModal('relaySheetModal'); }
     function relaySheetRender() {
-      const hasCode = cam.phase !== 'idle' && cam.relayCode;
       const step = (number, text) => `<div class="relay-step"><b>${number}</b><span>${text}</span></div>`;
       document.getElementById('relaySheetBody').innerHTML =
         "<h3>Use other phones' internet</h3><div class=\"sub\">Other phones can share their mobile data with this broadcast. More connections keep your video smooth when one is weak.</div>" +
-        (hasCode
-          ? `<div class="live-code-card"><div><small>Your code</small><div class="live-code">${cam.relayCode}</div></div>` +
-            `<button class="host-icon" title="Copy code" onclick="navigator.clipboard?.writeText(cam.relayCode)"><span class="material-icons">content_copy</span></button>` +
-            `<button class="host-icon" title="Show QR code" onclick="liveOpenQr()"><span class="material-icons">qr_code_2</span></button>` +
-            `<button class="host-btn small-text" onclick="cam.relayCode = newRelayCode(); relaySheetRender()">New code</button></div>`
-          : '<div class="live-code-card"><div><small>Your code</small><div>You get a code when you go live.</div></div></div>') +
+        `<div class="relay-code-card"><div class="relay-qr" id="relayQr"></div><div class="live-code">${cam.relayCode}</div>` +
+          `<div class="relay-actions"><button class="host-btn outline" onclick="navigator.clipboard?.writeText(cam.relayCode)"><span class="material-icons">content_copy</span>Copy</button>` +
+          `<button class="host-btn danger" style="background:var(--cr-violet);" onclick="relayShareCode()"><span class="material-icons">share</span>Share</button></div>` +
+          `<button class="host-btn small-text" onclick="relayNewCode()">New code</button></div>` +
         '<h3 style="font-size:16px;">On the other phone</h3>' +
         step(1, 'Open CloudReel and tap Share mobile data.') +
         step(2, 'Type your code, or tap Scan QR code and point it at this phone.') +
         step(3, 'Tap Connect. Its mobile data now helps send your video.') +
         '<h3 style="font-size:16px;">Phones helping now</h3><p>None yet.</p>';
+      if (window.QRCode) new QRCode(document.getElementById('relayQr'), { text: cam.relayCode, width: 184, height: 184 });
     }
-    function liveOpenQr() {
-      const box = document.getElementById('liveQrCode');
-      box.innerHTML = '';
-      if (window.QRCode) new QRCode(box, { text: cam.relayCode, width: 200, height: 200 });
-      document.getElementById('liveQrText').textContent = cam.relayCode;
-      openSessionModal('liveQrModal');
+    function relayShareCode() {
+      const text = `Help my CloudReel broadcast with your mobile data: open CloudReel, tap Share mobile data, and enter code ${cam.relayCode}`;
+      if (navigator.share) navigator.share({ text }).catch(() => {}); else { navigator.clipboard?.writeText(text); alert('Code copied to share'); }
+    }
+    // While live, a new code drops phones already helping, so it asks first (the app's AlertDialog).
+    function relayNewCode() {
+      if (cam.phase !== 'idle' && !confirm('Make a new code? Phones helping with the old code disconnect, and need the new code to join again.')) return;
+      cam.relayCode = newRelayCode();
+      relaySheetRender();
     }
     // ── Share mobile data (mirrors RelayScreen.kt) ──
     function relaySetCode(text) {
@@ -3338,7 +3338,6 @@
       }
       cam.elapsed = 0;
       if (cam.mode === 'live') {
-        cam.relayCode = newRelayCode();
         cam.phase = 'connecting';
         setTimeout(() => { if (cam.phase === 'connecting') { cam.phase = 'live'; camRender(); } }, 1500);
       } else {
