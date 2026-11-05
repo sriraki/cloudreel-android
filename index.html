@@ -1426,7 +1426,11 @@
     .cam.landscape .cam-vu { position: static; transform: none; display: flex; flex-direction: row-reverse; align-items: center; gap: 5px; padding: 5px 10px; border-radius: 20px; }
     .cam.landscape .cam-vu-bars { flex-direction: column; }
     .cam.landscape .cam-vu-bar { flex-direction: row; }
-    .cam.landscape .cam-vu-bar i { width: 5px; height: 5px; }
+    .cam.landscape .cam-vu-bar { gap: 1.5px; }
+    /* Flat, each block shows as 3 thin ticks (1.5px tick, 1.5px gap), as in the app. */
+    .cam.landscape .cam-vu-bar i { width: 7.5px; height: 5px; border-radius: 0; color: #10B981; background: repeating-linear-gradient(90deg, currentColor 0 1.5px, transparent 1.5px 3px); }
+    .cam.landscape .cam-vu-bar i:nth-child(n+9) { color: #F59E0B; }
+    .cam.landscape .cam-vu-bar i:nth-child(n+11) { color: #EF4444; }
     .cam.landscape .cam-vu-labels { flex-direction: column; margin-top: 0; line-height: 7px; }
     .cam.landscape .cam-zoom { position: absolute; right: 100px; top: 50%; transform: translateY(-50%); flex-direction: row; }
     .cam.landscape .cam-zoom-pill { flex-direction: column-reverse; }
