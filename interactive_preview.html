@@ -1629,6 +1629,9 @@
     .cs-switch { width: 38px; height: 22px; border-radius: 11px; background: var(--border-device); position: relative; flex-shrink: 0; transition: background 0.2s; }
     .cs-switch::after { content: ''; position: absolute; top: 3px; left: 3px; width: 16px; height: 16px; border-radius: 50%; background: #fff; transition: left 0.2s; }
     .cs-switch.on { background: #3B82F6; }
+    /* Off, as in the app's switches: grey knob and outline, since the border colour alone is too pale to see. */
+    .toggle-switch:not(.active), .cs-switch:not(.on) { background: var(--list-group-bg); box-shadow: inset 0 0 0 2px var(--text-muted); }
+    .toggle-switch:not(.active)::after, .cs-switch:not(.on)::after { background: var(--text-muted); }
     .cs-switch.on::after { left: 19px; }
     .cs-dialog { position: absolute; inset: 0; background: rgba(0,0,0,0.5); display: none; align-items: center; justify-content: center; padding: 24px; }
     .cs-dialog.open { display: flex; }
